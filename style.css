@@ -67,6 +67,8 @@ body {
 .cta-button:hover {
   border : 2px solid white;
   background-color:#1b1f38 ;
+    transform: scale(1.05);
+    transition: transform 0.3s ease;
 }
 
 
@@ -99,11 +101,15 @@ body {
 }
 
 .footer {
-  font-size: 0.9rem;
+  font-size: 1rem;
   text-align: center;
-  color: white;
+  /* color: white; */
   padding: 20px 0;
   width: 100%;
+}
+
+footer p {
+  color: black;
 }
 
 .footer a {
@@ -309,4 +315,70 @@ body {
     width: 40px;
     height: 40px;
   }
+}
+
+
+:root {
+  --primary-color: #ff477e;       
+  --secondary-color: #1b1f38;     
+  --text-color: #1b1f38;        
+  --light-bg-color: white;         
+  --modal-bg-color: #fefefe;      
+  --modal-overlay-color: rgba(0, 0, 0, 0.7); /
+  /* --font-family: "Sora", sans-serif;  */
+}
+
+body {
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--light-bg-color);
+  font-family: var(--font-family);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.dark-mode-toggle {
+  background-color: var(--secondary-color);
+  color: white;
+}
+
+.cta-button {
+  background-color: var(--primary-color);
+  color: white;
+  transition: background-color 0.3s;
+}
+
+.cta-button:hover {
+  background-color: var(--secondary-color);
+}
+
+.modal {
+  background-color: var(--modal-overlay-color);
+}
+
+.modal-content {
+  background-color: var(--modal-bg-color);
+}
+
+
+.footer a {
+  color: var(--primary-color);
+}
+
+/* Dark mode styles */
+body.dark-mode {
+  background-color: var(--secondary-color);
+  color: white;
+}
+
+.dark-mode .cta-button {
+  background-color: var(--primary-color);
+}
+
+.dark-mode .modal {
+  background-color: var(--modal-overlay-color);
 }

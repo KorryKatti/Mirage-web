@@ -1,20 +1,23 @@
 const toggleIcon = document.querySelector(".toggle-theme"); 
 
-function toggleDarkMode() {
-    document.body.classList.toggle("dark-mode");
 
-    if (document.body.classList.contains("dark-mode")) {
-        document.body.style.backgroundColor = "#1b1f38"; 
-        document.body.style.color = "white"; 
-        toggleIcon.classList.remove('fa-moon'); 
-        toggleIcon.classList.add('fa-sun'); 
-    } else {
-        document.body.style.backgroundColor = "white"; 
-        document.body.style.color = "#1b1f38"; 
-        toggleIcon.classList.remove('fa-sun'); 
-        toggleIcon.classList.add('fa-moon'); 
-    }
+
+function toggleDarkMode() {
+  document.body.classList.toggle("dark-mode");
+  if (document.body.classList.contains("dark-mode")) {
+    localStorage.setItem('darkMode', 'true');
+  } else {
+    localStorage.setItem('darkMode', 'false');
+  }
 }
+
+// On page load, set the initial theme based on local storage
+window.onload = () => {
+  if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark-mode');
+  }
+};
+
 
   function openModal() {
     document.getElementById("myModal").style.display = "flex";
