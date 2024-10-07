@@ -11,7 +11,6 @@ function toggleDarkMode() {
   }
 }
 
-// On page load, set the initial theme based on local storage
 window.onload = () => {
   if (localStorage.getItem('darkMode') === 'true') {
     document.body.classList.add('dark-mode');
@@ -27,7 +26,6 @@ window.onload = () => {
     document.getElementById("myModal").style.display = "none";
   }
 
-  // Close the modal when clicking outside of the content
   window.onclick = function (event) {
     const modal = document.getElementById("myModal");
     if (event.target == modal) {
