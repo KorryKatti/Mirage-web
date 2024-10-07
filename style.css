@@ -3,10 +3,9 @@
 body {
   min-height: 100vh;
   width: 100%;
-  background-color: #1b1f38;
+  background-color: white;
   font-family: "Sora", sans-serif;
   font-optical-sizing: auto;
-  color: #333;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -37,7 +36,6 @@ body {
 .header {
   margin-bottom: 45px;
   justify-content: start;
-  color: white;
   font-size: 3.5rem;
 }
 
@@ -46,7 +44,6 @@ body {
 }
 
 .description {
-  color: white;
   font-size: 1.1rem;
   margin-bottom: 1rem;
   max-width: 500px;
@@ -68,12 +65,10 @@ body {
 }
 
 .cta-button:hover {
-  background-color: #555;
+  border : 2px solid white;
+  background-color:#1b1f38 ;
 }
 
-.dark-mode .cta-button {
-  background-color: #007bff;
-}
 
 .contributors {
   margin-top: 3rem;
@@ -84,18 +79,19 @@ body {
 }
 
 .dark-mode-toggle {
+  border-radius: 8px;
   position: fixed;
-  top: 20px;
-  right: 20px;
+  top: 24px;
+  right: 29px;
   padding: 10px;
-  background-color: #333;
+  background-color: #1b1f38;
   color: white;
   border: none;
   cursor: pointer;
 }
 
 .dark-mode-toggle:hover {
-  background-color: #555;
+  background-color: #393e5e;
 }
 
 .stats {
@@ -105,7 +101,6 @@ body {
 .footer {
   font-size: 0.9rem;
   text-align: center;
-  color: white;
   padding: 20px;
   width: 100%;
 }
@@ -172,7 +167,6 @@ body {
   font-size: 21px;
   margin-bottom: 10px;
   text-align: center;
-  color: white;
 }
 
 .contributors-images-map {
@@ -292,15 +286,24 @@ body {
 
   .cta-button {
     text-align: center;
-    width: 86%;
+    width: 97%;
     padding: 10px;
     font-size: 0.9rem;
-  }
+}
+
+.stats p {
+  font-size: 14px;
+  margin: 12px 0;
+}
 
   .contributors-map {
     height: 300px;
   }
-
+  .contributors-text {
+    font-size: 15px;
+    margin-bottom: 45px;
+    text-align: center;
+}
   .contributor-pin {
     width: 40px;
     height: 40px;
