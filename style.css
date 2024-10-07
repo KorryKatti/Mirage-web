@@ -1,0 +1,308 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap');
+
+body {
+  min-height: 100vh;
+  width: 100%;
+  background-color: #1b1f38;
+  font-family: "Sora", sans-serif;
+  font-optical-sizing: auto;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: white;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #ff477e;
+}
+
+.container {
+  justify-content: space-between;
+  display: flex;
+  padding: 20px;
+  flex-wrap: wrap;
+}
+
+.header {
+  margin-bottom: 45px;
+  justify-content: start;
+  color: white;
+  font-size: 3.5rem;
+}
+
+.contain1 {
+  padding-right: 206px;
+}
+
+.description {
+  color: white;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  max-width: 500px;
+}
+
+.cta-button {
+  border-radius: 10px;
+  width: 45%;
+  display: block;
+  margin: 18px 0px;
+  padding: 13px 20px;
+  font-size: 1rem;
+  color: white;
+  background-color: #ff477e;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.cta-button:hover {
+  background-color: #555;
+}
+
+.dark-mode .cta-button {
+  background-color: #007bff;
+}
+
+.contributors {
+  margin-top: 3rem;
+}
+
+.contributors-images {
+  margin: 15px 0;
+}
+
+.dark-mode-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 10px;
+  background-color: #333;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.dark-mode-toggle:hover {
+  background-color: #555;
+}
+
+.stats {
+  margin-top: 3rem;
+}
+
+.footer {
+  font-size: 0.9rem;
+  text-align: center;
+  color: white;
+  padding: 20px;
+  width: 100%;
+}
+
+.footer a {
+  color: #007bff;
+  text-decoration: none;
+  margin: 0 5px;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
+
+/* Modal Styles */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.7);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 600px;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.contributors-map {
+  position: relative;
+  height: 500px;
+  width: 100%;
+  margin-top: 50px;
+  background: url('https://via.placeholder.com/800x500') no-repeat center center;
+  background-size: cover;
+  border: 1px solid #ddd;
+}
+
+.contributors-text {
+  font-size: 21px;
+  margin-bottom: 10px;
+  text-align: center;
+  color: white;
+}
+
+.contributors-images-map {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+.contributor-pin {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  transition: transform 0.3s ease;
+}
+
+.contributor-pin img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid #ff477e;
+}
+
+.contributor-pin:hover {
+  transform: scale(1.2);
+}
+
+.contributor-pin a {
+  display: inline-block;
+  text-decoration: none;
+  color: white;
+  font-size: 0.9rem;
+  text-align: center;
+  display: block;
+  margin-top: 5px;
+}
+
+/* Stats Section */
+.stats {
+  margin-top: 3rem;
+  color: #fff;
+  background-color: #2a2d47;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+.stats p {
+  margin: 10px 0;
+}
+
+.stats strong {
+  color: #ff477e;
+}
+
+/* Media Queries for responsiveness */
+@media (max-width: 1200px) {
+  .header {
+    font-size: 3rem;
+  }
+
+  .container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .cta-button {
+    width: 80%;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    font-size: 2.5rem;
+    text-align: center;
+  }
+
+  .cta-button {
+    text-align: center;
+    width: 86%;
+  }
+
+  .contributors-map {
+    height: 400px;
+  }
+
+  .contributor-pin {
+    width: 50px;
+    height: 50px;
+  }
+
+  .contain1 {
+    padding-right: 0px;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    min-height: auto;
+    width: 100%;
+  }
+
+  .header {
+    font-size: 2rem;
+    text-align: center;
+  }
+
+  .description {
+    font-size: 1rem;
+    max-width: 100%;
+  }
+
+  .contain1 {
+    padding-right: 0px;
+  }
+
+  .cta-button {
+    text-align: center;
+    width: 86%;
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+
+  .contributors-map {
+    height: 300px;
+  }
+
+  .contributor-pin {
+    width: 40px;
+    height: 40px;
+  }
+}
