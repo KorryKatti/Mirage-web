@@ -1,3 +1,7 @@
+window.onload = () => {
+    const isDarkMode = true;
+    applyTheme(isDarkMode);
+};
 const toggleIcon = document.querySelector(".toggle-theme");
 
 const applyTheme = (isDarkMode) => {
@@ -15,6 +19,8 @@ const applyTheme = (isDarkMode) => {
         document.body.style.backgroundColor = "white"; 
         document.body.style.color = "#1b1f38"; 
         footer.style.color = "#1b1f38";
+        const contributorsText = document.querySelector('.contributors-text');
+        contributorsText.style.color = 'white';
         toggleIcon.classList.remove('fa-sun'); 
         toggleIcon.classList.add('fa-moon'); 
     }
@@ -25,10 +31,6 @@ const toggleDarkMode = () => {
     applyTheme(isDarkMode);
 };
 
-window.onload = () => {
-    const isDarkMode = false;
-    applyTheme(isDarkMode);
-};
 
 const openModal = () => {
     document.getElementById("myModal").style.display = "flex";
@@ -44,3 +46,19 @@ window.onclick = (event) => {
         closeModal();
     }
 };
+
+let valueDisplays = document.querySelectorAll(".num1");
+let interval = 4000;
+// let endValue = 1234;
+valueDisplays.forEach((valueDisplay) => {
+  let startValue = 0;
+  let endValue = parseInt(valueDisplay.getAttribute("data-val"));
+  let duration = Math.floor(interval / endValue);
+  let counter = setInterval(function () {
+    startValue += 1;
+    valueDisplay.textContent = startValue;
+    if (startValue == endValue) {
+      clearInterval(counter);
+    }
+  }, duration);
+});
