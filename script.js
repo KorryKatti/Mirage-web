@@ -1,6 +1,39 @@
 window.onload = () => {
     const isDarkMode = true;
     applyTheme(isDarkMode);
+
+    const sio = io('https://mirage-o081.onrender.com/')
+    
+    const getMetrics = () => {
+      sio.emit('get_metrics')
+    }
+    
+    sio.on('connect', () => {
+      // console.log("Successfully connected to Mirage testnet server", sio.id);
+      getMetrics();
+      sio.on('metrics', (metrics) => {
+        
+        document.querySelectorAll('.num1')[0].setAttribute("data-val", metrics.total);
+        document.querySelectorAll('.num1')[1].setAttribute("data-val", metrics.today);
+        
+        let valueDisplays = document.querySelectorAll(".num1");
+        let interval = 4000;
+        
+        valueDisplays.forEach((valueDisplay) => {
+          let startValue = 0;
+          let endValue = parseInt(valueDisplay.getAttribute("data-val"));
+          let duration = Math.floor(interval / endValue);
+          let counter = setInterval(function () {
+            if (startValue == endValue) {
+              clearInterval(counter);
+              return;
+            }
+            startValue += 1;
+            valueDisplay.textContent = startValue;
+          }, duration);
+        });
+      })
+    })    
 };
 const toggleIcon = document.querySelector(".toggle-theme");
 
@@ -46,19 +79,3 @@ window.onclick = (event) => {
         closeModal();
     }
 };
-
-let valueDisplays = document.querySelectorAll(".num1");
-let interval = 4000;
-// let endValue = 1234;
-valueDisplays.forEach((valueDisplay) => {
-  let startValue = 0;
-  let endValue = parseInt(valueDisplay.getAttribute("data-val"));
-  let duration = Math.floor(interval / endValue);
-  let counter = setInterval(function () {
-    startValue += 1;
-    valueDisplay.textContent = startValue;
-    if (startValue == endValue) {
-      clearInterval(counter);
-    }
-  }, duration);
-});
