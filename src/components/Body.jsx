@@ -9,12 +9,23 @@ const Body = () => {
     <div className="bg-gradient-to-b from-[#4e5279] via-[#ebc5e4] to-[#cf8ba9]">
       <div className="flex justify-between -mb-4">
         <div className="m-5 p-3">
-          <h1 className="text-5xl font-manrope font-[600] mb-1">Mirage</h1>
-          <h2 className="text-2xl font-inter font-[600] mb-1">
+          <h1
+            className="text-5xl font-manrope font-[600] mb-1"
+            style={{ color: "rgba(255, 255, 245, 0.86)" }}
+          >
+            Mirage
+          </h1>
+          <h2
+            className="text-2xl font-inter font-[600] mb-1"
+            style={{ color: "rgba(255, 255, 245, 0.86)" }}
+          >
             Your Conversations, Your Privacy. Secured.
           </h2>
           <div className="container p-2 w-2/3">
-            <p className="text-xl font-inter font-[500]">
+            <p
+              className="text-xl font-inter font-[500]"
+              style={{ color: "rgba(255, 255, 245, 0.86)" }}
+            >
               At Mirage, privacy is not just a feature; it's our foundation. We
               are dedicated to safeguarding your personal conversations with
               end-to-end encryption, ensuring that only you and your chosen
@@ -42,33 +53,33 @@ const Body = () => {
 
       <div className="mt-12 mx-5 grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="bg-[#2A2D47] p-3 rounded-lg shadow-lg text-white ">
-          <h3 className="text-2xl font-bold flex">
+          <h3 className="text-xl font-bold flex">
             Complete Security{" "}
-            <span className="text-3xl m-1">
+            <span className="text-2xl m-1">
               <TfiLock />
             </span>
           </h3>
-          <p>Every message is encrypted to protect your privacy.</p>
+          <p className="ml-2">Every message is encrypted to protect your privacy.</p>
         </div>
         <div className="bg-[#2A2D47] p-3 rounded-lg shadow-lg text-white">
-          <h3 className="text-2xl font-bold flex">
+          <h3 className="text-xl font-bold flex">
             No Data Tracking{" "}
-            <span className="text-3xl m-1">
+            <span className="text-2xl m-1">
               <FiEyeOff />
             </span>
           </h3>
-          <p>
+          <p className="ml-2">
             We respect your personal space. Your data stays with you, always.
           </p>
         </div>
         <div className="bg-[#2A2D47] p-3 rounded-lg shadow-lg text-white">
-          <h3 className="text-2xl font-bold flex">
+          <h3 className="text-xl font-bold flex">
             Built for Trust{" "}
-            <span className="text-3xl m-1">
+            <span className="text-2xl m-1">
               <FiShield />
             </span>{" "}
           </h3>
-          <p>
+          <p className="ml-2">
             With Mirage, you can trust that your conversations remain
             confidential—no third parties, no breaches.
           </p>
@@ -77,41 +88,43 @@ const Body = () => {
 
       <hr className="my-12" />
       <div className="">
-  <div className="text-center font-inter font-[600]">
-    <div className="flex justify-center">
-      <img className="text-center" src="https://vite.dev/heart.svg" alt="heart" />
-    </div>
-    
-    <p className="text-xl">Free & open source</p>
-    <div className="w-2/3 ml-52">
-       <p className="text-md">
-      Mirage is MIT Licensed and will always be free and open source. This is made
-      possible by our contributors and these companies:
-    </p> 
-    </div>
-    
-  </div>
-  
-  <div className="text-center text-lg font-inter font-[500]">
-    Thanks to the people who worked on this project :)
-  </div>
+        <div className="text-center font-inter font-[600]">
+          <div className="flex justify-center">
+            <img
+              className="text-center"
+              src="https://vite.dev/heart.svg"
+              alt="heart"
+            />
+          </div>
 
-  <div className="flex justify-center space-x-4">
-    <a href="https://github.com/korrykatti/mirage/graphs/contributors">
-      <img
-        src="https://contrib.rocks/image?repo=korrykatti/mirage"
-        alt="Mirage Contributors"
-      />
-    </a>
-    <a href="https://github.com/KorryKatti/Mirage-web/graphs/contributors">
-      <img
-        src="https://contrib.rocks/image?repo=KorryKatti/Mirage-web"
-        alt="Mirage-web Contributors"
-      />
-    </a>
-  </div>
-</div>
+          <p className="text-xl">Free & open source</p>
+          <div className="w-2/3 ml-52">
+            <p className="text-md">
+              Mirage is MIT Licensed and will always be free and open source.
+              This is made possible by our contributors and these companies:
+            </p>
+          </div>
+        </div>
 
+        <div className="text-center text-lg font-inter font-[500]">
+          Thanks to the people who worked on this project :)
+        </div>
+
+        <div className="flex justify-center space-x-4">
+          <a href="https://github.com/korrykatti/mirage/graphs/contributors">
+            <img
+              src="https://contrib.rocks/image?repo=korrykatti/mirage"
+              alt="Mirage Contributors"
+            />
+          </a>
+          <a href="https://github.com/KorryKatti/Mirage-web/graphs/contributors">
+            <img
+              src="https://contrib.rocks/image?repo=KorryKatti/Mirage-web"
+              alt="Mirage-web Contributors"
+            />
+          </a>
+        </div>
+      </div>
 
       <hr className="my-10" />
       <Footer />
