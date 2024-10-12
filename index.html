@@ -3,99 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mirage - Privacy Focused Chat App</title>
-    <link rel="stylesheet" href="style.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Mirage</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+   <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    
   </head>
   <body>
-    
-    <button class="dark-mode-toggle" onclick="toggleDarkMode()">
-      <i class="toggle-theme fas fa-moon"></i>
-    </button>
-
-    <div class="container">
-      <div class="contain1">
-        <div class="header">
-          Welcome to <br />
-          Mirage
-        </div>
-        <div class="description">
-          Experience privacy at its core. Mirage is a privacy-based chat app
-          that makes sure your conversations stay secure and encrypted.
-        </div>
-
-        <a
-          href="https://github.com/KorryKatti/Mirage-web/issues/1"
-          class="cta-button"
-          >Get Started</a
-        >
-        <a href="#" class="cta-button" onclick="openModal()"
-          >See How Mirage Works</a
-        >
-      </div>
-      <div>
-        <div class="contributors">
-          <div class="contributors-text">
-            Thanks to the people who worked on this project :)
-          </div>
-          <div class="contributors-images">
-            <a href="https://github.com/korrykatti/mirage/graphs/contributors">
-              <img
-                src="https://contrib.rocks/image?repo=korrykatti/mirage"
-                alt="Mirage Contributors"
-              />
-            </a>
-          </div>
-          <div class="contributors-images">
-            <a
-              href="https://github.com/KorryKatti/Mirage-web/graphs/contributors"
-            >
-              <img
-                src="https://contrib.rocks/image?repo=KorryKatti/Mirage-web"
-                alt="Mirage-web Contributors"
-              />
-            </a>
-          </div>
-        </div>
-
-        <div class="stats">
-          <p>Daily Users:  
-          <span class="num1" data-val="0"> 0</span></p>
-          <p>Today's Users: 
-          <span class="num1" data-val="0"> 0</span></p>
-        </div>
-      </div>
-    </div>
-    <div class="footer">
-      <p>
-        <a href="https://x.com/dunkelkron">x.com/dunkelkron</a> |
-        <a href="https://github.com/korrykatti">github.com/korrykatti</a> |
-        <a href="https://korrykatti.github.io">korrykatti.github.io</a>
-      </p>
-      <p>
-        Mirage is open source under the
-        <a href="https://github.com/korrykatti/mirage/blob/main/LICENSE"
-          >MIT license</a
-        >.
-      </p>
-    </div>
-
-    <!-- Modal for video -->
-    <div id="myModal" class="modal">
-      <div class="modal-content">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <iframe
-          width="100%"
-          height="315"
-          src="https://www.youtube.com/embed/j50sctgjxe0"
-          frameborder="0"
-          allow="encrypted-media"
-          allowfullscreen
-        ></iframe>
-      </div>
-    </div>
-
-    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js" integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO" crossorigin="anonymous"></script>
-    <script src="script.js"></script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
