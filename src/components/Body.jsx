@@ -17,7 +17,7 @@ const Body = () => {
     // <div className={`font-sora ${toggleTheme ? "bg-custom-blue text-white" : "bg-white text-black"}`}>
     <div className="bg-white text-custom-blue" >
       <button className="dark-mode-toggle" onClick={handleToggle}>
-        {toggleTheme ? <FaSun className="text-2xl" /> : <FaMoon className="text-2xl" />}
+        {toggleTheme ? <FaSun className="text-xs" /> : <FaMoon className="text-xs" />}
       </button>
 
       <div class="container">
