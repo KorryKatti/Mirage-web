@@ -1,10 +1,36 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Footer from "./Footer";
 import { TfiLock } from "react-icons/tfi";
 import { FiEyeOff } from "react-icons/fi";
 import { FiShield } from "react-icons/fi";
+import { io } from 'socket.io-client';
+import CountUp from 'react-countup';
 
 const Body = () => {
+  const [dailyUsersCount, setDailyUsersCount] = useState(0);
+  const [todaysUserCount, setTodaysUsersCount] = useState(0);
+  
+  useEffect(() => {
+    const socket = io('https://mirage-o081.onrender.com/');
+    
+    socket.on('connect', () => {
+      // console.log('Successfully connected to Mirage test net server!', socket.id);
+
+      // Get metrics once connected to server
+      socket.emit('get_metrics');
+
+      // Update daily users count and todays users count states
+      socket.on('metrics', (data) => {
+        // console.log(data);
+        setDailyUsersCount(data.total);
+        setTodaysUsersCount(data.today);
+      })
+    })
+
+    // Close socket connection
+    return () => socket.disconnect();
+  }, []);
+
   return (
     <div className="bg-gradient-to-b from-[#4e5279] via-[#ebc5e4] to-[#cf8ba9]">
       <div className="flex justify-between -mb-4">
@@ -36,8 +62,8 @@ const Body = () => {
 
         <div className="mt-24 mr-10 py-5 px-8 mb-32 bg-[#2A2D47] rounded-xl shadow-md text-center font-semibold text-white w-1/3">
           <div className="">
-            <h2>Daily Users: 0</h2>
-            <h2>Today's Users: 0</h2>
+            <h2>Daily Users: <CountUp start={0} end={dailyUsersCount}></CountUp></h2>
+            <h2>Today's Users: <CountUp start={0} end={todaysUserCount}></CountUp></h2>
           </div>
         </div>
       </div>
