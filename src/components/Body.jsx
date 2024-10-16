@@ -1,12 +1,34 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { io } from 'socket.io-client';
+import CountUp from 'react-countup';
 import Footer from "./Footer";
-import './Body.css'
+import './Body.css';
 import { TfiLock } from "react-icons/tfi";
-import { FiEyeOff } from "react-icons/fi";
-import { FiShield } from "react-icons/fi";
+import { FiEyeOff, FiShield } from "react-icons/fi";
 import { FaSun, FaMoon } from "react-icons/fa"; // Import sun and moon icons
 
 const Body = () => {
+  const [dailyUsersCount, setDailyUsersCount] = useState(0);
+  const [todaysUserCount, setTodaysUsersCount] = useState(0);
+  
+  useEffect(() => {
+    const socket = io('https://mirage-o081.onrender.com/');
+    
+    socket.on('connect', () => {
+      // Get metrics once connected to server
+      socket.emit('get_metrics');
+
+      // Update daily users count and today's users count states
+      socket.on('metrics', (data) => {
+        setDailyUsersCount(data.total);
+        setTodaysUsersCount(data.today);
+      });
+    });
+
+    // Close socket connection
+    return () => socket.disconnect();
+  }, []);
+
   const [toggleTheme, setToggleTheme] = useState(false);
 
   const handleToggle = () => {
@@ -14,38 +36,32 @@ const Body = () => {
   };
 
   return (
-    // <div className={`font-sora ${toggleTheme ? "bg-custom-blue text-white" : "bg-white text-black"}`}>
-    <div className="bg-white text-custom-blue" >
+    <div className={`font-sora ${toggleTheme ? "bg-custom-blue text-white" : "bg-white text-custom-blue"}`}>
       <button className="dark-mode-toggle" onClick={handleToggle}>
         {toggleTheme ? <FaSun className="text-xs" /> : <FaMoon className="text-xs" />}
       </button>
 
-      <div class="container">
-        <div class="contain1">
-          <div class="header">
+      <div className="container">
+        <div className="contain1">
+          <div className="header">
             Welcome to <br />
             Mirage
           </div>
-          <div class="description">
+          <div className="description">
             Experience privacy at its core. Mirage is a privacy-based chat app
             that makes sure your conversations stay secure and encrypted.
           </div>
 
-          <a
-            href="LoginPage.html"
-            class="cta-button"
-          >Get Started</a
-          >
-          <a href="#" class="cta-button" onclick="openModal()"
-          >See How Mirage Works</a
-          >
+          <a href="LoginPage.html" className="cta-button">Get Started</a>
+          <a href="#" className="cta-button" onClick={() => openModal()}>See How Mirage Works</a>
         </div>
+
         <div>
-          <div class="contributors">
-            <div class="contributors-text">
+          <div className="contributors">
+            <div className="contributors-text">
               Thanks to the people who worked on this project :)
             </div>
-            <div class="contributors-images">
+            <div className="contributors-images">
               <a href="https://github.com/korrykatti/mirage/graphs/contributors">
                 <img
                   src="https://contrib.rocks/image?repo=korrykatti/mirage"
@@ -53,10 +69,8 @@ const Body = () => {
                 />
               </a>
             </div>
-            <div class="contributors-images1">
-              <a
-                href="https://github.com/KorryKatti/Mirage-web/graphs/contributors"
-              >
+            <div className="contributors-images1">
+              <a href="https://github.com/KorryKatti/Mirage-web/graphs/contributors">
                 <img
                   src="https://contrib.rocks/image?repo=KorryKatti/Mirage-web"
                   alt="Mirage-web Contributors"
@@ -65,14 +79,12 @@ const Body = () => {
             </div>
           </div>
 
-          <div class="stats">
-            <p>Daily Users: 1,234</p>
-            <p>Today's Users: 456</p>
+          <div className="stats">
+            <h2>Daily Users: <CountUp start={0} end={dailyUsersCount}></CountUp></h2>
+            <h2>Today's Users: <CountUp start={0} end={todaysUserCount}></CountUp></h2>
           </div>
-        </div>
-      </div>
 
-      {/* <div className="flex justify-center space-x-4 mt-8 font-semibold">
+                {/* <div className="flex justify-center space-x-4 mt-8 font-semibold">
         <button className="bg-[#91264f] hover:bg-[#a63279] hover:-translate-y-1 hover:scale-110 delay-150 text-white py-2 px-4 rounded border-2 border-transparent hover:border-white transition-all duration-300 ease-in-out">
           Get started
         </button>
@@ -118,6 +130,8 @@ const Body = () => {
 
 
 
+        </div>
+      </div>
       <hr />
       <Footer />
     </div>
