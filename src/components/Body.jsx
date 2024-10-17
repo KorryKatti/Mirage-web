@@ -1,25 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { io } from 'socket.io-client';
-import CountUp from 'react-countup';
+import { io } from "socket.io-client";
+import { FaSun, FaMoon } from "react-icons/fa"; // Import sun and moon icons
+import CountUp from "react-countup";
 import Footer from "./Footer";
 import './Body.css';
 import { TfiLock } from "react-icons/tfi";
 import { FiEyeOff, FiShield } from "react-icons/fi";
-import { FaSun, FaMoon } from "react-icons/fa"; // Import sun and moon icons
 
-const Body = () => {
+const Body = ({ toggleTheme, handleToggle }) => { // Receive toggleTheme and handleToggle as props
   const [dailyUsersCount, setDailyUsersCount] = useState(0);
   const [todaysUserCount, setTodaysUsersCount] = useState(0);
-  
+
   useEffect(() => {
-    const socket = io('https://mirage-o081.onrender.com/');
-    
-    socket.on('connect', () => {
+    const socket = io("https://mirage-o081.onrender.com/");
+
+    socket.on("connect", () => {
       // Get metrics once connected to server
-      socket.emit('get_metrics');
+      socket.emit("get_metrics");
 
       // Update daily users count and today's users count states
-      socket.on('metrics', (data) => {
+      socket.on("metrics", (data) => {
         setDailyUsersCount(data.total);
         setTodaysUsersCount(data.today);
       });
@@ -29,20 +29,14 @@ const Body = () => {
     return () => socket.disconnect();
   }, []);
 
-  const [toggleTheme, setToggleTheme] = useState(false);
-
-  const handleToggle = () => {
-    setToggleTheme(!toggleTheme); // Toggle the theme
-  };
 
   return (
     <div className={`font-sora ${toggleTheme ? "bg-custom-blue text-white" : "bg-white text-custom-blue"}`}>
-      <button className="dark-mode-toggle" onClick={handleToggle}>
-        {toggleTheme ? <FaSun className="text-xs" /> : <FaMoon className="text-xs" />}
-      </button>
-
       <div className="container">
         <div className="contain1">
+          <button className="dark-mode-toggle" onClick={handleToggle}>
+            {toggleTheme ? <FaSun className="text-xs" /> : <FaMoon className="text-xs" />}
+          </button>
           <div className="header">
             Welcome to <br />
             Mirage
