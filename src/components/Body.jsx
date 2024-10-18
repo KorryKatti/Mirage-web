@@ -6,7 +6,7 @@ import { io } from "socket.io-client";
 import CountUp from "react-countup";
 
 const Body = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false); 
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [dailyUsersCount, setDailyUsersCount] = useState(0);
   const [todaysUserCount, setTodaysUsersCount] = useState(0);
 
@@ -37,7 +37,9 @@ const Body = () => {
       {/* Header Section */}
       <div className="flex justify-between items-center p-8">
         <div className="space-y-4">
-          <h1 className="text-5xl font-manrope font-[600] text-white">Mirage</h1>
+          <h1 className="text-5xl font-manrope font-[600] text-white">
+            Mirage
+          </h1>
           <h2 className="text-2xl font-inter font-[500] text-white">
             Your Conversations, Your Privacy. Secured.
           </h2>
@@ -71,8 +73,9 @@ const Body = () => {
         <button className="bg-[#91264f] hover:bg-[#a63279] hover:scale-105 transition-transform text-white py-3 px-6 rounded-lg shadow-md font-semibold">
           Get Started
         </button>
-        <button className="bg-[#cf8ba9] hover:bg-[#ebc5e4] hover:scale-105 transition-transform text-black py-3 px-6 rounded-lg shadow-md font-semibold"
-        onClick={openModal}
+        <button
+          className="bg-[#cf8ba9] hover:bg-[#ebc5e4] hover:scale-105 transition-transform text-black py-3 px-6 rounded-lg shadow-md font-semibold"
+          onClick={openModal}
         >
           How it works?
         </button>
@@ -113,7 +116,11 @@ const Body = () => {
       {/* Open Source Section */}
       <div className="text-center  text-white space-y-6 font-inter font-[600] bg-gradient-to-r to-[grey] from-[black] bg-clip-text text-transparent">
         <div className="flex justify-center">
-          <img className="w-12 rounded-2xl shadow-inner" src="https://vite.dev/heart.svg" alt="heart" />
+          <img
+            className="w-12 rounded-2xl shadow-inner"
+            src="https://vite.dev/heart.svg"
+            alt="heart"
+          />
         </div>
         <p className="text-2xl">Free & open source</p>
         <p className="w-3/4 mx-auto text-md">
@@ -143,15 +150,21 @@ const Body = () => {
       <hr className="my-10" />
       <Footer />
       {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 "onClick={closeModal}>
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 "
+          onClick={closeModal}
+        >
           <div className=" bg-white rounded-lg px-4 pb-4">
-            <span className="close cursor-pointer flex justify-end font-bold text-2xl -mt-1" onClick={closeModal}>
+            <span
+              className="close cursor-pointer flex justify-end font-bold text-2xl -mt-1"
+              onClick={closeModal}
+            >
               &times;
             </span>
             <iframe
               width="600"
               height="430"
-              src="https://www.youtube.com/embed/j50sctgjxe0"
+              src="https://www.youtube.com/embed/j50sctgjxe0?autoplay=1&controls=1&showinfo=0&rel=0"
               frameBorder="0"
               allow="encrypted-media"
               allowFullScreen
