@@ -6,7 +6,7 @@ const Footer = () => {
   return (
     <div className="footer text-center py-2 mt-4">
       <div className="space-y-2">
-        <div className="flex justify-center space-x-4">
+      <div className="flex flex-col md:flex-row justify-center space-x-4">
           <a href="https://x.com/dunkelkron" className="flex items-center space-x-2 text-gray-800">
             <BsTwitterX />
             <span>x.com/dunkelkron</span>
