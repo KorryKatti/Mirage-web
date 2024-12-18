@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mirage Chat</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <h1>Welcome to Mirage Chat</h1>
+        <p>Where privacy meets simplicity</p>
+    </header>
+
+    <main>
+        <section id="intro">
+            <div class="content-wrapper reverse">
+                <p>Step into the future of communication with Mirage, a privacy-focused chat app built for the modern
+                    world. No "messages" are stored on the server, only usernames. Your conversations stay private.
+                    Plus, anyone can host their own server!</p>
+                <img src="" alt="Anime-inspired image" class="anime-img" id="image1">
+            </div>
+            <a href="#" class="cta-button">Join Now</a>
+        </section>
+
+        <section id="features">
+            <h2>Features</h2>
+            <ul>
+                <li>No messages stored on the server—only usernames</li>
+                <li>Anyone can host their own server</li>
+                <li>End-to-end encryption for maximum privacy</li>
+                <li>Completely free and open source</li>
+                <li>Fast, lightweight, and easy to use</li>
+            </ul>
+        </section>
+
+        <section id="how-it-works">
+            <h2>How It Works</h2>
+            <div class="content-wrapper">
+                <p>Mirage is designed to make communication simple and secure. When you chat, your messages are
+                    encrypted end-to-end, ensuring only you and the recipient can read them. All data is erased after
+                    the message is delivered, so nothing is ever stored on the server. You can host your own server for
+                    complete control over your data, ensuring a decentralized and private network of communication.</p>
+                <img src="" alt="Anime-inspired image" class="anime-img" id="image2">
+            </div>
+        </section>
+
+        <section id="testimonials">
+            <h2>what people are saying</h2>
+            <p>"honestly, mirage's been super chill. no more worrying about my messages just sitting on some random
+                server." - jake</p>
+            <p>"being able to run my own server made me trust mirage a lot more. it’s nice having control over my
+                chats." - lily</p>
+        </section>
+
+
+        <!--wip
+        <section id="stats">
+            <h2>Mirage Stats</h2>
+            <p>Users online: 1234</p>
+            <p>Servers hosted: 567</p>
+            <p>Messages sent today: 7890</p>
+        </section>-->
+        <!-- Server Status Section -->
+        <section id="server-status">
+            <p class="status-text" id="status">Checking server status...</p>
+            <p id="github-link" style="display:none;">Server is off. Please <a
+                    href="https://github.com/korrykatti/mirage/issues" target="_blank">[create an issue]</a> so we can
+                turn it on.</p>
+            <p id="free-note" style="display:none;">We will do it for free!</p>
+        </section>
+
+
+        <script>
+            // The URL of your Mirage app server
+            const serverUrl = 'http://goblin-complete-minnow.ngrok-free.app';  
+
+            // Function to check server status
+            function checkServerStatus() {
+                fetch(serverUrl, { method: 'GET' })
+                    .then(response => {
+                        if (response.ok) {
+                            // Server is up
+                            document.getElementById('status').textContent = 'Server is On';
+                            document.getElementById('status').classList.remove('offline');
+                            document.getElementById('status').classList.add('online');
+                            document.getElementById('github-link').style.display = 'none'; // Hide the GitHub link
+                        } else {
+                            // Server is down (non-2xx status code)
+                            document.getElementById('status').textContent = 'Server is Off';
+                            document.getElementById('status').classList.remove('online');
+                            document.getElementById('status').classList.add('offline');
+                            document.getElementById('github-link').style.display = 'block'; // Show the GitHub link
+                        }
+                    })
+                    .catch(error => {
+                        // Network error or server unreachable
+                        document.getElementById('status').textContent = 'Server is Off';
+                        document.getElementById('status').classList.remove('online');
+                        document.getElementById('status').classList.add('offline');
+                        document.getElementById('github-link').style.display = 'block'; // Show the GitHub link
+                    });
+            }
+
+            // Check server status on page load
+            checkServerStatus();
+        </script>
+
+        
+        <section id="contact">
+            <p>facing some trouble ? <a href="https://github.com/korrykatti/Mirage-web">[feel free to contact]</a></p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Mirage Chat | Built for Privacy</p>
+    </footer>
+
+    <button id="contrast-toggle" onclick="toggleContrast()">Toggle Contrast</button>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
