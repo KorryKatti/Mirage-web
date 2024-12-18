@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <script>
+        window.onload = function () {
+            // Retrieve username and email from localStorage
+            const username = localStorage.getItem('username');
+            const email = localStorage.getItem('email');
+            
+            // If a user is authenticated, display their username
+            if (username && email) {
+                document.getElementById("greeting").textContent = `Hello, ${username}`;
+            } else {
+                // Redirect to auth.html if no user is found
+                window.location.href = "auth.html";
+            }
+        };
+    </script>
+</head>
+<body>
+    <h1 id="greeting">Hello, User</h1>
+    <p>
+        Not you? <a href="auth.html">Log back in</a>
+    </p>
+    <!-- Chat interface content goes here -->
+</body>
+</html>
