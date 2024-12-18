@@ -1,5 +1,7 @@
 # Mirage-web
 
+** THIS IS NOT UP TO DATE **
+
 Welcome to **Mirage-web** – the web version of Mirage, a privacy-focused chat app!
 
 ## Overview
