@@ -222,3 +222,52 @@ button#contrast-toggle:hover {
     color: #5f5fc4;
     margin-top: 0.5em;
 }
+
+form {
+    max-width: 400px;
+    margin: 2em auto;
+    padding: 1.5em;
+    background-color: #1a1a2e;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+form label {
+    display: block;
+    font-size: 1.2em;
+    color: #fff;
+    margin-bottom: 0.5em;
+}
+
+form input {
+    width: 100%;
+    padding: 0.8em;
+    margin-bottom: 1.5em;
+    border: 2px solid #5f5fc4;
+    border-radius: 4px;
+    background-color: #121212;
+    color: #fff;
+    font-size: 1em;
+}
+
+form input:focus {
+    outline: none;
+    border-color: #5f5fc4;
+    background-color: #333;
+}
+
+form button {
+    width: 100%;
+    padding: 1em;
+    background-color: #5f5fc4;
+    border: none;
+    border-radius: 4px;
+    color: #000;
+    font-size: 1.2em;
+    cursor: pointer;
+}
+
+form button:hover {
+    background-color: #333;
+    color: #5f5fc4;
+}
