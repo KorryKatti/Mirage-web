@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/indexstyle.css" />
+    <title>register</title>
+    <style>
+        .sidebar {
+            width: 250px;
+            padding: 20px;
+            background: #222;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        label {
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="number"] {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            color: #ccf2ff;
+            padding: 0.5rem;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        button {
+            width: 80%;
+            background: #ff004c;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .footer {
+            margin-top: auto;
+            text-align: center;
+            color: #888;
+            font-size: 0.8rem;
+        }
+
+        /* Steins;Gate shader styling */
+        .main-content {
+            position: fixed;
+            top: 0;
+            left: 250px;
+            right: 0;
+            bottom: 0;
+            background-color: #0a0a0a;
+            overflow: hidden;
+            font-family: 'Share Tech Mono', monospace;
+            color: #5cdb95;
+        }
+
+        .divergence-meter {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            color: #5cdb95;
+            text-shadow: 0 0 8px #5cdb95;
+            z-index: 10;
+        }
+
+        .sg-logo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 60px;
+            color: #5cdb95;
+            opacity: 0.2;
+            z-index: 5;
+        }
+
+        .matrix-rain {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+        }
+
+        .time-circuits {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 30px;
+            z-index: 10;
+        }
+
+        .circuit {
+            text-align: center;
+        }
+
+        .circuit-label {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .circuit-time {
+            font-size: 20px;
+            padding: 5px 10px;
+            background: rgba(10, 10, 10, 0.7);
+            border: 1px solid #5cdb95;
+            color: #5cdb95;
+            text-shadow: 0 0 5px #5cdb95;
+        }
+
+        .equations {
+            position: absolute;
+            top: 30%;
+            width: 100%;
+            text-align: center;
+            font-size: 18px;
+            color: #5cdb95;
+            opacity: 0.8;
+            z-index: 6;
+        }
+
+        .glow-effect {
+            animation: glow 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 5px #5cdb95, 0 0 10px #5cdb95;
+            }
+            to {
+                text-shadow: 0 0 10px #5cdb95, 0 0 20px #5cdb95, 0 0 30px #5cdb95;
+            }
+        }
+
+        .microwaves {
+            position: absolute;
+            bottom: 100px;
+            width: 100%;
+            text-align: center;
+            font-size: 16px;
+            color: #ff004c;
+            z-index: 7;
+        }
+
+        .oopa {
+            position: absolute;
+            bottom: 150px;
+            right: 50px;
+            font-size: 30px;
+            color: #ff004c;
+            transform: rotate(15deg);
+            opacity: 0.6;
+            z-index: 8;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <table>
+            <thead>
+                <tr>
+                    <th>register</th>
+                </tr>
+            </thead>
+        </table>
+
+        <form method="POST" action="/register" onsubmit="return validateCaptcha()">
+            <div>
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required />
+            </div>
+            <div>
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required />
+            </div>
+            <div>
+                <label id="captcha-question"></label>
+                <input type="number" id="captcha-answer" required />
+            </div>
+            <div>
+                <button type="submit">Register</button>
+            </div>
+        </form>
+<br>
+        <div>
+            <a href="index.html" style="color: #ccc; text-decoration: none; margin-right: 10px;">[Back Home]</a>
+            <a href="login.html" style="color: #ccc; text-decoration: none;">[Login]</a>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 MIRAGE. All rights reserved.</p>
+        </div>
+    </div>
+
+    <script src="js/mathcaptcha.js"></script>
+
+    <div class="main-content">
+        <div class="divergence-meter glow-effect">Version: <span id="divergence">0.0.3</span></div>
+        
+        <div class="sg-logo">ミラージュ</div>
+        
+        <div class="matrix-rain" id="matrix-canvas"></div>
+        <!-- man i love steins gate -->
+        <div class="equations">
+            <div>Welcome To Mirage</div>
+            <div>Current version : 0.0.3</div>
+            <div>Worldline Convergence: <span id="convergence">0.571024</span>%</div>
+        </div>
+        
+        <div class="time-circuits">
+            <div class="circuit">
+                <div class="circuit-label">GOAL REACHED</div>
+                <div class="circuit-time">0.0200</div>
+            </div>
+            <div class="circuit">
+                <div class="circuit-label">USERS REGISTERED</div>
+                <div class="circuit-time">0</div>
+            </div>
+            <div class="circuit">
+                <div class="circuit-label">CURRENT DIVERGENCE</div>
+                <div class="circuit-time glow-effect"><a href="https://divergence.nyarchlinux.moe">1.048596</a></div>
+            </div>
+        </div>
+        
+        <div class="microwaves">[better, faster, stronger]</div>
+        
+        <div class="oopa">うーぱ</div>
+    </div>
+<script>
+    async function fetchDivergence() {
+        try {
+            const res = await fetch("http://divergence.nyarchlinux.moe/api/divergence");
+            const data = await res.json();
+
+            // grab the correct .circuit-time for "CURRENT DIVERGENCE"
+            const circuits = document.querySelectorAll('.circuit');
+            circuits.forEach(c => {
+                const label = c.querySelector('.circuit-label')?.textContent.trim();
+                if (label === "CURRENT DIVERGENCE") {
+                    const divergence = parseFloat(data.divergence).toFixed(5);
+                    c.querySelector('.circuit-time').textContent = divergence;
+                }
+            });
+        } catch (err) {
+            console.error("divergence fetch failed:", err);
+        }
+    }
+
+    fetchDivergence();
+</script>
+
+
+    <script src = "js/reganim.js"></script>
+</body>
+</html>

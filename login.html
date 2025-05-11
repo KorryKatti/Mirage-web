@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/indexstyle.css" />
+    <link rel = "stylesheet" href="css/loginstyle.css">
+    <title>login</title>
+    <style>
+        .sidebar {
+            width: 250px;
+            padding: 20px;
+            background: #222;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        label {
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="number"] {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            color: #ccf2ff;
+            padding: 0.5rem;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        button {
+            width: 80%;
+            background: #ff004c;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .footer {
+            margin-top: auto;
+            text-align: center;
+            color: #888;
+            font-size: 0.8rem;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <table>
+            <thead>
+                <tr>
+                    <th>Login</th>
+                </tr>
+            </thead>
+        </table>
+
+        <form method="POST" action="/login" onsubmit="return validateCaptcha()">
+            <div>
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required />
+            </div>
+            <div>
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required />
+            </div>
+            <div>
+                <label id="captcha-question"></label>
+                <input type="number" id="captcha-answer" required />
+            </div>
+            <div>
+                <button type="submit">Login</button>
+            </div>
+        </form>
+<br>
+        <div>
+            <a href="index.html" style="color: #ccc; text-decoration: none; margin-right: 10px;">[Back Home]</a>
+            <a href="register.html" style="color: #ccc; text-decoration: none;">[Register]</a>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 MIRAGE. All rights reserved.</p>
+        </div>
+    </div>
+
+    <script src="js/mathcaptcha.js"></script>
+
+    <div class="main-content">
+        <div class="divergence-meter">Version: <span id="divergence">0.0.3</span></div>
+        <canvas id="matrix-canvas" class="matrix-canvas"></canvas>
+    </div>
+
+    <script src="js/matrixanimation.js"></script>        
+    </script>
+</body>
+</html>
