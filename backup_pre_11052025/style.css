@@ -1,0 +1,273 @@
+/* Global reset and fun retro cosmic blue theme */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Courier New', Courier, monospace;
+    background-color: #121212;
+    color: #fff;
+    text-align: center;
+}
+
+header {
+    background-color: #1a1a2e;
+    padding: 2em;
+    border-bottom: 3px solid #5f5fc4;
+}
+
+header h1 {
+    font-size: 3em;
+    text-shadow: 2px 2px 4px rgba(95, 95, 196, 0.7);
+}
+
+header p {
+    font-size: 1.2em;
+    color: #5f5fc4;
+    font-weight: bold;
+}
+
+main {
+    padding: 2em;
+    background-color: #000;
+    color: #5f5fc4;
+}
+
+#intro {
+    margin-bottom: 3em;
+    font-size: 1.2em;
+}
+
+.cta-button {
+    display: inline-block;
+    background-color: #5f5fc4;
+    color: black;
+    padding: 1em 2em;
+    text-decoration: none;
+    font-size: 1.5em;
+    margin-top: 1em;
+    border-radius: 5px;
+    border: 2px solid #5f5fc4;
+}
+
+.cta-button:hover {
+    background-color: #333;
+    color: #5f5fc4;
+}
+
+#features {
+    margin-top: 3em;
+    font-size: 1.2em;
+}
+
+#features ul {
+    list-style-type: none;
+}
+
+#features li {
+    padding: 0.5em 0;
+    font-weight: bold;
+}
+
+#how-it-works {
+    margin-top: 3em;
+    font-size: 1.2em;
+}
+
+#testimonials {
+    margin-top: 3em;
+    font-size: 1.2em;
+}
+
+#testimonials p {
+    font-style: italic;
+}
+
+#stats {
+    margin-top: 3em;
+    font-size: 1.2em;
+}
+
+#stats p {
+    font-weight: bold;
+}
+
+#contact {
+    margin-top: 3em;
+    font-size: 1em;
+}
+
+footer {
+    background-color: #1a1a2e;
+    color: #5f5fc4;
+    padding: 1em;
+    font-size: 0.8em;
+    margin-top: 2em;
+    border-top: 3px solid #5f5fc4;
+}
+
+a {
+    color: #5f5fc4;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Image Layout */
+.content-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 1.5em 0;
+}
+
+.anime-img {
+    width: 100%;
+    max-width: 300px;
+    margin: 10px;
+    border: 5px solid #5f5fc4;
+    border-radius: 10px;
+}
+
+/* Reverse image and text positioning */
+.reverse {
+    flex-direction: row-reverse;
+}
+
+.content-wrapper p {
+    max-width: 600px;
+    font-size: 1.2em;
+}
+
+/* Contrast toggle styles */
+body.high-contrast {
+    background-color: #fff;
+    color: #000;
+}
+
+header.high-contrast {
+    background-color: #333;
+}
+
+footer.high-contrast {
+    background-color: #333;
+    color: #fff;
+}
+
+button#contrast-toggle {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    padding: 0.5em;
+    background-color: #5f5fc4;
+    color: black;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+button#contrast-toggle:hover {
+    background-color: #333;
+    color: #5f5fc4;
+}
+
+
+/* Server Status Section */
+#server-status {
+    margin-top: 3em;
+    font-size: 1.2em;
+    padding: 1em;
+    color: #fff;
+}
+
+#server-status p {
+    font-weight: bold;
+}
+
+#server-status .status-text {
+    font-size: 1.5em;
+    margin-bottom: 1em;
+}
+
+#server-status .status-text.online {
+    color: green;
+}
+
+#server-status .status-text.offline {
+    color: red;
+}
+
+#github-link {
+    font-size: 1.1em;
+    color: #ff8c00; /* Change link color to orange for better visibility */
+    text-decoration: none;
+    margin-top: 1em;
+}
+
+#github-link a {
+    color: #ff8c00;
+}
+
+#github-link a:hover {
+    text-decoration: underline;
+}
+
+#free-note {
+    font-size: 0.8em;
+    color: #5f5fc4;
+    margin-top: 0.5em;
+}
+
+form {
+    max-width: 400px;
+    margin: 2em auto;
+    padding: 1.5em;
+    background-color: #1a1a2e;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+form label {
+    display: block;
+    font-size: 1.2em;
+    color: #fff;
+    margin-bottom: 0.5em;
+}
+
+form input {
+    width: 100%;
+    padding: 0.8em;
+    margin-bottom: 1.5em;
+    border: 2px solid #5f5fc4;
+    border-radius: 4px;
+    background-color: #121212;
+    color: #fff;
+    font-size: 1em;
+}
+
+form input:focus {
+    outline: none;
+    border-color: #5f5fc4;
+    background-color: #333;
+}
+
+form button {
+    width: 100%;
+    padding: 1em;
+    background-color: #5f5fc4;
+    border: none;
+    border-radius: 4px;
+    color: #000;
+    font-size: 1.2em;
+    cursor: pointer;
+}
+
+form button:hover {
+    background-color: #333;
+    color: #5f5fc4;
+}
