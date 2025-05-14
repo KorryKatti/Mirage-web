@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="css/indexstyle.css" />
-    <link rel = "stylesheet" href="css/loginstyle.css">
+    <link rel="stylesheet" href="css/loginstyle.css">
     <title>login</title>
     <style>
         .sidebar {
@@ -55,9 +56,9 @@
             color: #888;
             font-size: 0.8rem;
         }
-
     </style>
 </head>
+
 <body>
     <div class="sidebar">
         <table>
@@ -67,8 +68,8 @@
                 </tr>
             </thead>
         </table>
+        <form method="POST" action="/login" onsubmit="if (validateCaptcha()) { login(); } return false;">
 
-        <form method="POST" action="/login" onsubmit="return validateCaptcha()">
             <div>
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username" required />
@@ -85,7 +86,7 @@
                 <button type="submit">Login</button>
             </div>
         </form>
-<br>
+        <br>
         <div>
             <a href="./index.html" style="color: #ccc; text-decoration: none; margin-right: 10px;">[Back Home]</a>
             <a href="./register.html" style="color: #ccc; text-decoration: none;">[Register]</a>
@@ -96,6 +97,32 @@
         </div>
     </div>
 
+    <!-- initial login system script -->
+    <script>
+        const server_url = "http://127.0.0.1:5000";
+        async function login() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            const res = await fetch(`${server_url}/api/login`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ username, password })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                localStorage.setItem('user', username);
+                alert("Login successful");
+                window.location.href = "./room.html";
+            } else {
+                alert("Login failed: " + data.error);
+            }
+
+        }
+    </script>
+
     <script src="js/mathcaptcha.js"></script>
 
     <div class="main-content">
@@ -103,7 +130,7 @@
         <canvas id="matrix-canvas" class="matrix-canvas"></canvas>
     </div>
 
-    <script src="js/matrixanimation.js"></script>        
-    </script>
+    <script src="js/matrixanimation.js"></script>
 </body>
+
 </html>

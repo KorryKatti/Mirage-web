@@ -184,7 +184,7 @@
             </thead>
         </table>
 
-        <form method="POST" action="/register" onsubmit="return validateCaptcha()">
+        <form method="POST" action="/register" onsubmit="return validateCaptcha() && register() === false;">
             <div>
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username" required />
@@ -250,7 +250,7 @@
             </div>
             <div class="circuit">
                 <div class="circuit-label">CURRENT DIVERGENCE</div>
-                <div class="circuit-time glow-effect"><a href="https://divergence.nyarchlinux.moe">1.048596</a></div>
+                <div class="circuit-time glow-effect"><a href="https://divergence.nyarchlinux.moe">loading..</a></div>
             </div>
         </div>
         
@@ -281,6 +281,49 @@
     fetchDivergence();
 </script>
 
+
+<!--registration logic script here-->
+<script>
+    const server_url = "http://127.0.0.1:5000";
+
+    async function register() {
+        const username = document.getElementById("username").value;
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        const avatar_url = document.getElementById("avatar").value;
+        const description = document.getElementById("description").value;
+
+        try {
+            const res = await fetch(`${server_url}/api/register`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    username,
+                    email,
+                    password,
+                    avatar_url,
+                    description
+                })
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                localStorage.setItem('user', username);
+                alert("Registration successful");
+                window.location.href = "./room.html";
+            } else {
+                alert("Registration failed: " + data.error);
+            }
+
+        } catch (err) {
+            alert("Network error");
+            console.error(err);
+        }
+    }
+</script>
 
     <script src = "js/reganim.js"></script>
 </body>
