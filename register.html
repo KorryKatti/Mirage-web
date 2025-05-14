@@ -258,6 +258,23 @@
         
         <div class="oopa">うーぱ</div>
     </div>
+
+<script>
+  fetch("https://korrykatti.pythonanywhere.com/api/usercount")
+    .then(res => res.text()) // usercount returns plain text
+    .then(count => {
+      const circuits = document.querySelectorAll('.circuit');
+      circuits.forEach(circuit => {
+        const label = circuit.querySelector('.circuit-label');
+        if (label && label.textContent.includes("USERS REGISTERED")) {
+          circuit.querySelector('.circuit-time').textContent = count;
+        }
+      });
+    })
+    .catch(err => console.error("couldn’t fetch user count:", err));
+</script>
+
+
 <script>
     async function fetchDivergence() {
         try {
@@ -284,7 +301,7 @@
 
 <!--registration logic script here-->
 <script>
-    const server_url = "http://127.0.0.1:5000";
+    const server_url = "https://korrykatti.pythonanywhere.com";
 
     async function register() {
         const username = document.getElementById("username").value;
@@ -313,7 +330,7 @@
             if (res.ok) {
                 localStorage.setItem('user', username);
                 alert("Registration successful");
-                window.location.href = "./room.html";
+                window.location.href = "./login.html";
             } else {
                 alert("Registration failed: " + data.error);
             }

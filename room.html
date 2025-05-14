@@ -5,6 +5,17 @@
   <title>MIRAGE Interface // V-0</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="css/style.css">
+  <script>
+    window.onload = function() {
+        const user = localStorage.getItem('user');
+
+        if (!user) {
+            alert("You are not logged in. Redirecting to homepage");
+            window.location.href = './index.html'; 
+        }
+    }
+</script>
+
 </head>
 <body class="scanlines">
   <div class="header">🧠 MIRAGE Interface v0.0.3-BETA // Common</div>
@@ -17,46 +28,110 @@
     <button onclick="sendMsg()">Send</button>
   </div>
 
-  <div class="divergence" onclick="glitchDivergence()">Divergence: [ !ERROR ]</div>
+  <!--<div class="divergence" onclick="glitchDivergence()">Divergence: [ !ERROR ]</div>-->
+  <div class="divergence" onclick="logout()">log out</div>
 
   <script>
-    const chatBox = document.getElementById('chat');
-    const input = document.getElementById('input');
-    const divergence = document.querySelector('.divergence');
-    let state = 0;
+const server_url = 'https://korrykatti.pythonanywhere.com';
+const chatBox = document.getElementById('chat');
+const input = document.getElementById('input');
 
-    function sendMsg() {
-      const raw = input.value.trim();
-      if (!raw.includes(':')) return alert('Use format: username: message');
-      
-      const splitIndex = raw.indexOf(':');
-      const username = raw.slice(0, splitIndex).trim();
-      const message = raw.slice(splitIndex + 1).trim();
-      if (!username || !message) return;
+const username = localStorage.getItem('user');
+const token = localStorage.getItem('token');
 
-      // frontend render
+if (!username || !token) {
+  alert('You are not logged in.');
+  window.location.href = './index.html';
+}
+
+function sendMsg() {
+  const message = input.value.trim();
+  if (!message) return;
+
+  fetch(`${server_url}/api/send_message`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': token
+    },
+    body: JSON.stringify({ username, message })
+  }).then(res => {
+    if (!res.ok) console.error('flask rejected the message');
+  }).catch(err => {
+    console.error('server is ghosting:', err);
+  });
+
+  input.value = '';
+}
+
+function parseMarkdown(text) {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')           // bold
+    .replace(/_(.*?)_/g, '<i>$1</i>')                 // italics
+    .replace(/`(.*?)`/g, '<code>$1</code>')           // inline code
+    .replace(/^> (.*$)/gm, '<blockquote>$1</blockquote>') // quote
+    .replace(/^- (.*$)/gm, '<li>$1</li>');            // list
+}
+
+
+function fetchMessages() {
+  fetch(`${server_url}/api/get_messages`, {
+    method: 'GET',
+    headers: {
+      'Authorization': token
+    }
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (!data.messages) return;
+
+    chatBox.innerHTML = '';
+    data.messages.forEach(m => {
       const msg = document.createElement('div');
       msg.className = 'msg';
-      msg.innerHTML = `<span class="msg-user">${username}:</span><span class="msg-text">${message}</span>`;
+      msg.innerHTML = `<span class="msg-user">${m.username}:</span><span class="msg-text">${parseMarkdown(m.message)}</span>`;
       chatBox.appendChild(msg);
-      chatBox.scrollTop = chatBox.scrollHeight;
-      input.value = '';
-
-      // POST to flask endpoint
-      fetch('http://127.0.0.1:5000/send_message', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, message })
-      }).then(res => {
-        if (!res.ok) console.error("flask yeeted the message");
-      }).catch(err => {
-        console.error("server not reachable:", err);
-      });
-    }
-
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') sendMsg();
     });
+    chatBox.scrollTop = chatBox.scrollHeight;
+  });
+}
+
+input.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') sendMsg();
+});
+
+// pull new messages every 3s
+setInterval(fetchMessages, 3000);
+fetchMessages();
+
+
+
+  function logout() {
+    fetch(`${server_url}/api/logout`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ token })
+    })
+    .then(res => {
+      if (!res.ok) {
+        return res.json().then(data => {
+          throw new Error(data.error || 'Logout failed');
+        });
+      }
+      return res.json();
+    })
+    .then(data => {
+      console.log(data.message);
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+      window.location.href = './index.html';
+    })
+    .catch(err => {
+      console.error('Logout failed:', err.message);
+    });
+  }
 
     function glitchDivergence() {
       const glitches = [
