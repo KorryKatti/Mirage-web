@@ -24,7 +24,7 @@
   </div>
 
   <div class="input-box">
-    <input type="text" id="input" placeholder="Enter as 'username: message'..." />
+    <input type="text" id="input" placeholder="Enter as message..." />
     <button onclick="sendMsg()">Send</button>
   </div>
 
@@ -64,14 +64,25 @@ function sendMsg() {
   input.value = '';
 }
 
-function parseMarkdown(text) {
-  return text
-    .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')           // bold
-    .replace(/_(.*?)_/g, '<i>$1</i>')                 // italics
-    .replace(/`(.*?)`/g, '<code>$1</code>')           // inline code
-    .replace(/^> (.*$)/gm, '<blockquote>$1</blockquote>') // quote
-    .replace(/^- (.*$)/gm, '<li>$1</li>');            // list
+function escapeHTML(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }
+
+function parseMarkdown(text) {
+  text = escapeHTML(text);
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+    .replace(/_(.*?)_/g, '<i>$1</i>')
+    .replace(/`(.*?)`/g, '<code>$1</code>')
+    .replace(/^> (.*$)/gm, '<blockquote>$1</blockquote>')
+    .replace(/^- (.*$)/gm, '<li>$1</li>');
+}
+
 
 
 function fetchMessages() {
@@ -89,7 +100,7 @@ function fetchMessages() {
     data.messages.forEach(m => {
       const msg = document.createElement('div');
       msg.className = 'msg';
-      msg.innerHTML = `<span class="msg-user">${m.username}:</span><span class="msg-text">${parseMarkdown(m.message)}</span>`;
+      msg.innerHTML = `<span class="msg-user"><a href="./userprofile.html?user=${encodeURIComponent(m.username)}">~${m.username}</a>:</span> <span class="msg-text">${parseMarkdown(m.message)}</span>`;
       chatBox.appendChild(msg);
     });
     chatBox.scrollTop = chatBox.scrollHeight;
