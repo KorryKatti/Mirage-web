@@ -100,7 +100,7 @@ function fetchMessages() {
     data.messages.forEach(m => {
       const msg = document.createElement('div');
       msg.className = 'msg';
-      msg.innerHTML = `<span class="msg-user"><a href="./userprofile.html?user=${encodeURIComponent(m.username)}">~${m.username}</a>:</span> <span class="msg-text">${parseMarkdown(m.message)}</span>`;
+      msg.innerHTML = `<span class="msg-user"><a href="./userprofile.html?user=${encodeURIComponent(m.username)}" style="color: #ff004c;">~${m.username}</a>:</span> <span class="msg-text">${parseMarkdown(m.message)}</span>`;
       chatBox.appendChild(msg);
     });
     chatBox.scrollTop = chatBox.scrollHeight;
