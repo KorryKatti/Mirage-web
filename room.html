@@ -17,7 +17,24 @@
 </script>
 
 </head>
+
 <body class="scanlines">
+  <div class="sidebar">
+    <div class="logo">
+      <img src="img/logo.png" alt="Logo" />
+    </div>
+    <div class="user-info">
+      <p>Welcome, <span id="username"></span></p>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="./index.html">Home</a></li>
+        <li><a href="./room.html">Room</a></li>
+        <li><a href="./userprofile.html">Profile</a></li>
+        <li><a href="./settings.html">Settings</a></li>
+      </ul>
+    </nav>
+  
   <div class="header">🧠 MIRAGE Interface v0.0.3-BETA // Common</div>
   <div class="chat-box" id="chat">
     <!-- messages will populate here -->
@@ -30,9 +47,10 @@
 
   <!--<div class="divergence" onclick="glitchDivergence()">Divergence: [ !ERROR ]</div>-->
   <div class="divergence" onclick="logout()">log out</div>
+  
 
   <script>
-const server_url = 'https://korrykatti.pythonanywhere.com';
+const server_url = 'http://127.0.0.1:5000';
 const chatBox = document.getElementById('chat');
 const input = document.getElementById('input');
 

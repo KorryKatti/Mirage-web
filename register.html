@@ -260,16 +260,16 @@
     </div>
 
 <script>
-  fetch("https://korrykatti.pythonanywhere.com/api/usercount")
+fetch(`${server_url}/api/usercount`)
     .then(res => res.text()) // usercount returns plain text
     .then(count => {
-      const circuits = document.querySelectorAll('.circuit');
-      circuits.forEach(circuit => {
-        const label = circuit.querySelector('.circuit-label');
-        if (label && label.textContent.includes("USERS REGISTERED")) {
-          circuit.querySelector('.circuit-time').textContent = count;
-        }
-      });
+        const circuits = document.querySelectorAll('.circuit');
+        circuits.forEach(circuit => {
+            const label = circuit.querySelector('.circuit-label');
+            if (label && label.textContent.includes("USERS REGISTERED")) {
+                circuit.querySelector('.circuit-time').textContent = count;
+            }
+        });
     })
     .catch(err => console.error("couldn’t fetch user count:", err));
 </script>
@@ -278,7 +278,7 @@
 <script>
     async function fetchDivergence() {
         try {
-            const res = await fetch("http://divergence.nyarchlinux.moe/api/divergence");
+            const res = await fetch("https://divergence.nyarchlinux.moe/api/divergence");
             const data = await res.json();
 
             // grab the correct .circuit-time for "CURRENT DIVERGENCE"
@@ -301,7 +301,15 @@
 
 <!--registration logic script here-->
 <script>
-    const server_url = "https://korrykatti.pythonanywhere.com";
+        let server_url = "http://127.0.0.1:5000";
+    fetch('settings.json')
+        .then(response => response.json())
+        .then(settings => {
+            if (settings.server_url) {
+                server_url = settings.server_url;
+            }
+        })
+        .catch(() => { /* fallback to default server_url */ });
 
     async function register() {
         const username = document.getElementById("username").value;

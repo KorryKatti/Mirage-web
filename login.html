@@ -97,34 +97,46 @@
         </div>
     </div>
 
-   <!-- initial login system script -->
-<script>
-    const server_url = "https://korrykatti.pythonanywhere.com";
+    <!-- initial login system script -->
+    <script>
+        let server_url = "http://127.0.0.1:5000";
+        fetch('settings.json')
+            .then(res => res.json())
+            .then(settings => {
+                if (settings.server_url) server_url = settings.server_url;
+            });
 
-    async function login() {
-        const username = document.getElementById("username").value;
-        const password = document.getElementById("password").value;
+        document.querySelector('form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!validateCaptcha()) return;
 
-        const res = await fetch(`${server_url}/api/login`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ username, password })
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            try {
+                const res = await fetch(`${server_url}/api/login`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    localStorage.setItem('user', username);
+                    localStorage.setItem('token', data.token);
+                    document.body.insertAdjacentHTML('beforeend', '<p style="color:lime;">login success</p>');
+                    setTimeout(() => window.location.href = "./room.html", 300);
+                } else {
+                    alert("Login failed: " + data.error);
+                }
+            } catch (err) {
+                alert("server died or smth");
+                console.error(err);
+            }
         });
-        const data = await res.json();
 
-        if (res.ok) {
-            // Save both username and token in localStorage
-            localStorage.setItem('user', username);
-            localStorage.setItem('token', data.token);
-            alert("Login successful");
-            window.location.href = "./room.html";
-        } else {
-            alert("Login failed: " + data.error);
-        }
-    }
-</script>
+    </script>
 
     <script src="js/mathcaptcha.js"></script>
 
