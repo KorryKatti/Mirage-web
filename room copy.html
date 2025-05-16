@@ -39,6 +39,17 @@
         <li><a href="./settings.html"><span class="nav-icon">⚙</span> Settings</a></li>
       </ul>
     </nav>
+    
+    <div class="room-selector">
+      <div class="section-header">CHANNELS <span class="expand-icon" id="toggleRooms">▼</span></div>
+      <ul id="roomList" class="room-list">
+        <li class="room active"><span class="room-icon">◉</span> Common <span class="unread-badge">2</span></li>
+        <li class="room"><span class="room-icon">◉</span> Developers</li>
+        <li class="room"><span class="room-icon">◉</span> Off-Topic</li>
+        <li class="room"><span class="room-icon">◎</span> Private <span class="private-indicator">P</span></li>
+        <li class="room add-room"><span class="room-icon">+</span> Join Channel</li>
+      </ul>
+    </div>
     <div class="sidebar-footer">
       <div class="system-status">SYS: <span class="status-ok">NOMINAL</span></div>
       <div class="version-info">v0.0.3-BETA</div>
@@ -110,11 +121,17 @@ function parseMarkdown(text) {
 }
 
 function fetchMessages() {
+  // Get current active room
+  const activeRoom = document.querySelector('.room.active');
+  const roomName = activeRoom ? activeRoom.textContent.trim().split(' ')[1] : 'Common';
+
   fetch(`${server_url}/api/get_messages`, {
     method: 'GET',
     headers: {
       'Authorization': token
-    }
+    },
+    // You might need to adjust the backend to support this parameter
+    body: JSON.stringify({ room: roomName })
   })
   .then(res => res.json())
   .then(data => {
@@ -170,6 +187,8 @@ function logout() {
 document.addEventListener('DOMContentLoaded', function() {
   const menuToggle = document.getElementById('menuToggle');
   const sidebar = document.getElementById('sidebar');
+  const toggleRooms = document.getElementById('toggleRooms');
+  const roomList = document.getElementById('roomList');
   
   // Check if we're on mobile and show the toggle button if needed
   function checkMobile() {
@@ -185,6 +204,48 @@ document.addEventListener('DOMContentLoaded', function() {
   menuToggle.addEventListener('click', function() {
     sidebar.classList.toggle('active');
   });
+  
+  // Toggle room list visibility
+  toggleRooms.addEventListener('click', function() {
+    roomList.classList.toggle('collapsed');
+    toggleRooms.classList.toggle('collapsed');
+  });
+  
+  // Handle room selection
+  const rooms = document.querySelectorAll('.room');
+  rooms.forEach(room => {
+    room.addEventListener('click', function() {
+      if (room.classList.contains('add-room')) {
+        showJoinRoomModal();
+        return;
+      }
+      
+      // Remove active class from all rooms
+      rooms.forEach(r => r.classList.remove('active'));
+      
+      // Add active class to clicked room
+      room.classList.add('active');
+      
+      // Update header text with room name
+      const roomName = room.textContent.trim().split(' ')[1]; // Get room name without icon and badges
+      document.querySelector('.header').textContent = '🧠 MIRAGE Interface v0.0.3-BETA // ' + roomName;
+      
+      // Clear unread badge if present
+      const badge = room.querySelector('.unread-badge');
+      if (badge) {
+        badge.remove();
+      }
+      
+      // Here you would load messages for the selected room
+      // For now, let's just clear the chat
+      document.getElementById('chat').innerHTML = '';
+    });
+  });
+  
+  function showJoinRoomModal() {
+    // This would be expanded in a real implementation
+    alert('Join new channel functionality would go here');
+  }
   
   // Check on load and on resize
   checkMobile();
