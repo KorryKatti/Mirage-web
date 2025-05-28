@@ -47,10 +47,23 @@
   return doc.body.innerHTML;
 }
 
+let server_url = 'http://127.0.0.1:5000';
+
+// Try to load server_url from settings.json if available
+fetch('settings.json')
+  .then(res => {
+    if (!res.ok) throw new Error('No settings.json');
+    return res.json();
+  })
+  .then(settings => {
+    if (settings.server_url) server_url = settings.server_url;
+  })
+  .catch(() => {
+    // fallback to default
+  });
 
 
-
-    fetch(`http://127.0.0.1:5000/api/user/${username}`)
+    fetch(`${server_url}/api/user/${username}`)
       .then(res => res.json())
       .then(data => {
         if (data.error) {
