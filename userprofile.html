@@ -5,6 +5,10 @@
   <title>MIRAGE // User Profile</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="css/userprofile.css" />
+  <script type="module">
+  window.appConfig = await fetch('/settings.json').then(r => r.json());
+</script>
+
 </head>
 <body class="scanlines">
   <div class="header">MIRAGE Profile Interface
@@ -24,6 +28,21 @@
   </script>
 
   <script>
+    let server_url = 'http://127.0.0.1:5000';
+
+// Try to load server_url from settings.json if available
+fetch('settings.json')
+  .then(res => {
+    if (!res.ok) throw new Error('No settings.json');
+    return res.json();
+  })
+  .then(settings => {
+    if (settings.server_url) server_url = settings.server_url;
+  })
+  .catch(() => {
+    // fallback to default
+  });
+
     const urlParams = new URLSearchParams(window.location.search);
     const username = urlParams.get('user');
 
@@ -46,21 +65,6 @@
 
   return doc.body.innerHTML;
 }
-
-let server_url = 'http://127.0.0.1:5000';
-
-// Try to load server_url from settings.json if available
-fetch('settings.json')
-  .then(res => {
-    if (!res.ok) throw new Error('No settings.json');
-    return res.json();
-  })
-  .then(settings => {
-    if (settings.server_url) server_url = settings.server_url;
-  })
-  .catch(() => {
-    // fallback to default
-  });
 
 
     fetch(`${server_url}/api/user/${username}`)
