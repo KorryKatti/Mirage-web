@@ -5,16 +5,14 @@
   <title>MIRAGE // User Profile</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="css/userprofile.css" />
-  <script type="module">
-  window.appConfig = await fetch('/settings.json').then(r => r.json());
-</script>
-
 </head>
 <body class="scanlines">
-  <div class="header">MIRAGE Profile Interface
+  <div class="header">
+    MIRAGE Profile Interface
     <div class="divergence" onclick="backtochat()">back to chat</div>
   </div>
-<div class="profile-box" style="text-align: center; margin: auto; width: fit-content;">
+
+  <div class="profile-box" style="text-align: center; margin: auto; width: fit-content;">
     <img id="avatar" src="" alt="Avatar" width="128" height="128" style="border-radius: 10px;" />
     <h2 id="username">Username</h2>
     <p id="description">Loading description...</p>
@@ -25,64 +23,57 @@
     function backtochat() {
       window.location.href = './room.html';
     }
-  </script>
-
-  <script>
-    let server_url = 'http://127.0.0.1:5000';
-
-// Try to load server_url from settings.json if available
-fetch('settings.json')
-  .then(res => {
-    if (!res.ok) throw new Error('No settings.json');
-    return res.json();
-  })
-  .then(settings => {
-    if (settings.server_url) server_url = settings.server_url;
-  })
-  .catch(() => {
-    // fallback to default
-  });
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const username = urlParams.get('user');
-
-    if (!username) {
-      document.body.innerHTML = '<p style="color:red;">No username provided</p>';
-      throw new Error("Username missing");
-    }
 
     function sanitizeHTML(input) {
-  const doc = new DOMParser().parseFromString(input, 'text/html');
+      const doc = new DOMParser().parseFromString(input, 'text/html');
+      doc.querySelectorAll('script').forEach(el => el.remove());
+      const allowed = ['STYLE', 'B', 'I', 'U', 'SPAN', 'DIV', 'P', 'EM', 'STRONG'];
+      doc.body.querySelectorAll('*').forEach(el => {
+        if (!allowed.includes(el.tagName)) el.remove();
+      });
+      return doc.body.innerHTML;
+    }
 
-  // remove all script tags
-  doc.querySelectorAll('script').forEach(el => el.remove());
+    async function initProfile() {
+      let server_url = 'http://127.0.0.1:5000'; // default fallback
 
-  // optional: allow only <style>, <b>, <i>, etc.
-  const allowed = ['STYLE', 'B', 'I', 'U', 'SPAN', 'DIV', 'P', 'EM', 'STRONG'];
-  doc.body.querySelectorAll('*').forEach(el => {
-    if (!allowed.includes(el.tagName)) el.remove();
-  });
+      try {
+        const settingsRes = await fetch('settings.json');
+        if (settingsRes.ok) {
+          const settings = await settingsRes.json();
+          if (settings.server_url) server_url = settings.server_url;
+        }
+      } catch (e) {
+        console.warn('settings.json not found or invalid, using default server_url');
+      }
 
-  return doc.body.innerHTML;
-}
+      const urlParams = new URLSearchParams(window.location.search);
+      const username = urlParams.get('user');
+      if (!username) {
+        document.body.innerHTML = '<p style="color:red;">No username provided</p>';
+        return;
+      }
 
-
-    fetch(`${server_url}/api/user/${username}`)
-      .then(res => res.json())
-      .then(data => {
+      try {
+        const res = await fetch(`${server_url}/api/user/${username}`);
+        const data = await res.json();
         if (data.error) {
           document.body.innerHTML = `<p style="color:red;">${data.error}</p>`;
           return;
         }
+
         document.getElementById('username').textContent = `~${data.username}`;
         document.getElementById('avatar').src = data.avatar_url || 'default.png';
         document.getElementById('description').innerHTML = sanitizeHTML(data.description || "no description provided.");
         document.getElementById('created_at').textContent = new Date(data.created_at).toLocaleString();
-      })
-      .catch(err => {
+      } catch (err) {
         console.error(err);
         document.body.innerHTML = '<p style="color:red;">Failed to fetch profile</p>';
-      });
+      }
+    }
+
+    // call the async init
+    initProfile();
   </script>
 </body>
 </html>
