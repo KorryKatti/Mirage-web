@@ -260,6 +260,15 @@
     </div>
 
 <script>
+            let server_url = "http://127.0.0.1:5000";
+    fetch('settings.json')
+        .then(response => response.json())
+        .then(settings => {
+            if (settings.server_url) {
+                server_url = settings.server_url;
+            }
+        })
+        .catch(() => { /* fallback to default server_url */ });
 fetch(`${server_url}/api/usercount`)
     .then(res => res.text()) // usercount returns plain text
     .then(count => {
@@ -301,15 +310,7 @@ fetch(`${server_url}/api/usercount`)
 
 <!--registration logic script here-->
 <script>
-        let server_url = "http://127.0.0.1:5000";
-    fetch('settings.json')
-        .then(response => response.json())
-        .then(settings => {
-            if (settings.server_url) {
-                server_url = settings.server_url;
-            }
-        })
-        .catch(() => { /* fallback to default server_url */ });
+
 
     async function register() {
         const username = document.getElementById("username").value;

@@ -514,3 +514,153 @@ nav li:nth-child(4) a {
   margin: 10px 0;
   font-size: 0.9rem;
 }
+
+/* Additional styles for inbox feature */
+.inbox-badge {
+  background: #ff004c;
+  color: #fff;
+  font-size: 0.7rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 10px;
+  margin-left: 0.5rem;
+  min-width: 1.2rem;
+  text-align: center;
+  display: inline-block;
+}
+
+.inbox-modal {
+  width: 600px;
+  max-width: 90vw;
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #333;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+.modal-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.send-btn {
+  background: #00ff9d;
+  color: #000;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+.send-btn:hover {
+  background: #00cc7a;
+}
+
+.inbox-messages {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 400px;
+}
+
+.inbox-message {
+  border: 1px solid #333;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: rgba(204, 242, 255, 0.02);
+}
+
+.message-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.sender-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+  border: 1px solid #333;
+}
+
+.message-info {
+  flex: 1;
+}
+
+.sender-name {
+  color: #ff004c;
+  font-weight: bold;
+  margin-right: 1rem;
+}
+
+.message-time {
+  color: #888;
+  font-size: 0.8rem;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: #ff004c;
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 0.1rem 0.2rem;
+  width: 1.6em;
+  min-width: 0;
+  max-width: 2em;
+}
+
+.delete-btn:hover {
+  color: #fff;
+  background: #000000;
+}
+
+.message-content {
+  margin-top: 0.5rem;
+  line-height: 1.4;
+}
+
+.no-messages {
+  text-align: center;
+  color: #888;
+  padding: 2rem;
+}
+
+#messageText {
+  width: 100%;
+  min-height: 80px;
+  resize: vertical;
+  background: #0a0a0a;
+  border: 1px solid #333;
+  color: #ccf2ff;
+  font-family: inherit;
+  padding: 0.5rem;
+}
+
+/* Scrollbar for inbox messages */
+.inbox-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.inbox-messages::-webkit-scrollbar-track {
+  background: #111;
+}
+
+.inbox-messages::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 3px;
+}
+
+.inbox-messages::-webkit-scrollbar-thumb:hover {
+  background: #ff004c;
+}

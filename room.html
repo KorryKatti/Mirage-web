@@ -24,7 +24,7 @@
         <li><a href="./index.html"><span class="nav-icon">⌂</span> Home</a></li>
         <li><a href="./room.html" class="active"><span class="nav-icon">💬</span> Room</a></li>
         <li><a id="profileLink"><span class="nav-icon">👤</span> Profile</a></li>
-        <li><a href="./settings.html"><span class="nav-icon">⚙</span> Settings</a></li>
+        <li><a id="inboxLink"><span class="nav-icon">📧</span> Inbox <span id="inboxCount" class="inbox-badge" style="display: none;"></span></a></li>
       </ul>
     </nav>
     
@@ -81,20 +81,48 @@
     </div>
   </div>
 
-  <script>
-let server_url = 'http://127.0.0.1:5000';
+  <!-- Inbox Modal -->
+  <div id="inboxModal" class="modal">
+    <div class="modal-content inbox-modal">
+      <div class="modal-header">
+        <h3>📧 Inbox Messages</h3>
+        <div class="modal-controls">
+          <button onclick="showSendMessageModal()" class="send-btn">Send Message</button>
+          <span class="close" onclick="closeInboxModal()">&times;</span>
+        </div>
+      </div>
+      <div id="inboxMessages" class="inbox-messages">
+        <!-- Inbox messages will be populated here -->
+      </div>
+    </div>
+  </div>
 
-// Try to load server_url from settings.json if available
+  <!-- Send Message Modal -->
+  <div id="sendMessageModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeSendMessageModal()">&times;</span>
+      <h3>Send Message</h3>
+      <input type="text" id="recipientUsername" placeholder="Recipient username" />
+      <textarea id="messageText" placeholder="Enter your message..." rows="4"></textarea>
+      <button onclick="sendInboxMessage()">Send</button>
+      <div id="sendError" class="error-message"></div>
+    </div>
+  </div>
+
+  <script>
+let server_url = '';
+
 fetch('settings.json')
-  .then(res => {
-    if (!res.ok) throw new Error('No settings.json');
-    return res.json();
-  })
+  .then(res => res.json())
   .then(settings => {
-    if (settings.server_url) server_url = settings.server_url;
+    if (settings.server_url) {
+      server_url = settings.server_url;
+    } else {
+      alert('server_url not found in settings.json');
+    }
   })
   .catch(() => {
-    // fallback to default
+    alert('Failed to load settings.json');
   });
 const chatBox = document.getElementById('chat');
 const input = document.getElementById('input');
@@ -124,11 +152,24 @@ window.onload = function() {
     if (profileLink) {
       profileLink.href = `./userprofile.html?user=${encodeURIComponent(user)}`;
     }
+    
+    // Setup inbox link
+    const inboxLink = document.getElementById('inboxLink');
+    if (inboxLink) {
+      inboxLink.addEventListener('click', showInboxModal);
+      inboxLink.style.cursor = 'pointer';
+    }
+    
     loadRooms();
+    loadInboxCount();
   }
 };
 
 function loadRooms() {
+// wait 1.22 seconds before loading rooms
+  setTimeout(() => {
+    fetchRooms();
+  }, 1220);
   fetch(`${server_url}/api/rooms`, {
     method: 'GET',
     headers: {
@@ -370,6 +411,11 @@ input.addEventListener('keydown', (e) => {
 // Pull new messages every 3s
 setInterval(fetchMessages, 3000);
 
+setTimeout(loadRooms, 1000);
+
+// Check inbox count every 30s
+setInterval(loadInboxCount, 30000);
+
 function logout() {
   fetch(`${server_url}/api/logout`, {
     method: 'POST',
@@ -414,6 +460,156 @@ function showCreateRoomModal() {
 
 function closeCreateModal() {
   document.getElementById('createRoomModal').style.display = 'none';
+}
+
+// Inbox functions
+function loadInboxCount() {
+  fetch(`${server_url}/api/inbox_count`, {
+    method: 'GET',
+    headers: {
+      'Authorization': token
+    }
+  })
+  .then(res => res.json())
+  .then(data => {
+    const countBadge = document.getElementById('inboxCount');
+    if (data.inbox_count && data.inbox_count > 0) {
+      countBadge.textContent = data.inbox_count;
+      countBadge.style.display = 'inline';
+    } else {
+      countBadge.style.display = 'none';
+    }
+  })
+  .catch(err => {
+    console.error('Failed to load inbox count:', err);
+  });
+}
+
+function showInboxModal() {
+  document.getElementById('inboxModal').style.display = 'block';
+  loadInboxMessages();
+}
+
+function closeInboxModal() {
+  document.getElementById('inboxModal').style.display = 'none';
+}
+
+function loadInboxMessages() {
+  fetch(`${server_url}/api/inbox`, {
+    method: 'GET',
+    headers: {
+      'Authorization': token
+    }
+  })
+  .then(res => res.json())
+  .then(data => {
+    const messagesContainer = document.getElementById('inboxMessages');
+    messagesContainer.innerHTML = '';
+    
+    if (!data.messages || data.messages.length === 0) {
+      messagesContainer.innerHTML = '<div class="no-messages">No messages found</div>';
+      return;
+    }
+    
+    data.messages.forEach(msg => {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'inbox-message';
+      messageDiv.innerHTML = `
+        <div class="message-header">
+          <img src="${msg.avatar_url}" class="sender-avatar" alt="Avatar" />
+          <div class="message-info">
+            <span class="sender-name">~${msg.sender}</span>
+            <span class="message-time">${formatTime(msg.created_at)}</span>
+          </div>
+          <button onclick="deleteInboxMessage(${msg.id})" class="delete-btn">×</button>
+        </div>
+        <div class="message-content">${parseMarkdown(msg.message)}</div>
+      `;
+      messagesContainer.appendChild(messageDiv);
+    });
+  })
+  .catch(err => {
+    console.error('Failed to load inbox messages:', err);
+    document.getElementById('inboxMessages').innerHTML = '<div class="error-message">Failed to load messages</div>';
+  });
+}
+
+function deleteInboxMessage(messageId) {
+  if (!confirm('Are you sure you want to delete this message?')) return;
+  
+  fetch(`${server_url}/api/delete_inbox_message`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': token
+    },
+    body: JSON.stringify({ message_id: messageId })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.message) {
+      loadInboxMessages(); // Refresh messages
+      loadInboxCount(); // Update count
+    } else {
+      alert('Failed to delete message: ' + (data.error || 'Unknown error'));
+    }
+  })
+  .catch(err => {
+    console.error('Failed to delete message:', err);
+    alert('Failed to delete message');
+  });
+}
+
+function showSendMessageModal() {
+  document.getElementById('sendMessageModal').style.display = 'block';
+  document.getElementById('sendError').textContent = '';
+}
+
+function closeSendMessageModal() {
+  document.getElementById('sendMessageModal').style.display = 'none';
+  document.getElementById('recipientUsername').value = '';
+  document.getElementById('messageText').value = '';
+}
+
+function sendInboxMessage() {
+  const recipient = document.getElementById('recipientUsername').value.trim();
+  const message = document.getElementById('messageText').value.trim();
+  const errorDiv = document.getElementById('sendError');
+  
+  if (!recipient || !message) {
+    errorDiv.textContent = 'Please fill in both recipient and message';
+    return;
+  }
+  
+  fetch(`${server_url}/api/send_inbox_message`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': token
+    },
+    body: JSON.stringify({
+      recipient: recipient,
+      message: message
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.message) {
+      closeSendMessageModal();
+      alert('Message sent successfully!');
+    } else {
+      errorDiv.textContent = data.error || 'Failed to send message';
+    }
+  })
+  .catch(err => {
+    console.error('Failed to send message:', err);
+    errorDiv.textContent = 'Failed to send message';
+  });
+}
+
+function formatTime(timestamp) {
+  const date = new Date(timestamp);
+  return date.toLocaleString();
 }
 
 function joinRoom() {
@@ -524,6 +720,8 @@ document.addEventListener('DOMContentLoaded', function() {
 window.onclick = function(event) {
   const joinModal = document.getElementById('joinRoomModal');
   const createModal = document.getElementById('createRoomModal');
+  const inboxModal = document.getElementById('inboxModal');
+  const sendModal = document.getElementById('sendMessageModal');
   
   if (event.target === joinModal) {
     closeJoinModal();
@@ -531,7 +729,14 @@ window.onclick = function(event) {
   if (event.target === createModal) {
     closeCreateModal();
   }
+  if (event.target === inboxModal) {
+    closeInboxModal();
+  }
+  if (event.target === sendModal) {
+    closeSendMessageModal();
+  }
 }
   </script>
+
 </body>
 </html>
