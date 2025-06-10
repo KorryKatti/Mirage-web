@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>MIRAGE Interface // V-0</title>
+  <title>MIRAGE Interface // V-0.0.4</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
@@ -35,16 +35,16 @@
       </ul>
     </div>
     <div class="sidebar-footer">
-<div class="system-status">
-  <span class="sys-label">SYS : </span>
-  <span class="status-indicator"></span>
-  <span class="status-text">NOMINAL</span>
-</div>
-      <div class="version-info">v0.0.3-BETA</div>
+      <div class="system-status">
+        <span class="sys-label">SYS : </span>
+        <span class="status-indicator"></span>
+        <span class="status-text">NOMINAL</span>
+      </div>
+      <div class="version-info">v0.0.4-BETA</div>
     </div>
   </div>
 
-  <div class="header" id="headerText">🧠 MIRAGE Interface v0.0.3-BETA // Loading...</div>
+  <div class="header" id="headerText">🧠 MIRAGE Interface v0.0.4-BETA // Loading...</div>
   <div class="chat-box" id="chat">
     <!-- messages will populate here -->
   </div>
@@ -52,6 +52,10 @@
   <div class="input-box">
     <input type="text" id="input" placeholder="Enter message..." />
     <button onclick="sendMsg()">Send</button>
+    <button class="file-upload-btn" onclick="triggerFileUpload()">
+      📎 File
+      <input type="file" id="fileInput" onchange="handleFileUpload()" />
+    </button>
   </div>
 
   <div class="divergence" onclick="logout()">log out</div>
@@ -109,6 +113,31 @@
     </div>
   </div>
 
+  <!-- Download Warning Modal -->
+  <div id="downloadWarningModal" class="modal warning-modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeDownloadWarning()">&times;</span>
+      <div class="warning-header">
+        <span class="warning-icon">⚠️</span>
+        <h3>Download Warning</h3>
+      </div>
+      <div class="warning-content">
+        <p>You are about to download a file from an external source. Please ensure you trust the sender before proceeding.</p>
+        <div class="file-info" id="downloadFileInfo">
+          <!-- File info will be populated here -->
+        </div>
+        <div class="disable-warnings">
+          <input type="checkbox" id="disableWarnings" />
+          <label for="disableWarnings">Don't show this warning again</label>
+        </div>
+      </div>
+      <div class="warning-buttons">
+        <button class="btn-cancel" onclick="closeDownloadWarning()">Cancel</button>
+        <button class="btn-proceed" onclick="proceedDownload()">Download</button>
+      </div>
+    </div>
+  </div>
+
   <script>
 let server_url = '';
 
@@ -124,6 +153,7 @@ fetch('settings.json')
   .catch(() => {
     alert('Failed to load settings.json');
   });
+
 const chatBox = document.getElementById('chat');
 const input = document.getElementById('input');
 
@@ -133,12 +163,15 @@ const token = localStorage.getItem('token');
 let currentRoomId = null;
 let currentRoomName = 'Loading...';
 let availableRooms = [];
+let pendingDownloadUrl = null;
+
+// Check if download warnings are disabled
+let downloadWarningsDisabled = localStorage.getItem('downloadWarningsDisabled') === 'true';
 
 if (!username || !token) {
   alert('You are not logged in.');
   window.location.href = './index.html';
 }
-
 
 window.onload = function() {
   const user = localStorage.getItem('user');
@@ -166,7 +199,7 @@ window.onload = function() {
 };
 
 function loadRooms() {
-// wait 1.22 seconds before loading rooms
+  // wait 1.22 seconds before loading rooms
   setTimeout(() => {
     fetchRooms();
   }, 1220);
@@ -213,7 +246,7 @@ function populateRoomList() {
     const icon = room.joined ? '◉' : '◎';
     const joinedClass = room.joined ? '' : ' not-joined';
     
-    li.innerHTML = `<span class="room-icon">${icon}</span> ${room.name}`;
+        li.innerHTML = `<span class="room-icon">${icon}</span> ${room.name}`;
     li.className += joinedClass;
     
     li.addEventListener('click', () => {
@@ -306,7 +339,7 @@ function selectRoom(roomId, roomName) {
   }
   
   // Update header
-  document.getElementById('headerText').textContent = `🧠 MIRAGE Interface v0.0.3-BETA // ${roomName}`;
+  document.getElementById('headerText').textContent = `🧠 MIRAGE Interface v0.0.4-BETA // ${roomName}`;
   
   // Load messages for this room
   fetchMessages();
@@ -683,6 +716,72 @@ function createRoom() {
   });
 }
 
+// Add this to your script section
+function fetchRooms() {
+  fetch(`${server_url}/api/rooms`, {
+    method: 'GET',
+    headers: {
+      'Authorization': token
+    }
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.rooms) {
+      availableRooms = data.rooms;
+      populateRoomList();
+    }
+  })
+  .catch(err => {
+    console.error('Failed to fetch rooms:', err);
+  });
+}
+
+function triggerFileUpload() {
+  document.getElementById('fileInput').click();
+}
+
+function handleFileUpload() {
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
+    
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('room_id', currentRoomId);
+
+    fetch(`${server_url}/api/upload_file`, {
+        method: 'POST',
+        headers: {
+            'Authorization': token
+        },
+        body: formData
+    })
+    .then(res => {
+        if (!res.ok) {
+            return res.json().then(err => {
+                throw new Error(err.error || `Network response was not ok: ${res.status} ${res.statusText}`);
+            });
+        }
+        return res.json();
+    })
+    .then(data => {
+        if (data.error) {
+            console.error('Upload failed:', data.error);
+            alert('Failed to upload file: ' + data.error);
+            return;
+        }
+        if (data.file_url) {
+            console.log('File uploaded successfully:', data.file_url);
+            const message = `[File] ${data.file_url}`;
+            sendMsg(); // Call sendMsg with the file URL
+        }
+    })
+    .catch(err => {
+        console.error('Failed to upload file:', err);
+        alert('Failed to upload file: ' + err.message);
+    });
+}
 // Mobile sidebar toggle functionality
 document.addEventListener('DOMContentLoaded', function() {
   const menuToggle = document.getElementById('menuToggle');
@@ -737,6 +836,5 @@ window.onclick = function(event) {
   }
 }
   </script>
-
 </body>
 </html>

@@ -227,7 +227,8 @@
     <script src="js/mathcaptcha.js"></script>
 
     <div class="main-content">
-        <div class="divergence-meter glow-effect">Version: <span id="divergence">0.0.3</span></div>
+        <!-- <div class="divergence-meter glow-effect">Version: <span id="divergence">0.0.3</span></div> -->
+         <div class="divergence-meter glow-effect">Version: <span id="divergence">0.0.3</span></div>
         
         <div class="sg-logo">ミラージュ</div>
         
@@ -236,6 +237,7 @@
         <div class="equations">
             <div>Welcome To Mirage</div>
             <div>Current version : 0.0.3</div>
+            <div>Next Update : File Sharing</div>
             <div>Worldline Convergence: <span id="convergence">0.571024</span>%</div>
         </div>
         
@@ -269,21 +271,26 @@
             }
         })
         .catch(() => { /* fallback to default server_url */ });
-fetch(`${server_url}/api/usercount`)
-    .then(res => res.text()) // usercount returns plain text
-    .then(count => {
-        const circuits = document.querySelectorAll('.circuit');
-        circuits.forEach(circuit => {
-            const label = circuit.querySelector('.circuit-label');
-            if (label && label.textContent.includes("USERS REGISTERED")) {
-                circuit.querySelector('.circuit-time').textContent = count;
-            }
-        });
-    })
-    .catch(err => console.error("couldn’t fetch user count:", err));
+function fetchUserCount() {
+    fetch(`${server_url}/api/usercount`)
+        .then(res => res.text()) // usercount returns plain text
+        .then(count => {
+            const circuits = document.querySelectorAll('.circuit');
+            circuits.forEach(circuit => {
+                const label = circuit.querySelector('.circuit-label');
+                if (label && label.textContent.includes("USERS REGISTERED")) {
+                    circuit.querySelector('.circuit-time').textContent = count;
+                }
+            });
+        })
+        .catch(err => console.error("couldn’t fetch user count:", err));
+}
+
+// Initial fetch
+setTimeout(fetchUserCount, 1000);
+// Refetch every 1 second
+
 </script>
-
-
 <script>
     async function fetchDivergence() {
         try {
