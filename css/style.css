@@ -816,3 +816,18 @@ nav li:nth-child(4) a {
   width: auto;
   margin: 0;
 }
+
+.download-btn {
+  background: #ff004c;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+  margin-left: 5px;
+}
+
+.download-btn:hover {
+  background: #cc0039;
+}
