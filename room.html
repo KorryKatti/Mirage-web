@@ -65,8 +65,9 @@
     <div class="modal-content">
       <span class="close" onclick="closeJoinModal()">&times;</span>
       <h3>Join Channel</h3>
-      <input type="text" id="joinRoomName" placeholder="Channel name" />
-      <button onclick="joinRoom()">Join</button>
+      <<input type="text" id="joinRoomName" placeholder="Channel name" />
+<input type="password" id="joinRoomPassword" placeholder="Password (if private)" />
+<button onclick="joinRoom()">Join</button>
       <div id="joinError" class="error-message"></div>
     </div>
   </div>
@@ -78,8 +79,9 @@
       <h3>Create Channel</h3>
       <input type="text" id="createRoomName" placeholder="Channel name" />
       <label>
-        <input type="checkbox" id="isPrivate" /> Private Channel
-      </label>
+  <input type="checkbox" id="isPrivate" /> Private Channel
+</label>
+<input type="password" id="roomPassword" placeholder="Password (required for private)" style="display:none;" />
       <button onclick="createRoom()">Create</button>
       <div id="createError" class="error-message"></div>
     </div>

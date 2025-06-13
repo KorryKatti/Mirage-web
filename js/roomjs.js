@@ -392,6 +392,7 @@ function showJoinRoomModal() {
 
 function closeJoinModal() {
   document.getElementById('joinRoomModal').style.display = 'none';
+  document.getElementById('joinRoomPassword').value = '';
 }
 
 function showCreateRoomModal() {
@@ -401,6 +402,7 @@ function showCreateRoomModal() {
 
 function closeCreateModal() {
   document.getElementById('createRoomModal').style.display = 'none';
+  document.getElementById('roomPassword').value = '';
 }
 
 // Inbox functions
@@ -555,11 +557,17 @@ function formatTime(timestamp) {
 
 function joinRoom() {
   const roomName = document.getElementById('joinRoomName').value.trim();
+  const password = document.getElementById('joinRoomPassword').value.trim();
   const errorDiv = document.getElementById('joinError');
   
   if (!roomName) {
     errorDiv.textContent = 'Please enter a room name';
     return;
+  }
+
+  const requestBody = { name: roomName };
+  if (password) {
+    requestBody.password = password;
   }
 
   fetch(`${server_url}/api/join_room`, {
@@ -568,7 +576,7 @@ function joinRoom() {
       'Content-Type': 'application/json',
       'Authorization': token
     },
-    body: JSON.stringify({ name: roomName })
+    body: JSON.stringify(requestBody)
   })
   .then(res => res.json())
   .then(data => {
@@ -586,14 +594,44 @@ function joinRoom() {
   });
 }
 
+// Show/hide password field based on private checkbox
+document.addEventListener('DOMContentLoaded', function() {
+  const privateCheckbox = document.getElementById('isPrivate');
+  const passwordField = document.getElementById('roomPassword');
+  
+  if (privateCheckbox && passwordField) {
+    privateCheckbox.addEventListener('change', function() {
+      passwordField.style.display = this.checked ? 'block' : 'none';
+      if (!this.checked) {
+        passwordField.value = '';
+      }
+    });
+  }
+});
+
 function createRoom() {
   const roomName = document.getElementById('createRoomName').value.trim();
   const isPrivate = document.getElementById('isPrivate').checked;
+  const password = document.getElementById('roomPassword').value.trim();
   const errorDiv = document.getElementById('createError');
   
   if (!roomName) {
     errorDiv.textContent = 'Please enter a room name';
     return;
+  }
+  
+  if (isPrivate && !password) {
+    errorDiv.textContent = 'Password required for private channels';
+    return;
+  }
+
+  const requestBody = { 
+    room_name: roomName,
+    is_private: isPrivate ? 1 : 0
+  };
+  
+  if (isPrivate && password) {
+    requestBody.password = password;
   }
 
   fetch(`${server_url}/api/create_room`, {
@@ -602,10 +640,7 @@ function createRoom() {
       'Content-Type': 'application/json',
       'Authorization': token
     },
-    body: JSON.stringify({ 
-      room_name: roomName,
-      is_private: isPrivate ? 1 : 0
-    })
+    body: JSON.stringify(requestBody)
   })
   .then(res => res.json())
   .then(data => {
