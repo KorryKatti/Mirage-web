@@ -105,17 +105,23 @@ function populateRoomList() {
     const icon = room.joined ? '◉' : '◎';
     const joinedClass = room.joined ? '' : ' not-joined';
     
-        li.innerHTML = `<span class="room-icon">${icon}</span> ${room.name}`;
+    li.innerHTML = `<span class="room-icon">${icon}</span> ${room.name}`;
     li.className += joinedClass;
+    
+    if (room.is_private) {
+      li.innerHTML += ' <span class="private-indicator">🔒</span>';
+    }
     
     li.addEventListener('click', () => {
       if (room.joined) {
         selectRoom(room.room_id, room.name);
       } else {
         joinExistingRoom(room.name, () => {
-          room.joined = true;
-          selectRoom(room.room_id, room.name);
-          populateRoomList(); // Refresh the list
+          // After joining, select the room
+          const updatedRoom = availableRooms.find(r => r.name === room.name);
+          if (updatedRoom && updatedRoom.joined) {
+            selectRoom(updatedRoom.room_id, updatedRoom.name);
+          }
         });
       }
     });
@@ -202,30 +208,53 @@ function selectRoom(roomId, roomName) {
   
   // Load messages for this room
   fetchMessages();
+  
+  // Clear any previous join errors
+  document.getElementById('joinError').textContent = '';
 }
 
 function joinExistingRoom(roomName, callback) {
+  const room = availableRooms.find(r => r.name === roomName);
+  let password = '';
+  
+  if (room && room.is_private) {
+    password = prompt(`Room "${roomName}" is private. Please enter password:`);
+    if (password === null) return; // User cancelled
+  }
+
   fetch(`${server_url}/api/join_room`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': token
     },
-    body: JSON.stringify({ name: roomName })
+    body: JSON.stringify({ 
+      name: roomName,
+      password: password 
+    })
   })
-  .then(res => res.json())
-  .then(data => {
-    if (data.message) {
-      console.log(data.message);
-      if (callback) callback();
-    } else {
-      console.error('Failed to join room:', data.error);
+  .then(res => {
+    if (!res.ok) {
+      return res.json().then(err => { throw new Error(err.error || 'Failed to join room'); });
     }
+    return res.json();
+  })
+  .then(data => {
+    // Immediately select the room we're joining
+    selectRoom(data.room_id, data.room_name);
+    
+    // Then refresh the room list
+    return fetchRooms();
+  })
+  .then(() => {
+    if (callback) callback();
   })
   .catch(err => {
     console.error('Error joining room:', err);
+    alert('Error joining room: ' + err.message);
   });
 }
+
 
 function sendMsg() {
   const message = input.value.trim();
@@ -565,32 +594,38 @@ function joinRoom() {
     return;
   }
 
-  const requestBody = { name: roomName };
-  if (password) {
-    requestBody.password = password;
-  }
-
   fetch(`${server_url}/api/join_room`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': token
     },
-    body: JSON.stringify(requestBody)
+    body: JSON.stringify({ 
+      name: roomName,
+      password: password 
+    })
   })
-  .then(res => res.json())
-  .then(data => {
-    if (data.message) {
-      closeJoinModal();
-      loadRooms(); // Refresh room list
-      document.getElementById('joinRoomName').value = '';
-    } else {
-      errorDiv.textContent = data.error || 'Failed to join room';
+  .then(res => {
+    if (!res.ok) {
+      return res.json().then(err => { throw new Error(err.error || 'Failed to join room'); });
     }
+    return res.json();
+  })
+  .then(data => {
+    // Close modal and clear inputs
+    closeJoinModal();
+    document.getElementById('joinRoomName').value = '';
+    document.getElementById('joinRoomPassword').value = '';
+    
+    // Immediately select the joined room
+    selectRoom(data.room_id, data.room_name);
+    
+    // Refresh room list
+    return fetchRooms();
   })
   .catch(err => {
-    errorDiv.textContent = 'Error joining room';
-    console.error('Error:', err);
+    errorDiv.textContent = err.message;
+    console.error('Error joining room:', err);
   });
 }
 
@@ -661,7 +696,7 @@ function createRoom() {
 
 // Add this to your script section
 function fetchRooms() {
-  fetch(`${server_url}/api/rooms`, {
+  return fetch(`${server_url}/api/rooms`, {
     method: 'GET',
     headers: {
       'Authorization': token
@@ -672,10 +707,12 @@ function fetchRooms() {
     if (data.rooms) {
       availableRooms = data.rooms;
       populateRoomList();
+      return data.rooms;
     }
   })
   .catch(err => {
     console.error('Failed to fetch rooms:', err);
+    throw err;
   });
 }
 

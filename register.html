@@ -262,33 +262,39 @@
     </div>
 
 <script>
-            let server_url = "http://127.0.0.1:5000";
-    fetch('settings.json')
-        .then(response => response.json())
-        .then(settings => {
-            if (settings.server_url) {
-                server_url = settings.server_url;
-            }
-        })
-        .catch(() => { /* fallback to default server_url */ });
+            let server_url = '';
+
+fetch('settings.json')
+  .then(res => res.json())
+  .then(settings => {
+    if (!settings.server_url) throw new Error('server_url missing');
+    server_url = settings.server_url;
+
+    fetchUserCount(); // first run
+    setInterval(fetchUserCount, 1000); // loop
+  })
+  .catch(err => {
+    console.error('💥 failed to load settings.json:', err);
+    // no default, so just bail
+  });
+
 function fetchUserCount() {
-    fetch(`${server_url}/api/usercount`)
-        .then(res => res.text()) // usercount returns plain text
-        .then(count => {
-            const circuits = document.querySelectorAll('.circuit');
-            circuits.forEach(circuit => {
-                const label = circuit.querySelector('.circuit-label');
-                if (label && label.textContent.includes("USERS REGISTERED")) {
-                    circuit.querySelector('.circuit-time').textContent = count;
-                }
-            });
-        })
-        .catch(err => console.error("couldn’t fetch user count:", err));
+  if (!server_url) return; // hard bail if config isn’t ready
+
+  fetch(`${server_url}/api/usercount`)
+    .then(res => res.text())
+    .then(count => {
+      document.querySelectorAll('.circuit').forEach(circuit => {
+        const label = circuit.querySelector('.circuit-label');
+        if (label?.textContent.includes("USERS REGISTERED")) {
+          const time = circuit.querySelector('.circuit-time');
+          if (time) time.textContent = count;
+        }
+      });
+    })
+    .catch(err => console.error("⚠️ couldn't fetch user count:", err));
 }
 
-// Initial fetch
-setTimeout(fetchUserCount, 1000);
-// Refetch every 1 second
 
 </script>
 <script>

@@ -831,3 +831,9 @@ nav li:nth-child(4) a {
 .download-btn:hover {
   background: #cc0039;
 }
+
+.private-indicator {
+  margin-left: 0.5rem;
+  font-size: 0.8em;
+  color: #ff6b35;
+}
