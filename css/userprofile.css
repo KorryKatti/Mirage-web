@@ -398,3 +398,142 @@ nav li:nth-child(4) a { animation-delay: 0.4s; }
   text-shadow: 0 0 3px #ff004c;
 }
 
+.followers-list, .following-list {
+  background: rgba(10, 10, 10, 0.8);
+  border: 1px solid #333;
+  padding: 1rem;
+  margin-top: 1rem;
+  border-radius: 4px;
+}
+
+.followers-list h4, .following-list h4 {
+  margin-top: 0;
+  color: #ff004c;
+  text-shadow: 0 0 3px rgba(255, 0, 76, 0.5);
+}
+
+.stat:hover {
+  background: rgba(255, 0, 76, 0.2) !important;
+  transform: scale(1.05);
+  transition: all 0.2s ease;
+}
+
+ /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-content {
+      background: #0a0a0a;
+      margin: 5% auto;
+      padding: 2rem;
+      border: 1px solid #ff004c;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 80vh;
+      overflow-y: auto;
+      position: relative;
+      animation: modalFadeIn 0.3s ease;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #333;
+    }
+
+    .modal-title {
+      color: #ff004c;
+      text-shadow: 0 0 3px rgba(255, 0, 76, 0.5);
+      margin: 0;
+      font-size: 1.2rem;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: #ff004c;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0;
+      margin: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .close-btn:hover {
+      color: #fff;
+      text-shadow: 0 0 5px #ff004c;
+      transform: scale(1.1);
+    }
+
+    .user-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.8rem;
+      padding: 0.8rem;
+      background: rgba(255, 0, 76, 0.05);
+      border: 1px solid rgba(255, 0, 76, 0.2);
+      border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .user-item:hover {
+      background: rgba(255, 0, 76, 0.1);
+      transform: translateX(5px);
+    }
+
+    .user-item img {
+      border-radius: 50%;
+      margin-right: 0.8rem;
+      border: 2px solid rgba(204, 242, 255, 0.3);
+    }
+
+    .user-item a {
+      color: #ccf2ff;
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.2s ease;
+    }
+
+    .user-item a:hover {
+      color: #ff004c;
+      text-shadow: 0 0 3px rgba(255, 0, 76, 0.5);
+    }
+
+    .empty-state {
+      text-align: center;
+      color: #888;
+      font-style: italic;
+      padding: 2rem;
+    }
+
+    /* Modal backdrop click area */
+    .modal-backdrop {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }

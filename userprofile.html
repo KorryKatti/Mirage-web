@@ -17,11 +17,12 @@
     <h2 id="username">Username</h2>
     <p id="description">Loading description...</p>
     <p class="date">Joined: <span id="created_at"></span></p>
-    <!-- Add this after the description -->
-<div id="follow-section" style="margin: 1rem 0;">
-  <button id="follow-btn" style="display: none;">Follow</button>
-  <button id="unfollow-btn" style="display: none;">Unfollow</button>
-</div>
+    
+    <!-- Follow section -->
+    <div id="follow-section" style="margin: 1rem 0;">
+      <button id="follow-btn" style="display: none;">Follow</button>
+      <button id="unfollow-btn" style="display: none;">Unfollow</button>
+    </div>
     
     <!-- Post creation form (only shown for own profile) -->
     <div id="post-form" style="display: none; margin-top: 2rem; text-align: left;">
@@ -44,6 +45,34 @@
     </div>
   </div>
 
+  <!-- Followers Modal -->
+  <div id="followers-modal" class="modal">
+    <div class="modal-backdrop" onclick="closeModal('followers-modal')"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Followers</h4>
+        <button class="close-btn" onclick="closeModal('followers-modal')">&times;</button>
+      </div>
+      <div id="followers-list">
+        <p style="color: #888;">Loading...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Following Modal -->
+  <div id="following-modal" class="modal">
+    <div class="modal-backdrop" onclick="closeModal('following-modal')"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Following</h4>
+        <button class="close-btn" onclick="closeModal('following-modal')">&times;</button>
+      </div>
+      <div id="following-list">
+        <p style="color: #888;">Loading...</p>
+      </div>
+    </div>
+  </div>
+
   <script>
     let server_url = 'http://127.0.0.1:5000'; // default fallback
     
@@ -60,6 +89,36 @@
       });
       return doc.body.innerHTML;
     }
+
+    // Modal functions
+    function openModal(modalId) {
+      document.getElementById(modalId).style.display = 'block';
+      document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = 'none';
+      document.body.style.overflow = 'auto'; // Restore scrolling
+    }
+
+    // Close modal when clicking outside or pressing Escape
+    window.addEventListener('click', function(event) {
+      const modals = document.querySelectorAll('.modal');
+      modals.forEach(modal => {
+        if (event.target === modal) {
+          closeModal(modal.id);
+        }
+      });
+    });
+
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') {
+        const openModal = document.querySelector('.modal[style*="display: block"]');
+        if (openModal) {
+          closeModal(openModal.id);
+        }
+      }
+    });
 
     async function loadSettings() {
       try {
@@ -87,149 +146,213 @@
     }
 
     async function fetchUserPosts(username) {
-  try {
-    const res = await fetch(`${server_url}/api/get_posts/${username}`);
-    const data = await res.json();
-    if (!res.ok) {
-      throw new Error(data.error || 'Failed to fetch posts');
+      try {
+        const res = await fetch(`${server_url}/api/get_posts/${username}`);
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || 'Failed to fetch posts');
+        }
+        return data;
+      } catch (err) {
+        console.error('Error fetching posts:', err);
+        return { posts: [] };
+      }
     }
-    return data;
-  } catch (err) {
-    console.error('Error fetching posts:', err);
-    return { posts: [] };
-  }
-}
-function renderProfile(data) {
-  document.getElementById('username').textContent = `~${data.username}`;
-  document.getElementById('avatar').src = data.avatar_url || 'default.png';
-  document.getElementById('description').innerHTML = sanitizeHTML(data.description || "no description provided.");
-  document.getElementById('created_at').textContent = new Date(data.created_at).toLocaleString();
-  
-  // Create or update stats display
-  let statsContainer = document.querySelector('.profile-stats');
-  if (!statsContainer) {
-    statsContainer = document.createElement('div');
-    statsContainer.className = 'profile-stats';
-    document.querySelector('.date').insertAdjacentElement('afterend', statsContainer);
-  }
 
-  statsContainer.innerHTML = `
-    <div class="stat">
-      <span class="stat-value">${data.stats.posts || 0}</span>
-      <div>posts</div>
-    </div>
-    <div class="stat">
-      <span class="stat-value">${data.stats.followers || 0}</span>
-      <div>followers</div>
-    </div>
-    <div class="stat">
-      <span class="stat-value">${data.stats.following || 0}</span>
-      <div>following</div>
-    </div>
-    <div class="stat">
-      <span class="stat-value">${data.stats.upvotes || 0}</span>
-      <div>▲</div>
-    </div>
-    <div class="stat">
-      <span class="stat-value">${data.stats.downvotes || 0}</span>
-      <div>▼</div>
-    </div>
-  `;
-}
+    function renderProfile(data) {
+      document.getElementById('username').textContent = `~${data.username}`;
+      document.getElementById('avatar').src = data.avatar_url || 'default.png';
+      document.getElementById('description').innerHTML = sanitizeHTML(data.description || "no description provided.");
+      document.getElementById('created_at').textContent = new Date(data.created_at).toLocaleString();
+      
+      // Create or update stats display
+      let statsContainer = document.querySelector('.profile-stats');
+      if (!statsContainer) {
+        statsContainer = document.createElement('div');
+        statsContainer.className = 'profile-stats';
+        document.querySelector('.date').insertAdjacentElement('afterend', statsContainer);
+      }
 
-function renderPosts(postsData) {
-  const container = document.getElementById('posts-container');
-  const posts = postsData.posts || [];
-  const currentUser = localStorage.getItem('user');
-  
-  if (posts.length === 0) {
-    container.innerHTML = '<p style="color: #888;">No posts yet.</p>';
-    return;
-  }
-  
-  let html = '';
-  posts.forEach(post => {
-    const isOwnPost = post.username === currentUser;
-    
-    html += `
-      <div class="post" data-post-id="${post.id}">
-        <div class="post-header">
-          Posted by ~${post.username} on ${new Date(post.created_at).toLocaleString()}
+      statsContainer.innerHTML = `
+        <div class="stat">
+          <span class="stat-value">${data.stats.posts || 0}</span>
+          <div>posts</div>
         </div>
-        <div class="post-content">
-          ${sanitizeHTML(post.content)}
+        <div class="stat" onclick="showFollowers('${data.username}')" style="cursor: pointer;">
+          <span class="stat-value">${data.stats.followers || 0}</span>
+          <div>followers</div>
         </div>
-        <div class="post-footer">
-          <div class="vote-buttons">
-            <button class="vote-btn upvote ${isOwnPost ? 'disabled' : ''}" 
-                    onclick="votePost(${post.id}, 'up')" 
-                    ${isOwnPost ? 'disabled' : ''}>
-              ▲ ${post.upvotes || 0}
-            </button>
-            <button class="vote-btn downvote ${isOwnPost ? 'disabled' : ''}" 
-                    onclick="votePost(${post.id}, 'down')" 
-                    ${isOwnPost ? 'disabled' : ''}>
-              ▼ ${post.downvotes || 0}
-            </button>
+        <div class="stat" onclick="showFollowing('${data.username}')" style="cursor: pointer;">
+          <span class="stat-value">${data.stats.following || 0}</span>
+          <div>following</div>
+        </div>
+        <div class="stat">
+          <span class="stat-value">${data.stats.upvotes || 0}</span>
+          <div>▲</div>
+        </div>
+        <div class="stat">
+          <span class="stat-value">${data.stats.downvotes || 0}</span>
+          <div>▼</div>
+        </div>
+      `;
+    }
+
+    function renderPosts(postsData) {
+      const container = document.getElementById('posts-container');
+      const posts = postsData.posts || [];
+      const currentUser = localStorage.getItem('user');
+      
+      if (posts.length === 0) {
+        container.innerHTML = '<p style="color: #888;">No posts yet.</p>';
+        return;
+      }
+      
+      let html = '';
+      posts.forEach(post => {
+        const isOwnPost = post.username === currentUser;
+        
+        html += `
+          <div class="post" data-post-id="${post.id}">
+            <div class="post-header">
+              Posted by ~${post.username} on ${new Date(post.created_at).toLocaleString()}
+            </div>
+            <div class="post-content">
+              ${sanitizeHTML(post.content)}
+            </div>
+            <div class="post-footer">
+              <div class="vote-buttons">
+                <button class="vote-btn upvote ${isOwnPost ? 'disabled' : ''}" 
+                        onclick="votePost(${post.id}, 'up')" 
+                        ${isOwnPost ? 'disabled' : ''}>
+                  ▲ ${post.upvotes || 0}
+                </button>
+                <button class="vote-btn downvote ${isOwnPost ? 'disabled' : ''}" 
+                        onclick="votePost(${post.id}, 'down')" 
+                        ${isOwnPost ? 'disabled' : ''}>
+                  ▼ ${post.downvotes || 0}
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-    `;
-  });
-  
-  container.innerHTML = html;
-}
-
-async function votePost(postId, voteType) {
-  const token = localStorage.getItem('token');
-  if (!token) {
-    alert('You need to be logged in to vote');
-    window.location.href = './index.html';
-    return;
-  }
-
-  // Disable buttons during vote
-  const buttons = document.querySelectorAll(`.post[data-post-id="${postId}"] .vote-btn`);
-  buttons.forEach(btn => btn.disabled = true);
-
-  try {
-    const response = await fetch(`${server_url}/api/vote_post`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': token
-      },
-      body: JSON.stringify({
-        post_id: postId,
-        vote_type: voteType
-      })
-    });
-
-    const data = await response.json();
-    
-    if (response.ok) {
-      // Refresh the entire profile to update all stats
-      const urlParams = new URLSearchParams(window.location.search);
-      const profileUsername = urlParams.get('user');
+        `;
+      });
       
-      // Fetch updated profile and posts
-      const [profileData, postsData] = await Promise.all([
-        fetchUserProfile(profileUsername),
-        fetchUserPosts(profileUsername)
-      ]);
-      
-      renderProfile(profileData);
-      renderPosts(postsData);
-    } else {
-      alert(data.error || 'Failed to vote');
-      buttons.forEach(btn => btn.disabled = false);
+      container.innerHTML = html;
     }
-  } catch (err) {
-    console.error('Error voting:', err);
-    alert('Failed to vote');
-    buttons.forEach(btn => btn.disabled = false);
-  }
-}
+
+    async function showFollowers(username) {
+      openModal('followers-modal');
+      
+      try {
+        const res = await fetch(`${server_url}/api/get_followers/${username}`);
+        const data = await res.json();
+        
+        if (!res.ok) throw new Error(data.error || 'Failed to fetch followers');
+        
+        const followersList = document.getElementById('followers-list');
+        
+        if (data.followers.length === 0) {
+          followersList.innerHTML = '<div class="empty-state">No followers yet</div>';
+        } else {
+          let html = '';
+          data.followers.forEach(user => {
+            html += `
+              <div class="user-item">
+                <img src="${user.avatar_url}" width="40" height="40" alt="${user.username}">
+                <a href="userprofile.html?user=${user.username}">~${user.username}</a>
+              </div>
+            `;
+          });
+          followersList.innerHTML = html;
+        }
+      } catch (err) {
+        console.error('Error loading followers:', err);
+        document.getElementById('followers-list').innerHTML = '<div class="empty-state" style="color: #ff004c;">Failed to load followers</div>';
+      }
+    }
+
+    async function showFollowing(username) {
+      openModal('following-modal');
+      
+      try {
+        const res = await fetch(`${server_url}/api/get_following/${username}`);
+        const data = await res.json();
+        
+        if (!res.ok) throw new Error(data.error || 'Failed to fetch following');
+        
+        const followingList = document.getElementById('following-list');
+        
+        if (data.following.length === 0) {
+          followingList.innerHTML = '<div class="empty-state">Not following anyone yet</div>';
+        } else {
+          let html = '';
+          data.following.forEach(user => {
+            html += `
+              <div class="user-item">
+                <img src="${user.avatar_url}" width="40" height="40" alt="${user.username}">
+                <a href="userprofile.html?user=${user.username}">~${user.username}</a>
+              </div>
+            `;
+          });
+          followingList.innerHTML = html;
+        }
+      } catch (err) {
+        console.error('Error loading following:', err);
+        document.getElementById('following-list').innerHTML = '<div class="empty-state" style="color: #ff004c;">Failed to load following</div>';
+      }
+    }
+
+    async function votePost(postId, voteType) {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('You need to be logged in to vote');
+        window.location.href = './index.html';
+        return;
+      }
+
+      // Disable buttons during vote
+      const buttons = document.querySelectorAll(`.post[data-post-id="${postId}"] .vote-btn`);
+      buttons.forEach(btn => btn.disabled = true);
+
+      try {
+        const response = await fetch(`${server_url}/api/vote_post`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': token
+          },
+          body: JSON.stringify({
+            post_id: postId,
+            vote_type: voteType
+          })
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+          // Refresh the entire profile to update all stats
+          const urlParams = new URLSearchParams(window.location.search);
+          const profileUsername = urlParams.get('user');
+          
+          // Fetch updated profile and posts
+          const [profileData, postsData] = await Promise.all([
+            fetchUserProfile(profileUsername),
+            fetchUserPosts(profileUsername)
+          ]);
+          
+          renderProfile(profileData);
+          renderPosts(postsData);
+        } else {
+          alert(data.error || 'Failed to vote');
+          buttons.forEach(btn => btn.disabled = false);
+        }
+      } catch (err) {
+        console.error('Error voting:', err);
+        alert('Failed to vote');
+        buttons.forEach(btn => btn.disabled = false);
+      }
+    }
+
     function setupPostForm() {
       const postContent = document.getElementById('post-content');
       const charCount = document.getElementById('char-count');
@@ -265,27 +388,132 @@ async function votePost(postId, voteType) {
             })
           });
           
-          // In the post button handler inside setupPostForm():
-if (response.ok) {
-  postContent.value = '';
-  charCount.textContent = '0/512';
-  
-  // Refresh both profile and posts
-  const currentUsername = localStorage.getItem('user');
-  const [profileData, postsData] = await Promise.all([
-    fetchUserProfile(currentUsername),
-    fetchUserPosts(currentUsername)
-  ]);
-  
-  renderProfile(profileData);
-  renderPosts(postsData);
-}else {
+          if (response.ok) {
+            postContent.value = '';
+            charCount.textContent = '0/512';
+            
+            // Refresh both profile and posts
+            const currentUsername = localStorage.getItem('user');
+            const [profileData, postsData] = await Promise.all([
+              fetchUserProfile(currentUsername),
+              fetchUserPosts(currentUsername)
+            ]);
+            
+            renderProfile(profileData);
+            renderPosts(postsData);
+          } else {
             const error = await response.json();
             alert(error.error || 'Failed to create post');
           }
         } catch (err) {
           console.error('Error creating post:', err);
           alert('Failed to create post');
+        }
+      });
+    }
+
+    async function setupFollowButtons(targetUsername) {
+      const followBtn = document.getElementById('follow-btn');
+      const unfollowBtn = document.getElementById('unfollow-btn');
+      const followSection = document.getElementById('follow-section');
+      
+      followSection.style.display = 'block';
+      
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+        
+        const response = await fetch(`${server_url}/api/check_follow?username=${targetUsername}`, {
+          headers: {
+            'Authorization': token
+          }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.is_following) {
+            unfollowBtn.style.display = 'inline-block';
+            followBtn.style.display = 'none';
+          } else {
+            followBtn.style.display = 'inline-block';
+            unfollowBtn.style.display = 'none';
+          }
+        }
+      } catch (err) {
+        console.error('Error checking follow status:', err);
+      }
+      
+      followBtn.addEventListener('click', async () => {
+        try {
+          const token = localStorage.getItem('token');
+          if (!token) {
+            alert('You need to be logged in to follow');
+            window.location.href = './index.html';
+            return;
+          }
+          
+          const response = await fetch(`${server_url}/api/follow`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': token
+            },
+            body: JSON.stringify({
+              username: targetUsername
+            })
+          });
+          
+          if (response.ok) {
+            followBtn.style.display = 'none';
+            unfollowBtn.style.display = 'inline-block';
+            
+            // Refresh profile stats
+            const profileData = await fetchUserProfile(targetUsername);
+            renderProfile(profileData);
+          } else {
+            const error = await response.json();
+            alert(error.error || 'Failed to follow');
+          }
+        } catch (err) {
+          console.error('Error following:', err);
+          alert('Failed to follow');
+        }
+      });
+      
+      unfollowBtn.addEventListener('click', async () => {
+        try {
+          const token = localStorage.getItem('token');
+          if (!token) {
+            alert('You need to be logged in to unfollow');
+            window.location.href = './index.html';
+            return;
+          }
+          
+          const response = await fetch(`${server_url}/api/unfollow`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': token
+            },
+            body: JSON.stringify({
+              username: targetUsername
+            })
+          });
+          
+          if (response.ok) {
+            unfollowBtn.style.display = 'none';
+            followBtn.style.display = 'inline-block';
+            
+            // Refresh profile stats
+            const profileData = await fetchUserProfile(targetUsername);
+            renderProfile(profileData);
+          } else {
+            const error = await response.json();
+            alert(error.error || 'Failed to unfollow');
+          }
+        } catch (err) {
+          console.error('Error unfollowing:', err);
+          alert('Failed to unfollow');
         }
       });
     }
@@ -324,124 +552,16 @@ if (response.ok) {
           document.getElementById('post-form').style.display = 'block';
           setupPostForm();
         }
+        
+        // Setup follow buttons if viewing another user's profile
+        if (currentUsername !== profileUsername) {
+          setupFollowButtons(profileUsername);
+        }
       } catch (err) {
         console.error(err);
         document.body.innerHTML = '<p style="color:red;">Failed to fetch profile data</p>';
       }
-      // Add to initProfile() after loading profile data
-if (currentUsername !== profileUsername) {
-    setupFollowButtons(profileUsername);
-}
-
-// New functions for follow functionality
-async function setupFollowButtons(targetUsername) {
-    const followBtn = document.getElementById('follow-btn');
-    const unfollowBtn = document.getElementById('unfollow-btn');
-    const followSection = document.getElementById('follow-section');
-    
-    followSection.style.display = 'block';
-    
-    try {
-        const token = localStorage.getItem('token');
-        if (!token) return;
-        
-        const response = await fetch(`${server_url}/api/check_follow?username=${targetUsername}`, {
-            headers: {
-                'Authorization': token
-            }
-        });
-        
-        if (response.ok) {
-            const data = await response.json();
-            if (data.is_following) {
-                unfollowBtn.style.display = 'inline-block';
-                followBtn.style.display = 'none';
-            } else {
-                followBtn.style.display = 'inline-block';
-                unfollowBtn.style.display = 'none';
-            }
-        }
-    } catch (err) {
-        console.error('Error checking follow status:', err);
     }
-    
-    followBtn.addEventListener('click', async () => {
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                alert('You need to be logged in to follow');
-                window.location.href = './index.html';
-                return;
-            }
-            
-            const response = await fetch(`${server_url}/api/follow`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': token
-                },
-                body: JSON.stringify({
-                    username: targetUsername
-                })
-            });
-            
-            if (response.ok) {
-                followBtn.style.display = 'none';
-                unfollowBtn.style.display = 'inline-block';
-                
-                // Refresh profile stats
-                const profileData = await fetchUserProfile(targetUsername);
-                renderProfile(profileData);
-            } else {
-                const error = await response.json();
-                alert(error.error || 'Failed to follow');
-            }
-        } catch (err) {
-            console.error('Error following:', err);
-            alert('Failed to follow');
-        }
-    });
-    
-    unfollowBtn.addEventListener('click', async () => {
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                alert('You need to be logged in to unfollow');
-                window.location.href = './index.html';
-                return;
-            }
-            
-            const response = await fetch(`${server_url}/api/unfollow`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': token
-                },
-                body: JSON.stringify({
-                    username: targetUsername
-                })
-            });
-            
-            if (response.ok) {
-                unfollowBtn.style.display = 'none';
-                followBtn.style.display = 'inline-block';
-                
-                // Refresh profile stats
-                const profileData = await fetchUserProfile(targetUsername);
-                renderProfile(profileData);
-            } else {
-                const error = await response.json();
-                alert(error.error || 'Failed to unfollow');
-            }
-        } catch (err) {
-            console.error('Error unfollowing:', err);
-            alert('Failed to unfollow');
-        }
-    });
-}
-    }
-
-    
 
     // Initialize the profile when the page loads
     document.addEventListener('DOMContentLoaded', initProfile);
