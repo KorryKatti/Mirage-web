@@ -5,6 +5,7 @@
   <title>MIRAGE // View Post</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="css/viewpost.css" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body class="scanlines">
   <div class="header">
@@ -49,15 +50,84 @@
       window.location.href = './room.html';
     }
 
+    
     function sanitizeHTML(input) {
-      const doc = new DOMParser().parseFromString(input, 'text/html');
-      doc.querySelectorAll('script').forEach(el => el.remove());
-      const allowed = ['STYLE', 'B', 'I', 'U', 'SPAN', 'DIV', 'P', 'EM', 'STRONG'];
-      doc.body.querySelectorAll('*').forEach(el => {
-        if (!allowed.includes(el.tagName)) el.remove();
-      });
-      return doc.body.innerHTML;
+  // First parse with marked to convert markdown to HTML
+  const html = marked.parse(input || '');
+  
+  // Create a temporary div to hold the parsed HTML
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = html;
+  
+  // Remove all script tags and other dangerous elements
+  const forbiddenTags = ['script', 'iframe', 'frame', 'object', 'embed', 'link', 'style'];
+  forbiddenTags.forEach(tag => {
+    const elements = tempDiv.getElementsByTagName(tag);
+    while (elements[0]) {
+      elements[0].parentNode.removeChild(elements[0]);
     }
+  });
+  
+  // Remove all event handlers and javascript: URIs
+  const allElements = tempDiv.getElementsByTagName('*');
+  for (let el of allElements) {
+    const attrs = el.attributes;
+    for (let i = attrs.length - 1; i >= 0; i--) {
+      const attr = attrs[i];
+      if (attr.name.startsWith('on') || 
+          (attr.name.toLowerCase() === 'href' && attr.value.toLowerCase().startsWith('javascript:'))) {
+        el.removeAttribute(attr.name);
+      }
+    }
+  }
+  
+  // Only allow specific tags
+  const allowedTags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em', 
+    'i', 'li', 'ol', 'strong', 'ul', 'p', 'br', 'img', 'h1', 'h2', 'h3', 'h4', 
+    'h5', 'h6', 'pre', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'hr'];
+  
+  const allNodes = tempDiv.getElementsByTagName('*');
+  for (let el of allNodes) {
+    if (!allowedTags.includes(el.tagName.toLowerCase())) {
+      // Replace disallowed tags with their content
+      const parent = el.parentNode;
+      while (el.firstChild) {
+        parent.insertBefore(el.firstChild, el);
+      }
+      parent.removeChild(el);
+    }
+  }
+  
+  // Only allow specific attributes
+  const allowedAttributes = {
+    'a': ['href', 'title', 'target'],
+    'img': ['src', 'alt', 'title', 'width', 'height'],
+    'th': ['align'],
+    'td': ['align']
+  };
+  
+  const allElementsFinal = tempDiv.getElementsByTagName('*');
+  for (let el of allElementsFinal) {
+    const tagName = el.tagName.toLowerCase();
+    if (allowedAttributes[tagName]) {
+      const attrs = el.attributes;
+      for (let i = attrs.length - 1; i >= 0; i--) {
+        const attr = attrs[i];
+        if (!allowedAttributes[tagName].includes(attr.name.toLowerCase())) {
+          el.removeAttribute(attr.name);
+        }
+      }
+    } else {
+      // Remove all attributes if not in allowedAttributes
+      const attrs = el.attributes;
+      for (let i = attrs.length - 1; i >= 0; i--) {
+        el.removeAttribute(attrs[i].name);
+      }
+    }
+  }
+  
+  return tempDiv.innerHTML;
+}
 
     async function loadSettings() {
       try {
@@ -97,63 +167,62 @@
       }
     }
 
-    function renderPost(postData) {
-      document.getElementById('post-id').textContent = postData.id;
-      
-      const postContainer = document.getElementById('post-container');
-      const currentUser = localStorage.getItem('user');
-      const isOwnPost = postData.username === currentUser;
-      
-      postContainer.innerHTML = `
-        <div class="post-header">
-          Posted by ~${postData.username} on ${new Date(postData.created_at).toLocaleString()}
-        </div>
-        <div class="post-content">
-          ${sanitizeHTML(postData.content)}
-        </div>
-        <div class="post-footer">
-          <div class="vote-buttons">
-            <button class="vote-btn upvote ${isOwnPost ? 'disabled' : ''}" 
-                    onclick="votePost(${postData.id}, 'up')" 
-                    ${isOwnPost ? 'disabled' : ''}>
-              ▲ ${postData.upvotes || 0}
-            </button>
-            <button class="vote-btn downvote ${isOwnPost ? 'disabled' : ''}" 
-                    onclick="votePost(${postData.id}, 'down')" 
-                    ${isOwnPost ? 'disabled' : ''}>
-              ▼ ${postData.downvotes || 0}
-            </button>
-          </div>
-        </div>
-      `;
-    }
-
+function renderPost(postData) {
+  document.getElementById('post-id').textContent = postData.id;
+  
+  const postContainer = document.getElementById('post-container');
+  const currentUser = localStorage.getItem('user');
+  const isOwnPost = postData.username === currentUser;
+  
+  postContainer.innerHTML = `
+    <div class="post-header">
+      Posted by ~${postData.username} on ${new Date(postData.created_at).toLocaleString()}
+    </div>
+    <div class="post-content markdown-content">
+      ${sanitizeHTML(marked.parse(postData.content))}
+    </div>
+    <div class="post-footer">
+      <div class="vote-buttons">
+        <button class="vote-btn upvote ${isOwnPost ? 'disabled' : ''}" 
+                onclick="votePost(${postData.id}, 'up')" 
+                ${isOwnPost ? 'disabled' : ''}>
+          ▲ ${postData.upvotes || 0}
+        </button>
+        <button class="vote-btn downvote ${isOwnPost ? 'disabled' : ''}" 
+                onclick="votePost(${postData.id}, 'down')" 
+                ${isOwnPost ? 'disabled' : ''}>
+          ▼ ${postData.downvotes || 0}
+        </button>
+      </div>
+    </div>
+  `;
+}
     function renderReplies(repliesData) {
-      const container = document.getElementById('replies-container');
-      const replies = repliesData.replies || [];
-      
-      if (replies.length === 0) {
-        container.innerHTML = '<p style="color: #888;">No replies yet.</p>';
-        return;
-      }
-      
-      let html = '';
-      replies.forEach(reply => {
-        html += `
-          <div class="post" style="margin-bottom: 1rem; padding: 1rem; background: rgba(204, 242, 255, 0.03);">
-            <div class="post-header" style="display: flex; align-items: center;">
-              <img src="${reply.avatar_url}" width="32" height="32" style="border-radius: 50%; margin-right: 0.5rem;">
-              ~${reply.username} replied on ${new Date(reply.created_at).toLocaleString()}
-            </div>
-            <div class="post-content" style="margin-top: 0.5rem;">
-              ${sanitizeHTML(reply.content)}
-            </div>
-          </div>
-        `;
-      });
-      
-      container.innerHTML = html;
-    }
+  const container = document.getElementById('replies-container');
+  const replies = repliesData.replies || [];
+  
+  if (replies.length === 0) {
+    container.innerHTML = '<p style="color: #888;">No replies yet.</p>';
+    return;
+  }
+  
+  let html = '';
+  replies.forEach(reply => {
+    html += `
+      <div class="reply" style="margin-bottom: 1rem; padding: 1rem; background: rgba(204, 242, 255, 0.03);">
+        <div class="reply-header" style="display: flex; align-items: center;">
+          <img src="${reply.avatar_url}" width="32" height="32" style="border-radius: 50%; margin-right: 0.5rem;">
+          ~${reply.username} replied on ${new Date(reply.created_at).toLocaleString()}
+        </div>
+        <div class="reply-content markdown-content" style="margin-top: 0.5rem;">
+          ${sanitizeHTML(marked.parse(reply.content))}
+        </div>
+      </div>
+    `;
+  });
+  
+  container.innerHTML = html;
+}
 
     async function votePost(postId, voteType) {
       const token = localStorage.getItem('token');
