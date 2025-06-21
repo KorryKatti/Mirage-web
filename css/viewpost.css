@@ -1,0 +1,595 @@
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+    * { box-sizing: border-box; }
+
+    body {
+      background: #0a0a0a;
+      color: #ccf2ff;
+      font-family: 'Share Tech Mono', monospace;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    .scanlines::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(204, 242, 255, 0.03),
+        rgba(204, 242, 255, 0.03) 2px,
+        transparent 2px,
+        transparent 4px
+      );
+      pointer-events: none;
+      z-index: 999;
+    }
+
+    .header {
+      text-align: center;
+      padding: 1rem;
+      font-size: 1.2rem;
+      border-bottom: 1px solid #444;
+      background-color: #111;
+      color: #ff004c;
+      text-shadow: 0 0 5px #ff004c;
+    }
+
+    .chat-box {
+      flex: 1;
+      padding: 1rem;
+      overflow-y: auto;
+    }
+
+    .msg {
+      margin-bottom: 1.5rem;
+      animation: flicker 0.8s ease;
+    }
+
+    .msg-user {
+      color: #fa5555;
+    }
+
+    .msg-text {
+      margin-left: 1rem;
+    }
+
+    .input-box {
+      display: flex;
+      border-top: 1px solid #444;
+      padding: 1rem;
+      background: #121212;
+    }
+
+    input {
+      flex: 1;
+      padding: 0.5rem;
+      background: #0a0a0a;
+      border: 1px solid #333;
+      color: #ccf2ff;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 1rem;
+    }
+
+    button {
+      margin-left: 1rem;
+      background: #ff004c;
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1rem;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .divergence {
+      position: fixed;
+      top: 10px;
+      right: 20px;
+      font-size: 0.8rem;
+      background: rgba(255,0,76,0.08);
+      border: 1px solid #ff004c;
+      padding: 0.3rem 0.6rem;
+      cursor: pointer;
+      color: #ff004c;
+      text-shadow: 0 0 4px #ff004c;
+    }
+
+    @keyframes flicker {
+      0%   { opacity: 0; transform: scale(0.98); }
+      40%  { opacity: 1; }
+      70%  { opacity: 0.5; }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    /* Sidebar styles to add to css/style.css */
+
+/* Additional styles for sidebar components */
+.status-indicator {
+  font-size: 0.8rem;
+  margin-top: 0.3rem;
+  color: #00ff9d;
+}
+
+.nav-icon {
+  margin-right: 8px;
+  font-size: 1.1em;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: 2rem;
+  font-size: 0.8rem;
+  color: #888;
+  border-top: 1px solid #333;
+  padding-top: 1rem;
+  margin-top: 2rem;
+}
+
+.system-status {
+  margin-bottom: 0.5rem;
+}
+
+.status-ok {
+  color: #00ff9d;
+}
+
+.version-info {
+  opacity: 0.7;
+}
+
+.sidebar {
+  width: 250px;
+  height: 100vh;
+  background-color: #111;
+  border-right: 1px solid #444;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 100;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.logo {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.logo img {
+  max-width: 80%;
+  height: auto;
+  filter: drop-shadow(0 0 5px rgba(255, 0, 76, 0.7));
+}
+
+.user-info {
+  margin-bottom: 2rem;
+  padding: 0.8rem;
+  background: rgba(255, 0, 76, 0.08);
+  border: 1px solid #ff004c;
+  color: #ccf2ff;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.user-info p {
+  margin: 0;
+}
+
+nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+nav li {
+  margin-bottom: 0.8rem;
+}
+
+nav a {
+  display: block;
+  padding: 0.7rem 1rem;
+  text-decoration: none;
+  color: #ccf2ff;
+  background: rgba(204, 242, 255, 0.05);
+  border-left: 3px solid transparent;
+  transition: all 0.2s ease;
+}
+
+nav a:hover, nav a.active {
+  background: rgba(255, 0, 76, 0.1);
+  border-left-color: #ff004c;
+  text-shadow: 0 0 3px rgba(255, 0, 76, 0.7);
+}
+
+/* Main content adjustment to make room for sidebar */
+.header, .chat-box, .input-box {
+  margin-left: 250px;
+  width: calc(100% - 250px);
+}
+
+/* Media query for mobile responsiveness */
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    width: 220px;
+  }
+  
+  .sidebar.active {
+    transform: translateX(0);
+  }
+  
+  .header, .chat-box, .input-box {
+    margin-left: 0;
+    width: 100%;
+  }
+  
+  .menu-toggle {
+    display: block;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 101;
+    background: none;
+    border: none;
+    color: #ff004c;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+}
+
+/* Animation for when sidebar items load */
+nav a {
+  animation: pulse 1s ease-in-out;
+  animation-fill-mode: backwards;
+}
+
+nav li:nth-child(1) a { animation-delay: 0.1s; }
+nav li:nth-child(2) a { animation-delay: 0.2s; }
+nav li:nth-child(3) a { animation-delay: 0.3s; }
+nav li:nth-child(4) a { animation-delay: 0.4s; }
+
+@keyframes pulse {
+  0% { opacity: 0; transform: translateX(-10px); }
+  70% { opacity: 0.7; transform: translateX(5px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+.header {
+  margin-left: 0 !important;
+  width: 100% !important;
+}
+
+.header, .chat-box, .input-box {
+  margin-left: 0 !important;
+  width: 100% !important;
+}
+
+/* Post styles */
+    .post-form textarea:focus, .post-form input:focus {
+      outline: none;
+      border-color: #ff004c;
+      box-shadow: 0 0 5px rgba(255, 0, 76, 0.3);
+    }
+
+    .post {
+      background: rgba(204, 242, 255, 0.05);
+      border: 1px solid #333;
+      border-left: 3px solid #ff004c;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .post-header {
+      font-size: 0.8rem;
+      color: #888;
+      margin-bottom: 0.5rem;
+    }
+
+    .post-content {
+      color: #ccf2ff;
+      line-height: 1.4;
+    }
+
+    #post-content {
+      width: 100%;
+      min-height: 100px;
+      background: #0a0a0a;
+      border: 1px solid #333;
+      color: #ccf2ff;
+      font-family: 'Share Tech Mono', monospace;
+      padding: 0.5rem;
+      resize: vertical;
+      transition: border-color 0.2s ease;
+    }
+
+    #post-content:focus {
+      outline: none;
+      border-color: #ff004c;
+      box-shadow: 0 0 5px rgba(255, 0, 76, 0.3);
+    }
+
+    .char-count {
+      font-size: 0.8rem;
+      color: #888;
+      transition: color 0.2s ease;
+    }
+
+    .posts-section h3 {
+      border-bottom: 1px solid #333;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .post-footer {
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #333;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.vote-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.vote-btn {
+  background: rgba(204, 242, 255, 0.05);
+  border: 1px solid #333;
+  color: #ccf2ff;
+  padding: 0.2rem 0.5rem;
+  font-family: 'Share Tech Mono', monospace;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.vote-btn:hover:not(:disabled) {
+  transform: scale(1.05);
+}
+
+.vote-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.upvote {
+  color: #00ff9d;
+  border-color: #00ff9d;
+}
+
+.upvote:hover:not(:disabled) {
+  background: rgba(0, 255, 157, 0.1);
+  text-shadow: 0 0 3px #00ff9d;
+}
+
+.downvote {
+  color: #ff004c;
+  border-color: #ff004c;
+}
+
+.downvote:hover:not(:disabled) {
+  background: rgba(255, 0, 76, 0.1);
+  text-shadow: 0 0 3px #ff004c;
+}
+.profile-stats {
+  display: flex;
+  gap: 1rem;
+  margin: 1rem 0;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.stat {
+  background: rgba(255, 0, 76, 0.1);
+  border: 1px solid #ff004c;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+}
+
+.stat-value {
+  color: #ff004c;
+  font-weight: bold;
+  text-shadow: 0 0 3px #ff004c;
+}
+
+.followers-list, .following-list {
+  background: rgba(10, 10, 10, 0.8);
+  border: 1px solid #333;
+  padding: 1rem;
+  margin-top: 1rem;
+  border-radius: 4px;
+}
+
+.followers-list h4, .following-list h4 {
+  margin-top: 0;
+  color: #ff004c;
+  text-shadow: 0 0 3px rgba(255, 0, 76, 0.5);
+}
+
+.stat:hover {
+  background: rgba(255, 0, 76, 0.2) !important;
+  transform: scale(1.05);
+  transition: all 0.2s ease;
+}
+
+ /* Modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-content {
+      background: #0a0a0a;
+      margin: 5% auto;
+      padding: 2rem;
+      border: 1px solid #ff004c;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 80vh;
+      overflow-y: auto;
+      position: relative;
+      animation: modalFadeIn 0.3s ease;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #333;
+    }
+
+    .modal-title {
+      color: #ff004c;
+      text-shadow: 0 0 3px rgba(255, 0, 76, 0.5);
+      margin: 0;
+      font-size: 1.2rem;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: #ff004c;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0;
+      margin: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .close-btn:hover {
+      color: #fff;
+      text-shadow: 0 0 5px #ff004c;
+      transform: scale(1.1);
+    }
+
+    .user-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.8rem;
+      padding: 0.8rem;
+      background: rgba(255, 0, 76, 0.05);
+      border: 1px solid rgba(255, 0, 76, 0.2);
+      border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .user-item:hover {
+      background: rgba(255, 0, 76, 0.1);
+      transform: translateX(5px);
+    }
+
+    .user-item img {
+      border-radius: 50%;
+      margin-right: 0.8rem;
+      border: 2px solid rgba(204, 242, 255, 0.3);
+    }
+
+    .user-item a {
+      color: #ccf2ff;
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.2s ease;
+    }
+
+    .user-item a:hover {
+      color: #ff004c;
+      text-shadow: 0 0 3px rgba(255, 0, 76, 0.5);
+    }
+
+    .empty-state {
+      text-align: center;
+      color: #888;
+      font-style: italic;
+      padding: 2rem;
+    }
+
+    /* Modal backdrop click area */
+    .modal-backdrop {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+
+    /* Additional styles for viewpost.html */
+#post-display {
+  background: rgba(204, 242, 255, 0.05);
+  border: 1px solid #333;
+  padding: 1rem;
+  border-radius: 4px;
+}
+
+#post-display h2 {
+  margin-top: 0;
+  border-bottom: 1px solid #333;
+  padding-bottom: 0.5rem;
+}
+
+#replies-section {
+  margin-top: 2rem;
+}
+
+.reply {
+  background: rgba(204, 242, 255, 0.03);
+  border: 1px solid #333;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+}
+
+.reply-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: #888;
+}
+
+.reply-header img {
+  margin-right: 0.5rem;
+  border-radius: 50%;
+}
+
+.reply-content {
+  color: #ccf2ff;
+  line-height: 1.4;
+}
+
+#reply-form {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: rgba(204, 242, 255, 0.03);
+  border: 1px solid #333;
+  border-radius: 4px;
+}
+
+#reply-form h3 {
+  margin-top: 0;
+}

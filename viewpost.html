@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MIRAGE // View Post</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="css/viewpost.css" />
+</head>
+<body class="scanlines">
+  <div class="header">
+    MIRAGE Post View
+    <div class="divergence" onclick="backtochat()">back to chat</div>
+  </div>
+
+  <div class="profile-box" style="text-align: center; margin: auto; width: fit-content; max-width: 800px;">
+    <!-- Post Display Area -->
+    <div id="post-display" style="margin-bottom: 2rem; text-align: left;">
+      <h2 style="color: #ff004c; text-shadow: 0 0 3px #ff004c;">Post #<span id="post-id"></span></h2>
+      <div id="post-container" class="post">
+        <!-- Post content will be loaded here -->
+      </div>
+    </div>
+
+    <!-- Replies Section -->
+    <div id="replies-section" style="text-align: left;">
+      <h3 style="color: #ff004c; text-shadow: 0 0 3px #ff004c;">Replies</h3>
+      <div id="replies-container">
+        <p style="color: #888;">Loading replies...</p>
+      </div>
+    </div>
+
+    <!-- Reply Form -->
+    <div id="reply-form" style="margin-top: 2rem; text-align: left;">
+      <h3 style="color: #ff004c; text-shadow: 0 0 3px #ff004c;">Add Reply</h3>
+      <textarea id="reply-content" placeholder="Write your reply..." maxlength="512" 
+                style="width: 100%; height: 100px; background: #0a0a0a; border: 1px solid #333; color: #ccf2ff; font-family: 'Share Tech Mono', monospace; padding: 0.5rem; resize: vertical;"></textarea>
+      <div style="margin-top: 0.5rem;">
+        <span id="char-count" style="color: #888; font-size: 0.8rem;">0/512</span>
+        <button id="reply-btn" style="float: right;">Post Reply</button>
+      </div>
+      <div style="clear: both;"></div>
+    </div>
+  </div>
+
+  <script>
+    let server_url = 'http://127.0.0.1:5000'; // default fallback
+    
+    function backtochat() {
+      window.location.href = './room.html';
+    }
+
+    function sanitizeHTML(input) {
+      const doc = new DOMParser().parseFromString(input, 'text/html');
+      doc.querySelectorAll('script').forEach(el => el.remove());
+      const allowed = ['STYLE', 'B', 'I', 'U', 'SPAN', 'DIV', 'P', 'EM', 'STRONG'];
+      doc.body.querySelectorAll('*').forEach(el => {
+        if (!allowed.includes(el.tagName)) el.remove();
+      });
+      return doc.body.innerHTML;
+    }
+
+    async function loadSettings() {
+      try {
+        const settingsRes = await fetch('settings.json');
+        if (settingsRes.ok) {
+          const settings = await settingsRes.json();
+          if (settings.server_url) server_url = settings.server_url;
+        }
+      } catch (e) {
+        console.warn('settings.json not found or invalid, using default server_url');
+      }
+    }
+
+    async function fetchPost(postId) {
+      try {
+        const res = await fetch(`${server_url}/api/get_post_by_id/${postId}`);
+        if (!res.ok) {
+          throw new Error('Failed to fetch post');
+        }
+        return await res.json();
+      } catch (err) {
+        console.error('Error fetching post:', err);
+        throw err;
+      }
+    }
+
+    async function fetchReplies(postId) {
+      try {
+        const res = await fetch(`${server_url}/api/get_replies/${postId}`);
+        if (!res.ok) {
+          throw new Error('Failed to fetch replies');
+        }
+        return await res.json();
+      } catch (err) {
+        console.error('Error fetching replies:', err);
+        return { replies: [] };
+      }
+    }
+
+    function renderPost(postData) {
+      document.getElementById('post-id').textContent = postData.id;
+      
+      const postContainer = document.getElementById('post-container');
+      const currentUser = localStorage.getItem('user');
+      const isOwnPost = postData.username === currentUser;
+      
+      postContainer.innerHTML = `
+        <div class="post-header">
+          Posted by ~${postData.username} on ${new Date(postData.created_at).toLocaleString()}
+        </div>
+        <div class="post-content">
+          ${sanitizeHTML(postData.content)}
+        </div>
+        <div class="post-footer">
+          <div class="vote-buttons">
+            <button class="vote-btn upvote ${isOwnPost ? 'disabled' : ''}" 
+                    onclick="votePost(${postData.id}, 'up')" 
+                    ${isOwnPost ? 'disabled' : ''}>
+              ▲ ${postData.upvotes || 0}
+            </button>
+            <button class="vote-btn downvote ${isOwnPost ? 'disabled' : ''}" 
+                    onclick="votePost(${postData.id}, 'down')" 
+                    ${isOwnPost ? 'disabled' : ''}>
+              ▼ ${postData.downvotes || 0}
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderReplies(repliesData) {
+      const container = document.getElementById('replies-container');
+      const replies = repliesData.replies || [];
+      
+      if (replies.length === 0) {
+        container.innerHTML = '<p style="color: #888;">No replies yet.</p>';
+        return;
+      }
+      
+      let html = '';
+      replies.forEach(reply => {
+        html += `
+          <div class="post" style="margin-bottom: 1rem; padding: 1rem; background: rgba(204, 242, 255, 0.03);">
+            <div class="post-header" style="display: flex; align-items: center;">
+              <img src="${reply.avatar_url}" width="32" height="32" style="border-radius: 50%; margin-right: 0.5rem;">
+              ~${reply.username} replied on ${new Date(reply.created_at).toLocaleString()}
+            </div>
+            <div class="post-content" style="margin-top: 0.5rem;">
+              ${sanitizeHTML(reply.content)}
+            </div>
+          </div>
+        `;
+      });
+      
+      container.innerHTML = html;
+    }
+
+    async function votePost(postId, voteType) {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('You need to be logged in to vote');
+        window.location.href = './index.html';
+        return;
+      }
+
+      // Disable buttons during vote
+      const buttons = document.querySelectorAll(`#post-container .vote-btn`);
+      buttons.forEach(btn => btn.disabled = true);
+
+      try {
+        const response = await fetch(`${server_url}/api/vote_post`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': token
+          },
+          body: JSON.stringify({
+            post_id: postId,
+            vote_type: voteType
+          })
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+          // Refresh the post data
+          const postData = await fetchPost(postId);
+          renderPost(postData);
+        } else {
+          alert(data.error || 'Failed to vote');
+          buttons.forEach(btn => btn.disabled = false);
+        }
+      } catch (err) {
+        console.error('Error voting:', err);
+        alert('Failed to vote');
+        buttons.forEach(btn => btn.disabled = false);
+      }
+    }
+
+    function setupReplyForm(postId) {
+      const replyContent = document.getElementById('reply-content');
+      const charCount = document.getElementById('char-count');
+      const replyBtn = document.getElementById('reply-btn');
+      
+      // Character counter
+      replyContent.addEventListener('input', () => {
+        const count = replyContent.value.length;
+        charCount.textContent = `${count}/512`;
+      });
+      
+      // Reply button handler
+      replyBtn.addEventListener('click', async () => {
+        const content = replyContent.value.trim();
+        if (!content) return;
+        
+        try {
+          const token = localStorage.getItem('token');
+          if (!token) {
+            alert('You need to be logged in to reply');
+            window.location.href = './index.html';
+            return;
+          }
+          
+          const response = await fetch(`${server_url}/api/reply_to_post`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': token
+            },
+            body: JSON.stringify({
+              post_id: postId,
+              content: content
+            })
+          });
+          
+          if (response.ok) {
+            replyContent.value = '';
+            charCount.textContent = '0/512';
+            
+            // Refresh replies
+            const repliesData = await fetchReplies(postId);
+            renderReplies(repliesData);
+          } else {
+            const error = await response.json();
+            alert(error.error || 'Failed to post reply');
+          }
+        } catch (err) {
+          console.error('Error posting reply:', err);
+          alert('Failed to post reply');
+        }
+      });
+    }
+
+    async function initPostView() {
+      await loadSettings();
+      
+      // Get current user from localStorage
+      const currentUsername = localStorage.getItem('user');
+      const token = localStorage.getItem('token');
+      
+      // If no user is logged in, redirect to login
+      if (!currentUsername || !token) {
+        window.location.href = './index.html';
+        return;
+      }
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const postId = urlParams.get('post_id');
+      if (!postId) {
+        document.body.innerHTML = '<p style="color:red;">No post ID provided</p>';
+        return;
+      }
+
+      try {
+        // Load post data
+        const postData = await fetchPost(postId);
+        renderPost(postData);
+        
+        // Load replies
+        const repliesData = await fetchReplies(postId);
+        renderReplies(repliesData);
+        
+        // Setup reply form
+        setupReplyForm(postId);
+      } catch (err) {
+        console.error(err);
+        document.body.innerHTML = '<p style="color:red;">Failed to fetch post data</p>';
+      }
+    }
+
+    // Initialize the post view when the page loads
+    document.addEventListener('DOMContentLoaded', initPostView);
+  </script>
+</body>
+</html>
