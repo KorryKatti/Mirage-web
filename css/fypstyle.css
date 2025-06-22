@@ -1,0 +1,282 @@
+    /* Enhanced styles for FYP */
+    .fyp-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+
+    .fyp-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid rgba(255, 0, 76, 0.3);
+    }
+
+    .fyp-title {
+      color: #ff004c;
+      text-shadow: 0 0 10px #ff004c;
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 0;
+    }
+
+    .settings-btn {
+      background: rgba(0, 255, 157, 0.1);
+      border: 1px solid #00ff9d;
+      color: #00ff9d;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .settings-btn:hover {
+      background: rgba(0, 255, 157, 0.2);
+      box-shadow: 0 0 10px rgba(0, 255, 157, 0.3);
+    }
+
+    .post {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 0, 76, 0.3);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .post:hover {
+      border-color: #ff004c;
+      box-shadow: 0 0 20px rgba(255, 0, 76, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .post-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .post-meta {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .post-id {
+      color: #ff004c;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+
+    .post-author {
+      color: #00ff9d;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .post-date {
+      color: #888;
+      font-size: 0.85rem;
+    }
+
+    .post-content {
+      line-height: 1.6;
+      margin-bottom: 1rem;
+      color: #fff;
+    }
+
+    .post-content h1, .post-content h2, .post-content h3 {
+      color: #ff004c;
+      text-shadow: 0 0 5px #ff004c;
+    }
+
+    .post-content code {
+      background: rgba(0, 255, 157, 0.1);
+      color: #00ff9d;
+      padding: 0.2rem 0.4rem;
+      border-radius: 3px;
+    }
+
+    .post-content pre {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 1rem;
+      border-radius: 4px;
+      overflow-x: auto;
+      border-left: 3px solid #ff004c;
+    }
+
+    .post-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 1rem;
+    }
+
+    .vote-buttons {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .vote-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .vote-btn:hover:not(.disabled) {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .vote-btn.upvote:hover:not(.disabled) {
+      border-color: #00ff9d;
+      color: #00ff9d;
+    }
+
+    .vote-btn.downvote:hover:not(.disabled) {
+      border-color: #ff004c;
+      color: #ff004c;
+    }
+
+    .vote-btn.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .refresh-container {
+      text-align: center;
+      margin: 2rem 0;
+    }
+
+    .refresh-btn {
+      background: linear-gradient(45deg, #ff004c, #ff3366);
+      color: white;
+      border: none;
+      padding: 0.75rem 2rem;
+      cursor: pointer;
+      border-radius: 25px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(255, 0, 76, 0.3);
+    }
+
+    .refresh-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 0, 76, 0.4);
+    }
+
+    .trending-section {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 255, 157, 0.3);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .trending-title {
+      color: #00ff9d;
+      text-shadow: 0 0 5px #00ff9d;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    .trending-topic {
+      color: #00ff9d;
+      text-decoration: none;
+      font-size: 0.9rem;
+      padding: 0.3rem 0.5rem;
+      border-left: 3px solid #00ff9d;
+      margin: 0.2rem 0;
+      display: block;
+      transition: all 0.2s ease;
+      background: rgba(0, 255, 157, 0.05);
+      border-radius: 0 4px 4px 0;
+    }
+
+    .trending-topic:hover {
+      background: rgba(0, 255, 157, 0.1);
+      padding-left: 0.8rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: #888;
+      padding: 3rem 1rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      border: 1px dashed rgba(255, 255, 255, 0.2);
+    }
+
+    .empty-state-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    .loading-state {
+      text-align: center;
+      padding: 2rem;
+      color: #ff004c;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 0, 76, 0.3);
+      border-radius: 50%;
+      border-top-color: #ff004c;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .fyp-container {
+        padding: 0.5rem;
+      }
+      
+      .fyp-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+      
+      .post-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .vote-buttons {
+        gap: 0.5rem;
+      }
+      
+      .vote-btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+      }
+    }

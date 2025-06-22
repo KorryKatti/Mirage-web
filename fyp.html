@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>MIRAGE // For You</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="css/userprofile.css" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<link rel="stylesheet" href="css/fypstyle.css"/>
+</head>
+
+<body class="scanlines">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo">
+      <h2 style="color: #ff004c; text-shadow: 0 0 5px #ff004c;">MIRAGE</h2>
+    </div>
+
+    <div class="user-info">
+      <p>Welcome back,</p>
+      <p id="sidebar-username" style="color: #ff004c; text-shadow: 0 0 3px #ff004c;">~user</p>
+    </div>
+
+    <nav>
+      <ul>
+        <li><a href="./room.html" onclick="backtochat()"><span class="nav-icon">💬</span> Back to Chat</a></li>
+        <li><a href="#" id="profile-link"><span class="nav-icon">👤</span> Your Profile</a></li>
+        <li><a href="#" id="settings-link"><span class="nav-icon">⚙️</span> Settings</a></li>
+      </ul>
+    </nav>
+
+    <!-- Trending Topics in Sidebar -->
+    <div class="trending-section">
+      <h4 class="trending-title">🔥 Trending Now</h4>
+      <div id="sidebar-trending">
+        <div class="loading-state">
+          <div class="loading-spinner"></div>
+          <p>Loading trends...</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <button id="back-to-top" style="background: rgba(255, 0, 76, 0.1); 
+                                     border: 1px solid #ff004c; 
+                                     color: #ff004c;
+                                     padding: 0.5rem;
+                                     width: 80%;
+                                     cursor: pointer;
+                                     border-radius: 4px;
+                                     transition: all 0.3s ease;">
+        ↑ Back to Top
+      </button>
+    </div>
+  </div>
+
+  <div class="header">
+    MIRAGE For You
+  </div>
+
+  <div class="fyp-container">
+    <!-- Header with settings -->
+    <div class="fyp-header">
+      <h1 class="fyp-title">✨ For You</h1>
+      <a href="#" class="settings-btn" id="mobile-settings">
+        <span>⚙️</span>
+        Settings
+      </a>
+    </div>
+
+    <!-- Posts Section -->
+    <div id="posts-section">
+      <div id="posts-container">
+        <div class="loading-state">
+          <div class="loading-spinner"></div>
+          <p>Loading your personalized feed...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Refresh Button -->
+    <div class="refresh-container">
+      <button id="refresh-btn" class="refresh-btn">
+        🔄 Refresh Feed
+      </button>
+    </div>
+  </div>
+
+  <script>
+    let server_url = 'http://127.0.0.1:5000'; // default fallback
+
+    function backtochat() {
+      window.location.href = './room.html';
+    }
+
+    function sanitizeHTML(input) {
+      // First parse with marked to convert markdown to HTML
+      const html = marked.parse(input || '');
+      
+      // Create a temporary div to hold the parsed HTML
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = html;
+      
+      // Remove all script tags and other dangerous elements
+      const forbiddenTags = ['script', 'iframe', 'frame', 'object', 'embed', 'link', 'style'];
+      forbiddenTags.forEach(tag => {
+        const elements = tempDiv.getElementsByTagName(tag);
+        while (elements[0]) {
+          elements[0].parentNode.removeChild(elements[0]);
+        }
+      });
+      
+      // Remove all event handlers and javascript: URIs
+      const allElements = tempDiv.getElementsByTagName('*');
+      for (let el of allElements) {
+        const attrs = el.attributes;
+        for (let i = attrs.length - 1; i >= 0; i--) {
+          const attr = attrs[i];
+          if (attr.name.startsWith('on') || 
+              (attr.name.toLowerCase() === 'href' && attr.value.toLowerCase().startsWith('javascript:'))) {
+            el.removeAttribute(attr.name);
+          }
+        }
+      }
+      
+      // Only allow specific tags
+      const allowedTags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em', 
+        'i', 'li', 'ol', 'strong', 'ul', 'p', 'br', 'img', 'h1', 'h2', 'h3', 'h4', 
+        'h5', 'h6', 'pre', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'hr'];
+      
+      const allNodes = tempDiv.getElementsByTagName('*');
+      for (let el of allNodes) {
+        if (!allowedTags.includes(el.tagName.toLowerCase())) {
+          // Replace disallowed tags with their content
+          const parent = el.parentNode;
+          while (el.firstChild) {
+            parent.insertBefore(el.firstChild, el);
+          }
+          parent.removeChild(el);
+        }
+      }
+      
+      // Only allow specific attributes
+      const allowedAttributes = {
+        'a': ['href', 'title', 'target'],
+        'img': ['src', 'alt', 'title', 'width', 'height'],
+        'th': ['align'],
+        'td': ['align']
+      };
+      
+      const allElementsFinal = tempDiv.getElementsByTagName('*');
+      for (let el of allElementsFinal) {
+        const tagName = el.tagName.toLowerCase();
+        if (allowedAttributes[tagName]) {
+          const attrs = el.attributes;
+          for (let i = attrs.length - 1; i >= 0; i--) {
+            const attr = attrs[i];
+            if (!allowedAttributes[tagName].includes(attr.name.toLowerCase())) {
+              el.removeAttribute(attr.name);
+            }
+          }
+        } else {
+          // Remove all attributes if not in allowedAttributes
+          const attrs = el.attributes;
+          for (let i = attrs.length - 1; i >= 0; i--) {
+            el.removeAttribute(attrs[i].name);
+          }
+        }
+      }
+      
+      return tempDiv.innerHTML;
+    }
+
+    async function loadSettings() {
+      try {
+        const settingsRes = await fetch('settings.json');
+        if (settingsRes.ok) {
+          const settings = await settingsRes.json();
+          if (settings.server_url) server_url = settings.server_url;
+        }
+      } catch (e) {
+        console.warn('settings.json not found or invalid, using default server_url');
+      }
+    }
+
+    async function fetchFYP() {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          window.location.href = './index.html';
+          return;
+        }
+
+        const res = await fetch(`${server_url}/api/fyp`, {
+          headers: {
+            'Authorization': token
+          }
+        });
+        
+        if (!res.ok) {
+          throw new Error('Failed to fetch FYP');
+        }
+        return await res.json();
+      } catch (err) {
+        console.error('Error fetching FYP:', err);
+        throw err;
+      }
+    }
+
+    function renderTrendingTopics(topics) {
+      const container = document.getElementById('sidebar-trending');
+      
+      if (!topics || topics.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state" style="padding: 1rem; font-size: 0.9rem;">
+            <div style="opacity: 0.5;">📊</div>
+            <p>No trending topics yet</p>
+          </div>
+        `;
+        return;
+      }
+
+      let html = '';
+      topics.slice(0, 5).forEach((topic, index) => {
+        html += `
+          <a href="#" onclick="searchTopic('${topic.replace('#', '').replace(/'/g, "\\'")}')" 
+             class="trending-topic">
+            ${topic}
+          </a>
+        `;
+      });
+      
+      container.innerHTML = html;
+    }
+
+    function searchTopic(topic) {
+      // You could implement a search function here
+      alert(`Searching for posts about: ${topic}`);
+    }
+
+    function renderPosts(postsData) {
+      const container = document.getElementById('posts-container');
+      const posts = postsData.posts || [];
+      const currentUser = localStorage.getItem('user');
+
+      if (posts.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">📝</div>
+            <h3>Your feed is empty</h3>
+            <p>Follow more users to see their posts here!</p>
+            <a href="./room.html" style="color: #ff004c; text-decoration: none;">
+              Go to chat to discover users →
+            </a>
+          </div>
+        `;
+        return;
+      }
+
+      let html = '';
+      posts.forEach(post => {
+        const isOwnPost = post.username === currentUser;
+        const createdDate = new Date(post.created_at);
+        const timeAgo = getTimeAgo(createdDate);
+
+        html += `
+          <div class="post" data-post-id="${post.id}">
+            <div class="post-header">
+              <div class="post-meta">
+                <a href="viewpost.html?post_id=${post.id}" class="post-id">#${post.id}</a>
+                <span>by</span>
+                <a href="userprofile.html?user=${encodeURIComponent(post.username)}" class="post-author">~${post.username}</a>
+              </div>
+              <div class="post-date">${timeAgo}</div>
+            </div>
+            <div class="post-content markdown-content">
+              ${sanitizeHTML(post.content)}
+            </div>
+            <div class="post-footer">
+              <div class="vote-buttons">
+                <button class="vote-btn upvote ${isOwnPost ? 'disabled' : ''}" 
+                        onclick="votePost(${post.id}, 'up')" 
+                        ${isOwnPost ? 'disabled' : ''}>
+                  <span>▲</span>
+                  <span>${post.upvotes || 0}</span>
+                </button>
+                <button class="vote-btn downvote ${isOwnPost ? 'disabled' : ''}" 
+                        onclick="votePost(${post.id}, 'down')" 
+                        ${isOwnPost ? 'disabled' : ''}>
+                  <span>▼</span>
+                  <span>${post.downvotes || 0}</span>
+                </button>
+              </div>
+              <div style="color: #888; font-size: 0.8rem;">
+                ${isOwnPost ? '👤 Your post' : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function getTimeAgo(date) {
+      const now = new Date();
+      const diffInSeconds = Math.floor((now - date) / 1000);
+      
+      if (diffInSeconds < 60) return 'just now';
+      if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+      if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+      if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
+      
+      return date.toLocaleDateString();
+    }
+
+    async function votePost(postId, voteType) {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('You need to be logged in to vote');
+        window.location.href = './index.html';
+        return;
+      }
+
+      // Disable buttons during vote
+      const buttons = document.querySelectorAll(`.post[data-post-id="${postId}"] .vote-btn`);
+      buttons.forEach(btn => {
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+      });
+
+      try {
+        const response = await fetch(`${server_url}/api/vote_post`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': token
+          },
+          body: JSON.stringify({
+            post_id: postId,
+            vote_type: voteType
+          })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Refresh the FYP
+          const fypData = await fetchFYP();
+          renderPosts(fypData);
+          renderTrendingTopics(fypData.trending_topics);
+        } else {
+          alert(data.error || 'Failed to vote');
+          buttons.forEach(btn => {
+            btn.disabled = false;
+            btn.style.opacity = '1';
+          });
+        }
+      } catch (err) {
+        console.error('Error voting:', err);
+        alert('Failed to vote');
+        buttons.forEach(btn => {
+          btn.disabled = false;
+          btn.style.opacity = '1';
+        });
+      }
+    }
+
+    async function loadFYP() {
+      // Show loading state
+      document.getElementById('posts-container').innerHTML = `
+        <div class="loading-state">
+          <div class="loading-spinner"></div>
+          <p>Loading your personalized feed...</p>
+        </div>
+      `;
+
+      try {
+        const fypData = await fetchFYP();
+        renderPosts(fypData);
+        renderTrendingTopics(fypData.trending_topics);
+      } catch (err) {
+        console.error('Error loading FYP:', err);
+        document.getElementById('posts-container').innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">⚠️</div>
+            <h3>Failed to load feed</h3>
+            <p>Please check your connection and try again.</p>
+            <button onclick="loadFYP()" style="background: #ff004c; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; margin-top: 1rem;">
+              Retry
+            </button>
+          </div>
+        `;
+      }
+    }
+
+    // Back to top functionality
+    function setupBackToTop() {
+      const backToTopBtn = document.getElementById('back-to-top');
+      
+      backToTopBtn.addEventListener('click', () => {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      });
+
+      // Show/hide back to top button based on scroll position
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 500) {
+          backToTopBtn.style.opacity = '1';
+        } else {
+          backToTopBtn.style.opacity = '0.5';
+        }
+      });
+    }
+
+    function openSettings() {
+      // You can implement a settings modal or redirect to settings page
+      alert('Settings functionality would be implemented here');
+      // window.location.href = './settings.html';
+    }
+
+    async function initFYP() {
+      await loadSettings();
+
+      // Get current user from localStorage
+      const currentUsername = localStorage.getItem('user');
+      const token = localStorage.getItem('token');
+      
+      // If no user is logged in, redirect to login
+      if (!currentUsername || !token) {
+        window.location.href = './index.html';
+        return;
+      }
+
+      // Set username in sidebar
+      document.getElementById('sidebar-username').textContent = `~${currentUsername}`;
+      
+      // Setup profile link with proper URL encoding
+      const profileLink = document.getElementById('profile-link');
+      profileLink.href = `userprofile.html?user=${encodeURIComponent(currentUsername)}`;
+      profileLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.location.href = `userprofile.html?user=${encodeURIComponent(currentUsername)}`;
+      });
+
+      // Setup settings links
+      document.getElementById('settings-link').addEventListener('click', (e) => {
+        e.preventDefault();
+        openSettings();
+      });
+      
+      document.getElementById('mobile-settings').addEventListener('click', (e) => {
+        e.preventDefault();
+        openSettings();
+      });
+
+      // Load initial FYP data
+      loadFYP();
+
+      // Setup refresh button
+      document.getElementById('refresh-btn').addEventListener('click', () => {
+        loadFYP();
+      });
+
+      // Setup back to top button
+      setupBackToTop();
+
+      // Auto-refresh every 30 seconds (optional)
+      setInterval(() => {
+        if (document.visibilityState === 'visible') {
+          loadFYP();
+        }
+      }, 30000);
+    }
+
+    // Initialize the FYP when the page loads
+    document.addEventListener('DOMContentLoaded', initFYP);
+  </script>
+</body>
+
+</html>
