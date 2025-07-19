@@ -34,6 +34,17 @@
         <!-- Rooms will be populated here -->
       </ul>
     </div>
+    <!-- Add this to the sidebar, after the room-selector div -->
+<div class="room-details" id="roomDetails">
+  <div class="section-header">ROOM INFO</div>
+  <div id="roomInfoContent">
+    <p>Room: <span id="currentRoomNameDisplay">Loading...</span></p>
+    <p>Members: <span id="roomMemberCount">Loading...</span></p>
+    <p>Type: <span id="roomType">Loading...</span></p>
+    <button id="roomMembersBtn" class="room-settings-btn">View Members</button>
+  </div>
+</div>
+
     <div class="sidebar-footer">
       <div class="system-status">
         <span class="sys-label">SYS : </span>
@@ -48,6 +59,16 @@
   <div class="chat-box" id="chat">
     <!-- messages will populate here -->
   </div>
+
+  <div id="roomMembersModal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="closeMembersModal">&times;</span>
+    <h3>Room Members: <span id="membersRoomName"></span></h3>
+    <div id="roomMembersList" class="members-list">
+      <!-- Members will be populated here -->
+    </div>
+  </div>
+</div>
 
   <div class="input-box">
     <input type="text" id="input" placeholder="Enter message..." />

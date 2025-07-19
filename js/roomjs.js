@@ -52,16 +52,17 @@ window.onload = function() {
       inboxLink.style.cursor = 'pointer';
     }
     
+    // Initialize room details display
+    document.getElementById('currentRoomNameDisplay').textContent = 'None';
+    document.getElementById('roomMemberCount').textContent = '0';
+    document.getElementById('roomType').textContent = 'Public';
+    
     loadRooms();
     loadInboxCount();
   }
 };
 
 function loadRooms() {
-  // wait 1.22 seconds before loading rooms
-  setTimeout(() => {
-    fetchRooms();
-  }, 1220);
   fetch(`${server_url}/api/rooms`, {
     method: 'GET',
     headers: {
@@ -72,19 +73,64 @@ function loadRooms() {
   .then(data => {
     if (data.rooms) {
       availableRooms = data.rooms;
-      populateRoomList();
       
-      // Auto-select first joined room or first available room
-      const joinedRoom = data.rooms.find(r => r.joined);
-      if (joinedRoom) {
-        selectRoom(joinedRoom.room_id, joinedRoom.name);
-      } else if (data.rooms.length > 0) {
-        // Try to join the first available room automatically
-        const firstRoom = data.rooms[0];
-        joinExistingRoom(firstRoom.name, () => {
-          selectRoom(firstRoom.room_id, firstRoom.name);
-        });
-      }
+      // Now fetch user's private rooms
+      fetch(`${server_url}/api/user_rooms`, {
+        method: 'GET',
+        headers: {
+          'Authorization': token
+        }
+      })
+      .then(res => res.json())
+      .then(userData => {
+        if (userData.rooms) {
+          // Merge private rooms with public ones
+          userData.rooms.forEach(userRoom => {
+            const existingRoom = availableRooms.find(r => r.room_id === userRoom.room_id);
+            if (existingRoom) {
+              existingRoom.joined = true;
+              existingRoom.is_private = userRoom.is_private;
+            } else {
+              availableRooms.push({
+                room_id: userRoom.room_id,
+                name: userRoom.name,
+                joined: true,
+                is_private: userRoom.is_private
+              });
+            }
+          });
+          
+          populateRoomList();
+          
+          // Auto-select logic
+          if (currentRoomId) {
+            // If we already have a room selected, refresh its details
+            const room = availableRooms.find(r => r.room_id == currentRoomId);
+            if (room) {
+              selectRoom(room.room_id, room.name);
+            } else {
+              // Our current room is no longer available
+              currentRoomId = null;
+              fetchRoomDetails(null); // Clear details
+            }
+          } else {
+            // Select first joined room or first available room
+            const joinedRoom = availableRooms.find(r => r.joined);
+            if (joinedRoom) {
+              selectRoom(joinedRoom.room_id, joinedRoom.name);
+            } else if (availableRooms.length > 0) {
+              const firstRoom = availableRooms[0];
+              joinExistingRoom(firstRoom.name, () => {
+                selectRoom(firstRoom.room_id, firstRoom.name);
+              });
+            }
+          }
+        }
+      })
+      .catch(err => {
+        console.error('Error fetching user rooms:', err);
+        populateRoomList();
+      });
     }
   })
   .catch(err => {
@@ -196,20 +242,22 @@ function selectRoom(roomId, roomName) {
   currentRoomId = roomId;
   currentRoomName = roomName;
   
-  // Update active room in UI
+  // Update UI
   document.querySelectorAll('.room').forEach(r => r.classList.remove('active'));
   const activeRoom = document.querySelector(`[data-room-id="${roomId}"]`);
   if (activeRoom) {
     activeRoom.classList.add('active');
   }
   
-  // Update header
   document.getElementById('headerText').textContent = `🧠 MIRAGE Interface v0.0.4-BETA // ${roomName}`;
   
-  // Load messages for this room
-  fetchMessages();
+  // Update room details immediately
+  document.getElementById('currentRoomNameDisplay').textContent = roomName;
   
-  // Clear any previous join errors
+  // Fetch messages and room details
+  fetchMessages();
+  fetchRoomDetails(roomId);
+  
   document.getElementById('joinError').textContent = '';
 }
 
@@ -830,3 +878,162 @@ window.onclick = function(event) {
     closeSendMessageModal();
   }
 }
+
+
+// Global variable to store current room details
+let currentRoomDetails = null;
+
+function fetchRoomDetails(roomId) {
+  if (!roomId) {
+    // Clear details if no room is selected
+    document.getElementById('currentRoomNameDisplay').textContent = 'None';
+    document.getElementById('roomMemberCount').textContent = '0';
+    document.getElementById('roomType').textContent = 'Public';
+    return;
+  }
+
+  // First get basic room info
+  fetch(`${server_url}/api/rooms`, {
+    method: 'GET',
+    headers: {
+      'Authorization': token
+    }
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.rooms) {
+      const room = data.rooms.find(r => r.room_id == roomId);
+      if (room) {
+        document.getElementById('currentRoomNameDisplay').textContent = room.name;
+        document.getElementById('roomType').textContent = room.is_private ? 'Private' : 'Public';
+        
+        // Now get member count
+        fetch(`${server_url}/api/room_members/${roomId}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': token
+          }
+        })
+        .then(res => res.json())
+        .then(memberData => {
+          if (memberData.members) {
+            document.getElementById('roomMemberCount').textContent = memberData.members.length;
+          } else {
+            document.getElementById('roomMemberCount').textContent = '0';
+          }
+        })
+        .catch(err => {
+          console.error('Error fetching room members:', err);
+          document.getElementById('roomMemberCount').textContent = '0';
+        });
+      }
+    }
+  })
+  .catch(err => {
+    console.error('Error fetching room details:', err);
+    document.getElementById('currentRoomNameDisplay').textContent = 'None';
+    document.getElementById('roomMemberCount').textContent = '0';
+    document.getElementById('roomType').textContent = 'Public';
+  });
+}
+
+// Get all rooms the user has joined (including private rooms)
+function fetchUserRooms() {
+  fetch(`${server_url}/api/user_rooms`, {
+    method: 'GET',
+    headers: {
+      'Authorization': token
+    }
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.rooms) {
+      // Merge with available rooms
+      availableRooms.forEach(room => {
+        const userRoom = data.rooms.find(r => r.room_id === room.room_id);
+        if (userRoom) {
+          room.joined = true;
+          room.is_private = userRoom.is_private;
+        }
+      });
+      
+      // Add any private rooms not in the public list
+      data.rooms.forEach(userRoom => {
+        if (!availableRooms.some(r => r.room_id === userRoom.room_id)) {
+          availableRooms.push({
+            room_id: userRoom.room_id,
+            name: userRoom.name,
+            joined: true,
+            is_private: userRoom.is_private
+          });
+        }
+      });
+      
+      populateRoomList();
+    }
+  })
+  .catch(err => {
+    console.error('Error fetching user rooms:', err);
+  });
+}
+
+
+
+
+// Show room members modal
+function showRoomMembersModal() {
+  if (!currentRoomId) return;
+  
+  document.getElementById('roomMembersModal').style.display = 'block';
+  
+  fetch(`${server_url}/api/room_members/${currentRoomId}`, {
+    method: 'GET',
+    headers: {
+      'Authorization': token
+    }
+  })
+  .then(res => res.json())
+  .then(data => {
+    const membersList = document.getElementById('roomMembersList');
+    membersList.innerHTML = '';
+    
+    if (!data.members || data.members.length === 0) {
+      membersList.innerHTML = '<p>No members found</p>';
+      return;
+    }
+    
+    data.members.forEach(member => {
+      const memberDiv = document.createElement('div');
+      memberDiv.className = 'room-member';
+      memberDiv.innerHTML = `
+        <img src="./img/default-avatar.png" class="member-avatar" />
+        <span class="member-name">${member}</span>
+        <a href="./userprofile.html?user=${encodeURIComponent(member)}" class="view-profile-btn">View Profile</a>
+      `;
+      membersList.appendChild(memberDiv);
+    });
+  })
+  .catch(err => {
+    console.error('Error fetching room members:', err);
+    document.getElementById('roomMembersList').innerHTML = '<p>Failed to load members</p>';
+  });
+}
+
+
+
+// Add event listeners when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+  // Add room members button if it exists
+  const roomMembersBtn = document.getElementById('roomMembersBtn');
+  if (roomMembersBtn) {
+    roomMembersBtn.addEventListener('click', showRoomMembersModal);
+  }
+  
+  // Add close button for members modal
+  const closeMembersModal = document.getElementById('closeMembersModal');
+  if (closeMembersModal) {
+    closeMembersModal.addEventListener('click', () => {
+      document.getElementById('roomMembersModal').style.display = 'none';
+    });
+  }
+});
