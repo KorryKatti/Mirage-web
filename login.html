@@ -4,100 +4,85 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="css/indexstyle.css" />
+    <link rel="stylesheet" href="css/auth_layout.css" />
     <link rel="stylesheet" href="css/loginstyle.css">
-    <title>login</title>
-    <style>
-        .sidebar {
-            width: 250px;
-            padding: 20px;
-            background: #222;
-            color: white;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-
-        label {
-            font-size: 0.9rem;
-            color: #ccc;
-        }
-
-        input[type="text"],
-        input[type="password"],
-        input[type="number"] {
-            background: #0a0a0a;
-            border: 1px solid #333;
-            color: #ccf2ff;
-            padding: 0.5rem;
-            font-family: 'Share Tech Mono', monospace;
-        }
-
-        button {
-            width: 80%;
-            background: #ff004c;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            cursor: pointer;
-            font-family: 'Share Tech Mono', monospace;
-        }
-
-        .footer {
-            margin-top: auto;
-            text-align: center;
-            color: #888;
-            font-size: 0.8rem;
-        }
-    </style>
+    <title>MIRAGE // AUTH_ACCESS</title>
 </head>
 
 <body>
-    <div class="sidebar">
-        <table>
-            <thead>
-                <tr>
-                    <th>Login</th>
-                </tr>
-            </thead>
-        </table>
-        <form method="POST" action="/login" onsubmit="if (validateCaptcha()) { login(); } return false;">
+    <!-- Punch Card Background -->
+    <div class="punch-card-bg">
+        <div class="card-column"></div>
+        <div class="card-column"></div>
+        <div class="card-column"></div>
+        <div class="card-column"></div>
+        <div class="card-column"></div>
+        <div class="card-column"></div>
+        <div class="card-column"></div>
+        <div class="card-column"></div>
+    </div>
 
-            <div>
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" required />
-            </div>
-            <div>
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required />
-            </div>
-            <div>
-                <label id="captcha-question"></label>
-                <input type="number" id="captcha-answer" required />
-            </div>
-            <div>
-                <button type="submit">Login</button>
-            </div>
-        </form>
-        <br>
-        <div>
-            <a href="./index.html" style="color: #ccc; text-decoration: none; margin-right: 10px;">[Back Home]</a>
-            <a href="./register.html" style="color: #ccc; text-decoration: none;">[Register]</a>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            ACCESS_CARD: 402
         </div>
 
-        <div class="footer">
-            <p>© 2025 MIRAGE. All rights reserved.</p>
+        <form method="POST" action="/login" onsubmit="if (validateCaptcha()) { login(); } return false;">
+            <div class="input-slot">
+                <label for="username">User ID (Username)</label>
+                <input type="text" id="username" name="username" title="Enter your account username" required />
+            </div>
+            <div class="input-slot">
+                <label for="password">Security Cipher (Password)</label>
+                <input type="password" id="password" name="password" title="Enter your security password" required />
+            </div>
+            <div class="input-slot">
+                <label id="captcha-question">VERIFYING_SUM...</label>
+                <input type="number" id="captcha-answer" required />
+            </div>
+            <button type="submit" class="mech-btn">AUTHORIZE_CARD</button>
+        </form>
+
+        <div class="sidebar-links">
+            <a href="./index.html">[RETURN TO MASTER]</a>
+            <a href="./register.html">[REGISTER NEW_TOKEN]</a>
+        </div>
+
+        <div class="footer" style="text-align: left; margin-top: 20px;">
+            <p>© 1965-2025 MIRAGE COMP.</p>
         </div>
     </div>
 
-    <!-- initial login system script -->
+    <main class="main-content">
+        <div class="binary-ghost">
+            01001101<br>01001001<br>01010010<br>01010100<br>01001000<br>01001001
+        </div>
+
+        <div style="z-index: 10; text-align: center;">
+            <h1 style="font-size: 3rem; letter-spacing: 5px; color: var(--card-brown);">CARD_READER_02</h1>
+            <p style="opacity: 0.6;">STATION_ID: MIRAGE_HUB_01</p>
+        </div>
+
+        <div class="reader-container">
+            <div class="mechanical-counter">
+                <div class="counter-label">SYSTEM_UPTIME</div>
+                <div id="uptime" class="counter-value">00:00:00</div>
+            </div>
+            <div class="mechanical-counter">
+                <div class="counter-label">VERSION</div>
+                <div class="counter-value">0.0.6</div>
+            </div>
+        </div>
+
+        <div class="reader-container">
+            <div class="mechanical-counter" style="border-color: var(--mech-red);">
+                <div class="counter-label" style="color: var(--mech-red);">SIGNAL_STRENGTH</div>
+                <div class="counter-value">OPTIMAL</div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/mathcaptcha.js"></script>
     <script>
         let server_url = "http://127.0.0.1:5000";
         fetch('settings.json')
@@ -106,10 +91,7 @@
                 if (settings.server_url) server_url = settings.server_url;
             });
 
-        document.querySelector('form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (!validateCaptcha()) return;
-
+        async function login() {
             const username = document.getElementById("username").value;
             const password = document.getElementById("password").value;
 
@@ -121,31 +103,29 @@
                 });
 
                 const data = await res.json();
-
                 if (res.ok) {
                     localStorage.setItem('user', username);
                     localStorage.setItem('token', data.token);
-                    document.body.insertAdjacentHTML('beforeend', '<p style="color:lime;">login success</p>');
+                    alert("ACCESS GRANTED");
                     setTimeout(() => window.location.href = "./room.html", 300);
                 } else {
-                    alert("Login failed: " + data.error);
+                    alert("ACCESS DENIED: " + data.error);
                 }
             } catch (err) {
-                alert("server died or smth");
-                console.error(err);
+                alert("MECHANICAL FAILURE");
             }
-        });
+        }
 
+        function updateUptime() {
+            const now = new Date();
+            const timeStr = now.getHours().toString().padStart(2, '0') + ':' +
+                now.getMinutes().toString().padStart(2, '0') + ':' +
+                now.getSeconds().toString().padStart(2, '0');
+            document.getElementById('uptime').textContent = timeStr;
+        }
+        setInterval(updateUptime, 1000);
+        updateUptime();
     </script>
-
-    <script src="js/mathcaptcha.js"></script>
-
-    <div class="main-content">
-        <div class="divergence-meter">Version: <span id="divergence">0.0.6</span></div>
-        <canvas id="matrix-canvas" class="matrix-canvas"></canvas>
-    </div>
-
-    <script src="js/matrixanimation.js"></script>
 </body>
 
 </html>
