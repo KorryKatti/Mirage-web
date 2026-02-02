@@ -27,6 +27,16 @@
             ACCESS_CARD: 402
         </div>
 
+        <!-- Theme Toggle -->
+        <div class="theme-switch-container">
+            <span>LIGHT</span>
+            <label class="switch">
+                <input type="checkbox" id="theme-toggle">
+                <span class="slider"></span>
+            </label>
+            <span>DARK</span>
+        </div>
+
         <form method="POST" action="/login" onsubmit="if (validateCaptcha()) { login(); } return false;">
             <div class="input-slot">
                 <label for="username">User ID (Username)</label>
@@ -84,6 +94,26 @@
 
     <script src="js/mathcaptcha.js"></script>
     <script>
+        // Theme Management
+        const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
+
+        // Check for saved theme
+        if (localStorage.getItem('theme') === 'dark') {
+            body.classList.add('dark-mode');
+            themeToggle.checked = true;
+        }
+
+        themeToggle.addEventListener('change', () => {
+            if (themeToggle.checked) {
+                body.classList.add('dark-mode');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.remove('dark-mode');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+
         let server_url = "http://127.0.0.1:5000";
         fetch('settings.json')
             .then(res => res.json())

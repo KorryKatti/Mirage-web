@@ -5,49 +5,65 @@
   <meta charset="UTF-8" />
   <title>MIRAGE // User Profile</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="css/userprofile.css" />
+  <link rel="stylesheet" href="css/dossier_profile.css" />
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 
-<body class="scanlines">
+<body>
   <div class="header">
-    MIRAGE Profile Interface
+    <div class="header-title">DOC_REF: MIRAGE_CLASSIFIED</div>
     <div class="header-nav">
-      <div class="divergence-btn" onclick="backtofyp()">back to feed</div>
-      <div class="divergence-btn" onclick="backtochat()">back to chat</div>
+      <div class="theme-switch-container">
+        <span>LIGHT</span>
+        <label class="switch">
+          <input type="checkbox" id="theme-toggle">
+          <span class="slider"></span>
+        </label>
+        <span>DARK</span>
+      </div>
+      <div class="divergence-btn" onclick="backtofyp()">[ARCHIVE_FEED]</div>
+      <div class="divergence-btn" onclick="backtochat()">[SECURE_CHAT]</div>
     </div>
   </div>
 
   <div class="profile-container">
-    <div class="profile-box" style="text-align: center; margin: auto; width: fit-content; max-width: 800px;">
-      <img id="avatar" src="" alt="Avatar" width="128" height="128" style="border-radius: 10px;" />
-      <h2 id="username">Username</h2>
-      <p id="description">Loading description...</p>
-      <p class="date">Joined: <span id="created_at"></span></p>
+    <div class="profile-box">
+      <div class="polaroid-frame">
+        <img id="avatar" src="" alt="Subject Photo" width="200" height="200" />
+      </div>
+      <h2 id="username">SUBJECT_ID</h2>
+      <div style="margin-top: -10px; margin-bottom: 20px;">
+        <span class="redacted">CLASSIFIED_INFORMATION</span>
+      </div>
+      <p id="description">Evaluating personnel dossier...</p>
+      <p class="date">FILE_OPENED: <span id="created_at"></span></p>
 
       <!-- Follow section -->
-      <div id="follow-section" style="margin: 1rem 0;">
-        <button id="follow-btn" style="display: none;">Follow</button>
-        <button id="unfollow-btn" style="display: none;">Unfollow</button>
+      <div id="follow-section" style="margin: 1rem 0; display: flex; gap: 10px; justify-content: center;">
+        <button id="follow-btn"
+          style="display: none; background: #000; color: #fff; border: 1px solid #fff; padding: 5px 15px; font-family: 'Special Elite', cursive;">FOLLOW</button>
+        <button id="unfollow-btn"
+          style="display: none; background: #fff; color: #000; border: 1px solid #000; padding: 5px 15px; font-family: 'Special Elite', cursive;">UNFOLLOW</button>
+        <button id="message-btn"
+          style="background: var(--stamp-red); color: #fff; border: none; padding: 5px 15px; font-family: 'Special Elite', cursive; cursor: pointer;">SEND_WIRE</button>
       </div>
 
       <!-- Post creation form (only shown for own profile) -->
-      <div id="post-form" style="display: none; margin-top: 2rem; text-align: left;">
-        <h3 style="color: #ff004c; text-shadow: 0 0 3px #ff004c;">Create New Post</h3>
-        <textarea id="post-content" placeholder="What's on your mind?" maxlength="512"
-          style="width: 100%; height: 100px; background: #0a0a0a; border: 1px solid #333; color: #ccf2ff; font-family: 'Share Tech Mono', monospace; padding: 0.5rem; resize: vertical;"></textarea>
-        <div style="margin-top: 0.5rem;">
-          <span id="char-count" style="color: #888; font-size: 0.8rem;">0/512</span>
-          <button id="post-btn" style="float: right;">Post</button>
+      <div id="post-form" style="display: none; text-align: left;">
+        <h3 style="font-family: 'Special Elite', cursive; margin-bottom: 1rem;">NEW_DATA_INPUT:</h3>
+        <textarea id="post-content" placeholder="TYPE_MESSAGE_HERE..." maxlength="512"></textarea>
+        <div style="margin-top: 1rem; display: flex; justify-content: space-between; align-items: center;">
+          <span id="char-count" style="opacity: 0.6; font-size: 0.8rem;">BUFFER: 0/512</span>
+          <button id="post-btn">FILE_REPORT</button>
         </div>
-        <div style="clear: both;"></div>
       </div>
 
       <!-- Posts section -->
-      <div id="posts-section" style="margin-top: 2rem; text-align: left;">
-        <h3 style="color: #ff004c; text-shadow: 0 0 3px #ff004c;">Posts</h3>
+      <div id="posts-section" style="margin-top: 3rem; text-align: left;">
+        <h3 style="font-family: 'Special Elite', cursive; border-bottom: 2px solid #000; padding-bottom: 5px;">
+          RECORDED_LOGS:</h3>
         <div id="posts-container">
-          <p style="color: #888;">Loading posts...</p>
+          <p style="opacity: 0.5;">DECRYPTING_LOGS...</p>
         </div>
       </div>
     </div>
@@ -84,6 +100,26 @@
 
 
   <script>
+    // Theme Management
+    const themeToggle = document.getElementById('theme-toggle');
+    const body = document.body;
+
+    // Check for saved theme
+    if (localStorage.getItem('theme') === 'dark') {
+      body.classList.add('dark-mode');
+      themeToggle.checked = true;
+    }
+
+    themeToggle.addEventListener('change', () => {
+      if (themeToggle.checked) {
+        body.classList.add('dark-mode');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        body.classList.remove('dark-mode');
+        localStorage.setItem('theme', 'light');
+      }
+    });
+
     let server_url = 'http://127.0.0.1:5000'; // default fallback
 
     function backtochat() {
@@ -636,9 +672,14 @@
           setupPostForm();
         }
 
-        // Setup follow buttons if viewing another user's profile
+        // Setup follow buttons and message button if viewing another user's profile
         if (currentUsername !== profileUsername) {
           setupFollowButtons(profileUsername);
+          document.getElementById('message-btn').onclick = () => {
+            window.location.href = `messages.html?user=${encodeURIComponent(profileUsername)}`;
+          };
+        } else {
+          document.getElementById('message-btn').style.display = 'none';
         }
       } catch (err) {
         console.error(err);

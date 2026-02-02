@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>MIRAGE // Secure Relay</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/messages.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"></script>
+</head>
+
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>Conversations</h2>
+            <button id="new-msg-btn" onclick="openNewMsg()"
+                style="background:none; border:none; color:var(--cyan-glow); cursor:pointer; font-size:1.5rem;">+</button>
+        </div>
+        <div id="convo-list" class="convo-list">
+            <!-- Senders will be listed here -->
+            <div style="padding: 20px; text-align: center; opacity: 0.5;">Scanning for frequencies...</div>
+        </div>
+    </aside>
+
+    <main class="chat-area">
+        <header class="chat-header" id="chat-header" style="display: none;">
+            <img id="active-avatar" class="avatar" src="default.png" alt="">
+            <div class="convo-info">
+                <div id="active-user-name" class="active-user-name">Select a frequency</div>
+                <div style="font-size: 0.8rem; opacity: 0.6;">ENCRYPTED_CHANNEL_7</div>
+            </div>
+            <div style="margin-left: auto; display: flex; gap: 15px;">
+                <a href="room.html"
+                    style="color: var(--cyan-glow); text-decoration: none; font-size: 0.9rem; font-family: 'Share Tech Mono', monospace;">[
+                    BACK_TO_CHAT ]</a>
+                <a href="fyp.html"
+                    style="color: var(--cyan-glow); text-decoration: none; font-size: 0.9rem; font-family: 'Share Tech Mono', monospace;">[
+                    BACK_TO_FEED ]</a>
+            </div>
+        </header>
+
+        <div id="messages-container" class="messages-container">
+            <div class="no-chat-selected">
+                <div class="loader" id="main-loader" style="display: none;"></div>
+                <h3 id="empty-state-text">SELECT_START_TRANSMISSION</h3>
+            </div>
+        </div>
+
+        <div class="input-area" id="input-area" style="display: none;">
+            <div class="input-wrapper">
+                <input type="text" id="msg-input" placeholder="Enter secure message..." autocomplete="off">
+                <button id="send-btn">TRANS_MIT</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let server_url = 'http://127.0.0.1:5000';
+        const token = localStorage.getItem('token');
+        const currentUser = localStorage.getItem('user');
+
+        let allMessages = [];
+        let conversations = {};
+        let activeSender = null;
+
+        if (!token || !currentUser) {
+            window.location.href = 'index.html';
+        }
+
+        async function loadSettings() {
+            try {
+                const res = await fetch('settings.json');
+                const settings = await res.json();
+                if (settings.server_url) server_url = settings.server_url;
+            } catch (e) { }
+        }
+
+        async function fetchInbox() {
+            try {
+                const res = await fetch(`${server_url}/api/inbox`, {
+                    headers: { 'Authorization': token }
+                });
+                const data = await res.json();
+                return data.messages || [];
+            } catch (err) {
+                console.error(err);
+                return [];
+            }
+        }
+
+        function groupMessages(messages) {
+            const groups = {};
+            messages.forEach(msg => {
+                if (!groups[msg.sender]) {
+                    groups[msg.sender] = {
+                        sender: msg.sender,
+                        avatar: msg.avatar_url || 'default.png',
+                        messages: [],
+                        lastMessage: msg
+                    };
+                }
+                groups[msg.sender].messages.push(msg);
+            });
+            return groups;
+        }
+
+        function renderConvoList() {
+            const list = document.getElementById('convo-list');
+            list.innerHTML = '';
+
+            const sortedSenders = Object.values(conversations).sort((a, b) =>
+                new Date(b.lastMessage.created_at) - new Date(a.lastMessage.created_at)
+            );
+
+            if (sortedSenders.length === 0) {
+                list.innerHTML = '<div style="padding:20px; text-align:center; opacity:0.5;">No incoming transmissions</div>';
+                return;
+            }
+
+            sortedSenders.forEach(convo => {
+                const item = document.createElement('div');
+                item.className = `convo-item ${activeSender === convo.sender ? 'active' : ''}`;
+                item.onclick = () => selectConvo(convo.sender);
+
+                item.innerHTML = `
+          <img src="${convo.avatar}" class="avatar" alt="">
+          <div class="convo-info">
+            <span class="convo-name">~${convo.sender}</span>
+            <span class="convo-preview">${convo.lastMessage.message.substring(0, 30)}${convo.lastMessage.message.length > 30 ? '...' : ''}</span>
+          </div>
+        `;
+                list.appendChild(item);
+            });
+        }
+
+        function selectConvo(sender) {
+            activeSender = sender;
+            renderConvoList();
+
+            document.getElementById('chat-header').style.display = 'flex';
+            document.getElementById('input-area').style.display = 'block';
+            document.getElementById('active-user-name').textContent = `~${sender}`;
+            document.getElementById('active-avatar').src = conversations[sender].avatar;
+
+            renderMessages();
+        }
+
+        function renderMessages() {
+            const container = document.getElementById('messages-container');
+            container.innerHTML = '';
+
+            const messages = conversations[activeSender].messages.slice().sort((a, b) =>
+                new Date(a.created_at) - new Date(b.created_at)
+            );
+
+            messages.forEach(msg => {
+                const div = document.createElement('div');
+                div.className = 'message received';
+
+                const timestamp = new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+                div.innerHTML = `
+          <div class="message-content">${marked.parse(msg.message)}</div>
+          <div class="message-meta">${timestamp}</div>
+          <button class="delete-msg-btn" onclick="deleteMessage(${msg.id}, event)">×</button>
+        `;
+                container.appendChild(div);
+            });
+
+            container.scrollTop = container.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('msg-input');
+            const text = input.value.trim();
+            if (!text || !activeSender) return;
+
+            const btn = document.getElementById('send-btn');
+            btn.disabled = true;
+            btn.textContent = '...';
+
+            try {
+                const res = await fetch(`${server_url}/api/send_inbox_message`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': token
+                    },
+                    body: JSON.stringify({
+                        recipient: activeSender,
+                        message: text
+                    })
+                });
+
+                const data = await res.json();
+                if (data.message) {
+                    input.value = '';
+                    const container = document.getElementById('messages-container');
+                    const div = document.createElement('div');
+                    div.className = 'message sent';
+                    div.innerHTML = `
+            <div class="message-content">${marked.parse(text)}</div>
+            <div class="message-meta">SENT_LOCAL</div>
+          `;
+                    container.appendChild(div);
+                    container.scrollTop = container.scrollHeight;
+                } else {
+                    alert(data.error || 'Failed to send');
+                }
+            } catch (err) {
+                alert('Network error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'TRANS_MIT';
+            }
+        }
+
+        async function deleteMessage(id, event) {
+            event.stopPropagation();
+            if (!confirm('Destroy this transmission data?')) return;
+
+            try {
+                await fetch(`${server_url}/api/delete_inbox_message`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': token
+                    },
+                    body: JSON.stringify({ message_id: id })
+                });
+                init(); // Refresh all
+            } catch (e) { }
+        }
+
+        function openNewMsg() {
+            const recipient = prompt("Enter User ID (Recipient):");
+            if (recipient) {
+                if (!conversations[recipient]) {
+                    conversations[recipient] = { sender: recipient, avatar: 'default.png', messages: [], lastMessage: { message: 'New thread', created_at: new Date() } };
+                    renderConvoList();
+                }
+                selectConvo(recipient);
+            }
+        }
+
+        async function init() {
+            await loadSettings();
+            allMessages = await fetchInbox();
+            conversations = groupMessages(allMessages);
+            renderConvoList();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const userParam = urlParams.get('user');
+
+            if (userParam && !activeSender) {
+                if (!conversations[userParam]) {
+                    conversations[userParam] = {
+                        sender: userParam,
+                        avatar: 'default.png',
+                        messages: [],
+                        lastMessage: { message: 'New thread', created_at: new Date() }
+                    };
+                    renderConvoList();
+                }
+                selectConvo(userParam);
+            } else if (activeSender) {
+                if (conversations[activeSender]) renderMessages();
+            }
+        }
+
+        document.getElementById('send-btn').onclick = sendMessage;
+        document.getElementById('msg-input').onkeypress = (e) => { if (e.key === 'Enter') sendMessage(); };
+
+        init();
+        setInterval(init, 10000); 
+    </script>
+</body>
+
+</html>

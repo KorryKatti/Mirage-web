@@ -1,0 +1,298 @@
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
+
+:root {
+    --term-bg: #05070a;
+    --panel-bg: rgba(13, 18, 26, 0.85);
+    --cyan-glow: #00f2ff;
+    --cyan-dim: rgba(0, 242, 255, 0.3);
+    --amber-glow: #ffb700;
+    --msg-bot: #1a222d;
+    --msg-user: #003b42;
+    --border-glow: rgba(0, 242, 255, 0.15);
+}
+
+* {
+    box-sizing: border-box;
+    scrollbar-width: thin;
+    scrollbar-color: var(--cyan-glow) transparent;
+}
+
+body {
+    background: var(--term-bg);
+    color: #e0e6ed;
+    font-family: 'Rajdhani', sans-serif;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
+    background-image:
+        radial-gradient(circle at 50% 50%, rgba(0, 242, 255, 0.05) 0%, transparent 70%),
+        linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+    background-size: 100% 100%, 100% 2px, 3px 100%;
+}
+
+/* Sidebar for Conversations */
+.sidebar {
+    width: 320px;
+    background: var(--panel-bg);
+    border-right: 1px solid var(--border-glow);
+    display: flex;
+    flex-direction: column;
+    backdrop-filter: blur(15px);
+    z-index: 10;
+}
+
+.sidebar-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--border-glow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sidebar-header h2 {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.2rem;
+    margin: 0;
+    color: var(--cyan-glow);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.convo-list {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.convo-item {
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.convo-item:hover {
+    background: rgba(0, 242, 255, 0.05);
+}
+
+.convo-item.active {
+    background: rgba(0, 242, 255, 0.1);
+    border-left: 4px solid var(--cyan-glow);
+}
+
+.avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: 1px solid var(--cyan-glow);
+    background: #000;
+    flex-shrink: 0;
+}
+
+.convo-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.convo-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.convo-preview {
+    font-size: 0.85rem;
+    color: #8a9bb0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Main Chat Area */
+.chat-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.chat-header {
+    padding: 15px 30px;
+    background: var(--panel-bg);
+    border-bottom: 1px solid var(--border-glow);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    backdrop-filter: blur(10px);
+}
+
+.active-user-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--cyan-glow);
+}
+
+.messages-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.message {
+    max-width: 80%;
+    padding: 12px 18px;
+    border-radius: 12px;
+    position: relative;
+    line-height: 1.5;
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.message.received {
+    align-self: flex-start;
+    background: var(--msg-bot);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom-left-radius: 2px;
+}
+
+.message.sent {
+    align-self: flex-end;
+    background: var(--msg-user);
+    border: 1px solid var(--cyan-dim);
+    border-bottom-right-radius: 2px;
+}
+
+.message-meta {
+    font-size: 0.75rem;
+    margin-top: 5px;
+    opacity: 0.6;
+    text-align: right;
+}
+
+.delete-msg-btn {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 20px;
+    height: 20px;
+    background: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 12px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.message:hover .delete-msg-btn {
+    display: flex;
+}
+
+/* Input Area */
+.input-area {
+    padding: 20px 30px;
+    background: var(--panel-bg);
+    border-top: 1px solid var(--border-glow);
+}
+
+.input-wrapper {
+    display: flex;
+    gap: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 5px;
+    border: 1px solid var(--cyan-dim);
+    border-radius: 8px;
+}
+
+#msg-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: white;
+    padding: 10px 15px;
+    font-family: inherit;
+    font-size: 1rem;
+    outline: none;
+}
+
+#send-btn {
+    background: var(--cyan-glow);
+    color: #000;
+    border: none;
+    padding: 0 20px;
+    border-radius: 6px;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+#send-btn:hover {
+    filter: brightness(1.2);
+    box-shadow: 0 0 15px var(--cyan-glow);
+}
+
+/* Empty States */
+.no-chat-selected {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.3;
+}
+
+.no-chat-selected h3 {
+    font-family: 'Share Tech Mono', monospace;
+    letter-spacing: 5px;
+}
+
+/* Loading Spinner */
+.loader {
+    border: 4px solid rgba(0, 242, 255, 0.1);
+    border-left-color: var(--cyan-glow);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 80px;
+    }
+
+    .convo-info,
+    .sidebar-header h2 {
+        display: none;
+    }
+}

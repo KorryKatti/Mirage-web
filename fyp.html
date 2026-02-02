@@ -5,34 +5,34 @@
   <meta charset="UTF-8" />
   <title>MIRAGE // For You</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="css/userprofile.css" />
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<link rel="stylesheet" href="css/fypstyle.css"/>
+  <link rel="stylesheet" href="css/telegraph_fyp.css" />
+  <script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"></script>
 </head>
 
 <body class="scanlines">
   <!-- Sidebar -->
   <div class="sidebar">
     <div class="logo">
-      <h2 style="color: #ff004c; text-shadow: 0 0 5px #ff004c;">MIRAGE</h2>
+      <h2>TELEGRAPH_WIRE</h2>
     </div>
 
     <div class="user-info">
-      <p>Welcome back,</p>
-      <p id="sidebar-username" style="color: #ff004c; text-shadow: 0 0 3px #ff004c;">~user</p>
+      <p>OPERATOR_ID:</p>
+      <p id="sidebar-username">~USER</p>
     </div>
 
     <nav>
       <ul>
-        <li><a href="./room.html" onclick="backtochat()"><span class="nav-icon">💬</span> Back to Chat</a></li>
-        <li><a href="#" id="profile-link"><span class="nav-icon">👤</span> Your Profile</a></li>
-        <li><a href="#" id="settings-link"><span class="nav-icon">⚙️</span> Settings</a></li>
+        <li><a href="./room.html" onclick="backtochat()">[ TRANSMIT_MSG ]</a></li>
+        <li><a href="./messages.html">[ SECURE_RELAY ]</a></li>
+        <li><a href="#" id="profile-link">[ VIEW_DOSSIER ]</a></li>
+        <li><a href="#" id="settings-link">[ CONFIGURE ]</a></li>
       </ul>
     </nav>
 
     <!-- Trending Topics in Sidebar -->
     <div class="trending-section">
-      <h4 class="trending-title">🔥 Trending Now</h4>
+      <h4 class="trending-title">⚡ PRIORITY_WIRES</h4>
       <div id="sidebar-trending">
         <div class="loading-state">
           <div class="loading-spinner"></div>
@@ -48,35 +48,28 @@
                                      padding: 0.5rem;
                                      width: 80%;
                                      cursor: pointer;
-                                     border-radius: 4px;
-                                     transition: all 0.3s ease;">
-        ↑ Back to Top
+                                     opacity: 0.5;
+                                     transition: opacity 0.3s ease;">
+        ⬆ BACK_TO_TOP
       </button>
     </div>
   </div>
 
-  <div class="header">
-    MIRAGE For You
-  </div>
-
-  <div class="fyp-container">
-    <!-- Header with settings -->
+  <main class="fyp-container">
     <div class="fyp-header">
-      <h1 class="fyp-title">✨ For You</h1>
-      <a href="#" class="settings-btn" id="mobile-settings">
-        <span>⚙️</span>
-        Settings
-      </a>
+      <h1 class="fyp-title">WIRE_SERVICE</h1>
+      <div class="header-actions">
+        <button id="refresh-btn" class="settings-btn">
+          <span>🔄</span> RELOAD_WIRES
+        </button>
+        <button id="mobile-settings" class="settings-btn" style="display: none;">
+          <span>⚙️</span>
+        </button>
+      </div>
     </div>
 
-    <!-- Posts Section -->
-    <div id="posts-section">
-      <div id="posts-container">
-        <div class="loading-state">
-          <div class="loading-spinner"></div>
-          <p>Loading your personalized feed...</p>
-        </div>
-      </div>
+    <div id="posts-container">
+      <!-- Posts will be loaded here -->
     </div>
 
     <!-- Refresh Button -->
@@ -85,7 +78,7 @@
         🔄 Refresh Feed
       </button>
     </div>
-  </div>
+  </main>
 
   <script>
     let server_url = 'http://127.0.0.1:5000'; // default fallback
@@ -95,13 +88,24 @@
     }
 
     function sanitizeHTML(input) {
+      if (!input) return '';
       // First parse with marked to convert markdown to HTML
-      const html = marked.parse(input || '');
-      
+      let html = '';
+      try {
+        if (typeof marked.parse === 'function') {
+          html = marked.parse(input);
+        } else {
+          html = marked(input);
+        }
+      } catch (e) {
+        console.error('Marked parsing error:', e);
+        html = input; // fallback to raw text
+      }
+
       // Create a temporary div to hold the parsed HTML
       const tempDiv = document.createElement('div');
       tempDiv.innerHTML = html;
-      
+
       // Remove all script tags and other dangerous elements
       const forbiddenTags = ['script', 'iframe', 'frame', 'object', 'embed', 'link', 'style'];
       forbiddenTags.forEach(tag => {
@@ -110,25 +114,25 @@
           elements[0].parentNode.removeChild(elements[0]);
         }
       });
-      
+
       // Remove all event handlers and javascript: URIs
       const allElements = tempDiv.getElementsByTagName('*');
       for (let el of allElements) {
         const attrs = el.attributes;
         for (let i = attrs.length - 1; i >= 0; i--) {
           const attr = attrs[i];
-          if (attr.name.startsWith('on') || 
-              (attr.name.toLowerCase() === 'href' && attr.value.toLowerCase().startsWith('javascript:'))) {
+          if (attr.name.startsWith('on') ||
+            (attr.name.toLowerCase() === 'href' && attr.value.toLowerCase().startsWith('javascript:'))) {
             el.removeAttribute(attr.name);
           }
         }
       }
-      
+
       // Only allow specific tags
-      const allowedTags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em', 
-        'i', 'li', 'ol', 'strong', 'ul', 'p', 'br', 'img', 'h1', 'h2', 'h3', 'h4', 
+      const allowedTags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em',
+        'i', 'li', 'ol', 'strong', 'ul', 'p', 'br', 'img', 'h1', 'h2', 'h3', 'h4',
         'h5', 'h6', 'pre', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'hr'];
-      
+
       const allNodes = tempDiv.getElementsByTagName('*');
       for (let el of allNodes) {
         if (!allowedTags.includes(el.tagName.toLowerCase())) {
@@ -140,7 +144,7 @@
           parent.removeChild(el);
         }
       }
-      
+
       // Only allow specific attributes
       const allowedAttributes = {
         'a': ['href', 'title', 'target'],
@@ -148,7 +152,7 @@
         'th': ['align'],
         'td': ['align']
       };
-      
+
       const allElementsFinal = tempDiv.getElementsByTagName('*');
       for (let el of allElementsFinal) {
         const tagName = el.tagName.toLowerCase();
@@ -168,7 +172,7 @@
           }
         }
       }
-      
+
       return tempDiv.innerHTML;
     }
 
@@ -197,7 +201,7 @@
             'Authorization': token
           }
         });
-        
+
         if (!res.ok) {
           throw new Error('Failed to fetch FYP');
         }
@@ -210,7 +214,7 @@
 
     function renderTrendingTopics(topics) {
       const container = document.getElementById('sidebar-trending');
-      
+
       if (!topics || topics.length === 0) {
         container.innerHTML = `
           <div class="empty-state" style="padding: 1rem; font-size: 0.9rem;">
@@ -230,7 +234,7 @@
           </a>
         `;
       });
-      
+
       container.innerHTML = html;
     }
 
@@ -262,17 +266,21 @@
       posts.forEach(post => {
         const isOwnPost = post.username === currentUser;
         const createdDate = new Date(post.created_at);
-        const timeAgo = getTimeAgo(createdDate);
+
+        // Telegram format processing
+        const wireId = `WIRE-${post.id}`;
+        const timestamp = createdDate.toLocaleString('en-US', { hour12: false }).toUpperCase();
 
         html += `
           <div class="post" data-post-id="${post.id}">
             <div class="post-header">
               <div class="post-meta">
-                <a href="viewpost.html?post_id=${post.id}" class="post-id">#${post.id}</a>
-                <span>by</span>
-                <a href="userprofile.html?user=${encodeURIComponent(post.username)}" class="post-author">~${post.username}</a>
+                <a href="viewpost.html?post_id=${post.id}" class="post-id">${wireId}</a>
+                <div>TO: MIRAGE NETWORK</div>
+                <div>FROM: <a href="userprofile.html?user=${encodeURIComponent(post.username)}" class="post-author">@${post.username.toUpperCase()}</a> 
+                <a href="messages.html?user=${encodeURIComponent(post.username)}" style="color:var(--western-orange); text-decoration:none; font-size:0.7rem; margin-left:5px;">[MSG]</a></div>
+                <div class="post-date">RECEIVED: ${timestamp}</div>
               </div>
-              <div class="post-date">${timeAgo}</div>
             </div>
             <div class="post-content markdown-content">
               ${sanitizeHTML(post.content)}
@@ -282,18 +290,18 @@
                 <button class="vote-btn upvote ${isOwnPost ? 'disabled' : ''}" 
                         onclick="votePost(${post.id}, 'up')" 
                         ${isOwnPost ? 'disabled' : ''}>
-                  <span>▲</span>
+                  <span>▲ ACK</span>
                   <span>${post.upvotes || 0}</span>
                 </button>
                 <button class="vote-btn downvote ${isOwnPost ? 'disabled' : ''}" 
                         onclick="votePost(${post.id}, 'down')" 
                         ${isOwnPost ? 'disabled' : ''}>
-                  <span>▼</span>
+                  <span>▼ REJ</span>
                   <span>${post.downvotes || 0}</span>
                 </button>
               </div>
-              <div style="color: #888; font-size: 0.8rem;">
-                ${isOwnPost ? '👤 Your post' : ''}
+              <div style="font-family: 'Special Elite', cursive; color: var(--stamp-red); opacity: 0.7;">
+                ${isOwnPost ? 'OFFICIAL_SENDER' : 'INCOMING_DISPATCH'}
               </div>
             </div>
           </div>
@@ -306,12 +314,12 @@
     function getTimeAgo(date) {
       const now = new Date();
       const diffInSeconds = Math.floor((now - date) / 1000);
-      
+
       if (diffInSeconds < 60) return 'just now';
       if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
       if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
       if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
-      
+
       return date.toLocaleDateString();
     }
 
@@ -346,17 +354,24 @@
         const data = await response.json();
 
         if (response.ok) {
-          // Refresh the FYP
-          const fypData = await fetchFYP();
-          renderPosts(fypData);
-          renderTrendingTopics(fypData.trending_topics);
+          // Update only the specific post's vote counts
+          const postElement = document.querySelector(`.post[data-post-id="${postId}"]`);
+          if (postElement) {
+            const upBtn = postElement.querySelector('.upvote span:last-child');
+            const downBtn = postElement.querySelector('.downvote span:last-child');
+
+            if (voteType === 'up') upBtn.textContent = (parseInt(upBtn.textContent) + 1);
+            if (voteType === 'down') downBtn.textContent = (parseInt(downBtn.textContent) + 1);
+          }
         } else {
           alert(data.error || 'Failed to vote');
-          buttons.forEach(btn => {
-            btn.disabled = false;
-            btn.style.opacity = '1';
-          });
         }
+
+        // Re-enable buttons
+        buttons.forEach(btn => {
+          btn.disabled = false;
+          btn.style.opacity = '1';
+        });
       } catch (err) {
         console.error('Error voting:', err);
         alert('Failed to vote');
@@ -398,20 +413,25 @@
     // Back to top functionality
     function setupBackToTop() {
       const backToTopBtn = document.getElementById('back-to-top');
-      
+      const container = document.querySelector('.fyp-container');
+
+      if (!container) return;
+
       backToTopBtn.addEventListener('click', () => {
-        window.scrollTo({
+        container.scrollTo({
           top: 0,
           behavior: 'smooth'
         });
       });
 
-      // Show/hide back to top button based on scroll position
-      window.addEventListener('scroll', () => {
-        if (window.scrollY > 500) {
+      // Show/hide back to top button based on scroll position in the container
+      container.addEventListener('scroll', () => {
+        if (container.scrollTop > 300) {
           backToTopBtn.style.opacity = '1';
+          backToTopBtn.style.pointerEvents = 'auto';
         } else {
           backToTopBtn.style.opacity = '0.5';
+          backToTopBtn.style.pointerEvents = 'none';
         }
       });
     }
@@ -428,7 +448,7 @@
       // Get current user from localStorage
       const currentUsername = localStorage.getItem('user');
       const token = localStorage.getItem('token');
-      
+
       // If no user is logged in, redirect to login
       if (!currentUsername || !token) {
         window.location.href = './index.html';
@@ -437,7 +457,7 @@
 
       // Set username in sidebar
       document.getElementById('sidebar-username').textContent = `~${currentUsername}`;
-      
+
       // Setup profile link with proper URL encoding
       const profileLink = document.getElementById('profile-link');
       profileLink.href = `userprofile.html?user=${encodeURIComponent(currentUsername)}`;
@@ -451,7 +471,7 @@
         e.preventDefault();
         openSettings();
       });
-      
+
       document.getElementById('mobile-settings').addEventListener('click', (e) => {
         e.preventDefault();
         openSettings();
@@ -467,13 +487,6 @@
 
       // Setup back to top button
       setupBackToTop();
-
-      // Auto-refresh every 30 seconds (optional)
-      setInterval(() => {
-        if (document.visibilityState === 'visible') {
-          loadFYP();
-        }
-      }, 30000);
     }
 
     // Initialize the FYP when the page loads
