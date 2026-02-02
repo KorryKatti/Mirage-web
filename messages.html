@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>MIRAGE // Secure Relay</title>
+    <title>MIRAGE // The Record Crate</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/messages.css">
     <script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"></script>
@@ -13,44 +13,37 @@
 
     <aside class="sidebar">
         <div class="sidebar-header">
-            <h2>Conversations</h2>
+            <h2>RECORD_CRATE_ALPHA</h2>
             <button id="new-msg-btn" onclick="openNewMsg()"
-                style="background:none; border:none; color:var(--cyan-glow); cursor:pointer; font-size:1.5rem;">+</button>
+                style="background:none; border:none; color:var(--record-yellow); cursor:pointer; font-size:1.5rem;">📁</button>
         </div>
         <div id="convo-list" class="convo-list">
-            <!-- Senders will be listed here -->
-            <div style="padding: 20px; text-align: center; opacity: 0.5;">Scanning for frequencies...</div>
+            <!-- Senders will be listed here as record spines -->
+            <div style="padding: 20px; text-align: center; opacity: 0.5;">BROWSING_COLLECTION...</div>
         </div>
     </aside>
 
     <main class="chat-area">
         <header class="chat-header" id="chat-header" style="display: none;">
-            <img id="active-avatar" class="avatar" src="default.png" alt="">
-            <div class="convo-info">
-                <div id="active-user-name" class="active-user-name">Select a frequency</div>
-                <div style="font-size: 0.8rem; opacity: 0.6;">ENCRYPTED_CHANNEL_7</div>
-            </div>
-            <div style="margin-left: auto; display: flex; gap: 15px;">
-                <a href="room.html"
-                    style="color: var(--cyan-glow); text-decoration: none; font-size: 0.9rem; font-family: 'Share Tech Mono', monospace;">[
-                    BACK_TO_CHAT ]</a>
-                <a href="fyp.html"
-                    style="color: var(--cyan-glow); text-decoration: none; font-size: 0.9rem; font-family: 'Share Tech Mono', monospace;">[
-                    BACK_TO_FEED ]</a>
+            <div class="active-user-name" id="active-user-name">SELECT_SIDE_A</div>
+            <div class="header-nav">
+                <a href="room.html">[ TO_THE_COURT ]</a>
+                <a href="fyp.html">[ VIEW_COLLECTION ]</a>
             </div>
         </header>
 
         <div id="messages-container" class="messages-container">
             <div class="no-chat-selected">
-                <div class="loader" id="main-loader" style="display: none;"></div>
-                <h3 id="empty-state-text">SELECT_START_TRANSMISSION</h3>
+                <h3 id="empty-state-text">START_THE_TURNTABLE</h3>
+                <div style="font-size: 3rem; margin-top: 20px;">💿</div>
             </div>
         </div>
 
         <div class="input-area" id="input-area" style="display: none;">
-            <div class="input-wrapper">
-                <input type="text" id="msg-input" placeholder="Enter secure message..." autocomplete="off">
-                <button id="send-btn">TRANS_MIT</button>
+            <div class="control-panel">
+                <div class="knob"></div>
+                <input type="text" id="msg-input" placeholder="Inscribe liner notes..." autocomplete="off">
+                <button id="send-btn">RELEASE_TRACK</button>
             </div>
         </div>
     </main>
@@ -92,15 +85,29 @@
         function groupMessages(messages) {
             const groups = {};
             messages.forEach(msg => {
-                if (!groups[msg.sender]) {
-                    groups[msg.sender] = {
-                        sender: msg.sender,
-                        avatar: msg.avatar_url || 'default.png',
+                // Determine the other person in the conversation
+                const partner = msg.sender === currentUser ? msg.recipient : msg.sender;
+
+                if (!groups[partner]) {
+                    groups[partner] = {
+                        partner: partner,
+                        avatar: 'default.png', // Default, will update if we find their message
                         messages: [],
                         lastMessage: msg
                     };
                 }
-                groups[msg.sender].messages.push(msg);
+
+                // If the message is FROM the partner, use their avatar for the conversation
+                if (msg.sender === partner && msg.avatar_url) {
+                    groups[partner].avatar = msg.avatar_url;
+                }
+
+                groups[partner].messages.push(msg);
+
+                // Keep track of the truly last message for sorting
+                if (new Date(msg.created_at) > new Date(groups[partner].lastMessage.created_at)) {
+                    groups[partner].lastMessage = msg;
+                }
             });
             return groups;
         }
@@ -109,26 +116,26 @@
             const list = document.getElementById('convo-list');
             list.innerHTML = '';
 
-            const sortedSenders = Object.values(conversations).sort((a, b) =>
+            const sortedPartners = Object.values(conversations).sort((a, b) =>
                 new Date(b.lastMessage.created_at) - new Date(a.lastMessage.created_at)
             );
 
-            if (sortedSenders.length === 0) {
-                list.innerHTML = '<div style="padding:20px; text-align:center; opacity:0.5;">No incoming transmissions</div>';
+            if (sortedPartners.length === 0) {
+                list.innerHTML = '<div style="padding:20px; text-align:center; opacity:0.5; color:var(--cardboard);">CRATE_EMPTY</div>';
                 return;
             }
 
-            sortedSenders.forEach(convo => {
+            sortedPartners.forEach(convo => {
                 const item = document.createElement('div');
-                item.className = `convo-item ${activeSender === convo.sender ? 'active' : ''}`;
-                item.onclick = () => selectConvo(convo.sender);
+                item.className = `convo-item ${activeSender === convo.partner ? 'active' : ''}`;
+                item.onclick = () => selectConvo(convo.partner);
 
                 item.innerHTML = `
           <img src="${convo.avatar}" class="avatar" alt="">
           <div class="convo-info">
-            <span class="convo-name">~${convo.sender}</span>
-            <span class="convo-preview">${convo.lastMessage.message.substring(0, 30)}${convo.lastMessage.message.length > 30 ? '...' : ''}</span>
+            <span class="convo-name">${convo.partner}</span>
           </div>
+          <div class="record-label-tag">LP</div>
         `;
                 list.appendChild(item);
             });
@@ -139,9 +146,8 @@
             renderConvoList();
 
             document.getElementById('chat-header').style.display = 'flex';
-            document.getElementById('input-area').style.display = 'block';
-            document.getElementById('active-user-name').textContent = `~${sender}`;
-            document.getElementById('active-avatar').src = conversations[sender].avatar;
+            document.getElementById('input-area').style.display = 'flex';
+            document.getElementById('active-user-name').textContent = `PLAYING: ${sender.toUpperCase()}`;
 
             renderMessages();
         }
@@ -156,14 +162,21 @@
 
             messages.forEach(msg => {
                 const div = document.createElement('div');
-                div.className = 'message received';
+                const isSent = msg.sender === currentUser;
+                div.className = isSent ? 'message sent' : 'message received';
 
-                const timestamp = new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const timestamp = new Date(msg.created_at).toLocaleTimeString();
+                const pfp = msg.avatar_url || 'https://i.pinimg.com/736x/b9/e8/db/b9e8db33168a26c9ca697a05ddc80937.jpg';
 
                 div.innerHTML = `
-          <div class="message-content">${marked.parse(msg.message)}</div>
-          <div class="message-meta">${timestamp}</div>
-          <button class="delete-msg-btn" onclick="deleteMessage(${msg.id}, event)">×</button>
+          <div class="pfp-container">
+            <img src="${pfp}" alt="artwork">
+          </div>
+          <div class="message-body">
+            <div class="message-content">${marked.parse(msg.message)}</div>
+            <div class="message-meta">TRACK_ID: ${timestamp} / ${isSent ? 'LOCAL_REC' : 'TRANS_IN'}</div>
+          </div>
+          <button class="delete-btn" onclick="deleteMessage(${msg.id}, event)">×</button>
         `;
                 container.appendChild(div);
             });
@@ -196,29 +209,22 @@
                 const data = await res.json();
                 if (data.message) {
                     input.value = '';
-                    const container = document.getElementById('messages-container');
-                    const div = document.createElement('div');
-                    div.className = 'message sent';
-                    div.innerHTML = `
-            <div class="message-content">${marked.parse(text)}</div>
-            <div class="message-meta">SENT_LOCAL</div>
-          `;
-                    container.appendChild(div);
-                    container.scrollTop = container.scrollHeight;
+                    // Re-fetch to get the official unified history
+                    init();
                 } else {
-                    alert(data.error || 'Failed to send');
+                    alert('Mastering Error: Needle scratch');
                 }
             } catch (err) {
-                alert('Network error');
+                alert('Signal Interruption: Store closed');
             } finally {
                 btn.disabled = false;
-                btn.textContent = 'TRANS_MIT';
+                btn.textContent = 'RELEASE_TRACK';
             }
         }
 
         async function deleteMessage(id, event) {
             event.stopPropagation();
-            if (!confirm('Destroy this transmission data?')) return;
+            if (!confirm('Shred this vinyl?')) return;
 
             try {
                 await fetch(`${server_url}/api/delete_inbox_message`, {
@@ -234,10 +240,15 @@
         }
 
         function openNewMsg() {
-            const recipient = prompt("Enter User ID (Recipient):");
+            const recipient = prompt("Enter Artist ID (User ID):");
             if (recipient) {
                 if (!conversations[recipient]) {
-                    conversations[recipient] = { sender: recipient, avatar: 'default.png', messages: [], lastMessage: { message: 'New thread', created_at: new Date() } };
+                    conversations[recipient] = {
+                        partner: recipient,
+                        avatar: 'default.png',
+                        messages: [],
+                        lastMessage: { message: 'New LP', created_at: new Date() }
+                    };
                     renderConvoList();
                 }
                 selectConvo(recipient);
@@ -256,10 +267,10 @@
             if (userParam && !activeSender) {
                 if (!conversations[userParam]) {
                     conversations[userParam] = {
-                        sender: userParam,
+                        partner: userParam,
                         avatar: 'default.png',
                         messages: [],
-                        lastMessage: { message: 'New thread', created_at: new Date() }
+                        lastMessage: { message: 'New LP', created_at: new Date() }
                     };
                     renderConvoList();
                 }
