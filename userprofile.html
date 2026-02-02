@@ -12,38 +12,43 @@
 <body class="scanlines">
   <div class="header">
     MIRAGE Profile Interface
-    <div class="divergence" onclick="backtochat()">back to chat</div>
+    <div class="header-nav">
+      <div class="divergence-btn" onclick="backtofyp()">back to feed</div>
+      <div class="divergence-btn" onclick="backtochat()">back to chat</div>
+    </div>
   </div>
 
-  <div class="profile-box" style="text-align: center; margin: auto; width: fit-content; max-width: 800px;">
-    <img id="avatar" src="" alt="Avatar" width="128" height="128" style="border-radius: 10px;" />
-    <h2 id="username">Username</h2>
-    <p id="description">Loading description...</p>
-    <p class="date">Joined: <span id="created_at"></span></p>
+  <div class="profile-container">
+    <div class="profile-box" style="text-align: center; margin: auto; width: fit-content; max-width: 800px;">
+      <img id="avatar" src="" alt="Avatar" width="128" height="128" style="border-radius: 10px;" />
+      <h2 id="username">Username</h2>
+      <p id="description">Loading description...</p>
+      <p class="date">Joined: <span id="created_at"></span></p>
 
-    <!-- Follow section -->
-    <div id="follow-section" style="margin: 1rem 0;">
-      <button id="follow-btn" style="display: none;">Follow</button>
-      <button id="unfollow-btn" style="display: none;">Unfollow</button>
-    </div>
-
-    <!-- Post creation form (only shown for own profile) -->
-    <div id="post-form" style="display: none; margin-top: 2rem; text-align: left;">
-      <h3 style="color: #ff004c; text-shadow: 0 0 3px #ff004c;">Create New Post</h3>
-      <textarea id="post-content" placeholder="What's on your mind?" maxlength="512"
-        style="width: 100%; height: 100px; background: #0a0a0a; border: 1px solid #333; color: #ccf2ff; font-family: 'Share Tech Mono', monospace; padding: 0.5rem; resize: vertical;"></textarea>
-      <div style="margin-top: 0.5rem;">
-        <span id="char-count" style="color: #888; font-size: 0.8rem;">0/512</span>
-        <button id="post-btn" style="float: right;">Post</button>
+      <!-- Follow section -->
+      <div id="follow-section" style="margin: 1rem 0;">
+        <button id="follow-btn" style="display: none;">Follow</button>
+        <button id="unfollow-btn" style="display: none;">Unfollow</button>
       </div>
-      <div style="clear: both;"></div>
-    </div>
 
-    <!-- Posts section -->
-    <div id="posts-section" style="margin-top: 2rem; text-align: left;">
-      <h3 style="color: #ff004c; text-shadow: 0 0 3px #ff004c;">Posts</h3>
-      <div id="posts-container">
-        <p style="color: #888;">Loading posts...</p>
+      <!-- Post creation form (only shown for own profile) -->
+      <div id="post-form" style="display: none; margin-top: 2rem; text-align: left;">
+        <h3 style="color: #ff004c; text-shadow: 0 0 3px #ff004c;">Create New Post</h3>
+        <textarea id="post-content" placeholder="What's on your mind?" maxlength="512"
+          style="width: 100%; height: 100px; background: #0a0a0a; border: 1px solid #333; color: #ccf2ff; font-family: 'Share Tech Mono', monospace; padding: 0.5rem; resize: vertical;"></textarea>
+        <div style="margin-top: 0.5rem;">
+          <span id="char-count" style="color: #888; font-size: 0.8rem;">0/512</span>
+          <button id="post-btn" style="float: right;">Post</button>
+        </div>
+        <div style="clear: both;"></div>
+      </div>
+
+      <!-- Posts section -->
+      <div id="posts-section" style="margin-top: 2rem; text-align: left;">
+        <h3 style="color: #ff004c; text-shadow: 0 0 3px #ff004c;">Posts</h3>
+        <div id="posts-container">
+          <p style="color: #888;">Loading posts...</p>
+        </div>
       </div>
     </div>
   </div>
@@ -76,7 +81,7 @@
     </div>
   </div>
 
-  
+
 
   <script>
     let server_url = 'http://127.0.0.1:5000'; // default fallback
@@ -85,83 +90,87 @@
       window.location.href = './room.html';
     }
 
-function sanitizeHTML(input) {
-  // First parse with marked to convert markdown to HTML
-  const html = marked.parse(input || '');
-  
-  // Create a temporary div to hold the parsed HTML
-  const tempDiv = document.createElement('div');
-  tempDiv.innerHTML = html;
-  
-  // Remove all script tags and other dangerous elements
-  const forbiddenTags = ['script', 'iframe', 'frame', 'object', 'embed', 'link', 'style'];
-  forbiddenTags.forEach(tag => {
-    const elements = tempDiv.getElementsByTagName(tag);
-    while (elements[0]) {
-      elements[0].parentNode.removeChild(elements[0]);
+    function backtofyp() {
+      window.location.href = './fyp.html';
     }
-  });
-  
-  // Remove all event handlers and javascript: URIs
-  const allElements = tempDiv.getElementsByTagName('*');
-  for (let el of allElements) {
-    const attrs = el.attributes;
-    for (let i = attrs.length - 1; i >= 0; i--) {
-      const attr = attrs[i];
-      if (attr.name.startsWith('on') || 
-          (attr.name.toLowerCase() === 'href' && attr.value.toLowerCase().startsWith('javascript:'))) {
-        el.removeAttribute(attr.name);
-      }
-    }
-  }
-  
-  // Only allow specific tags
-  const allowedTags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em', 
-    'i', 'li', 'ol', 'strong', 'ul', 'p', 'br', 'img', 'h1', 'h2', 'h3', 'h4', 
-    'h5', 'h6', 'pre', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'hr'];
-  
-  const allNodes = tempDiv.getElementsByTagName('*');
-  for (let el of allNodes) {
-    if (!allowedTags.includes(el.tagName.toLowerCase())) {
-      // Replace disallowed tags with their content
-      const parent = el.parentNode;
-      while (el.firstChild) {
-        parent.insertBefore(el.firstChild, el);
-      }
-      parent.removeChild(el);
-    }
-  }
-  
-  // Only allow specific attributes
-  const allowedAttributes = {
-    'a': ['href', 'title', 'target'],
-    'img': ['src', 'alt', 'title', 'width', 'height'],
-    'th': ['align'],
-    'td': ['align']
-  };
-  
-  const allElementsFinal = tempDiv.getElementsByTagName('*');
-  for (let el of allElementsFinal) {
-    const tagName = el.tagName.toLowerCase();
-    if (allowedAttributes[tagName]) {
-      const attrs = el.attributes;
-      for (let i = attrs.length - 1; i >= 0; i--) {
-        const attr = attrs[i];
-        if (!allowedAttributes[tagName].includes(attr.name.toLowerCase())) {
-          el.removeAttribute(attr.name);
+
+    function sanitizeHTML(input) {
+      // First parse with marked to convert markdown to HTML
+      const html = marked.parse(input || '');
+
+      // Create a temporary div to hold the parsed HTML
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = html;
+
+      // Remove all script tags and other dangerous elements
+      const forbiddenTags = ['script', 'iframe', 'frame', 'object', 'embed', 'link', 'style'];
+      forbiddenTags.forEach(tag => {
+        const elements = tempDiv.getElementsByTagName(tag);
+        while (elements[0]) {
+          elements[0].parentNode.removeChild(elements[0]);
+        }
+      });
+
+      // Remove all event handlers and javascript: URIs
+      const allElements = tempDiv.getElementsByTagName('*');
+      for (let el of allElements) {
+        const attrs = el.attributes;
+        for (let i = attrs.length - 1; i >= 0; i--) {
+          const attr = attrs[i];
+          if (attr.name.startsWith('on') ||
+            (attr.name.toLowerCase() === 'href' && attr.value.toLowerCase().startsWith('javascript:'))) {
+            el.removeAttribute(attr.name);
+          }
         }
       }
-    } else {
-      // Remove all attributes if not in allowedAttributes
-      const attrs = el.attributes;
-      for (let i = attrs.length - 1; i >= 0; i--) {
-        el.removeAttribute(attrs[i].name);
+
+      // Only allow specific tags
+      const allowedTags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em',
+        'i', 'li', 'ol', 'strong', 'ul', 'p', 'br', 'img', 'h1', 'h2', 'h3', 'h4',
+        'h5', 'h6', 'pre', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'hr'];
+
+      const allNodes = tempDiv.getElementsByTagName('*');
+      for (let el of allNodes) {
+        if (!allowedTags.includes(el.tagName.toLowerCase())) {
+          // Replace disallowed tags with their content
+          const parent = el.parentNode;
+          while (el.firstChild) {
+            parent.insertBefore(el.firstChild, el);
+          }
+          parent.removeChild(el);
+        }
       }
+
+      // Only allow specific attributes
+      const allowedAttributes = {
+        'a': ['href', 'title', 'target'],
+        'img': ['src', 'alt', 'title', 'width', 'height'],
+        'th': ['align'],
+        'td': ['align']
+      };
+
+      const allElementsFinal = tempDiv.getElementsByTagName('*');
+      for (let el of allElementsFinal) {
+        const tagName = el.tagName.toLowerCase();
+        if (allowedAttributes[tagName]) {
+          const attrs = el.attributes;
+          for (let i = attrs.length - 1; i >= 0; i--) {
+            const attr = attrs[i];
+            if (!allowedAttributes[tagName].includes(attr.name.toLowerCase())) {
+              el.removeAttribute(attr.name);
+            }
+          }
+        } else {
+          // Remove all attributes if not in allowedAttributes
+          const attrs = el.attributes;
+          for (let i = attrs.length - 1; i >= 0; i--) {
+            el.removeAttribute(attrs[i].name);
+          }
+        }
+      }
+
+      return tempDiv.innerHTML;
     }
-  }
-  
-  return tempDiv.innerHTML;
-}
 
     // Modal functions
     function openModal(modalId) {
@@ -270,21 +279,21 @@ function sanitizeHTML(input) {
       `;
     }
 
-function renderPosts(postsData) {
-  const container = document.getElementById('posts-container');
-  const posts = postsData.posts || [];
-  const currentUser = localStorage.getItem('user');
+    function renderPosts(postsData) {
+      const container = document.getElementById('posts-container');
+      const posts = postsData.posts || [];
+      const currentUser = localStorage.getItem('user');
 
-  if (posts.length === 0) {
-    container.innerHTML = '<p style="color: #888;">No posts yet.</p>';
-    return;
-  }
+      if (posts.length === 0) {
+        container.innerHTML = '<p style="color: #888;">No posts yet.</p>';
+        return;
+      }
 
-  let html = '';
-  posts.forEach(post => {
-    const isOwnPost = post.username === currentUser;
+      let html = '';
+      posts.forEach(post => {
+        const isOwnPost = post.username === currentUser;
 
-    html += `
+        html += `
       <div class="post" data-post-id="${post.id}">
         <div class="post-header">
           <a href="viewpost.html?post_id=${post.id}" style="color: #ff004c; text-decoration: none; margin-right: 10px;">#${post.id}</a>
@@ -309,10 +318,10 @@ function renderPosts(postsData) {
         </div>
       </div>
     `;
-  });
+      });
 
-  container.innerHTML = html;
-}
+      container.innerHTML = html;
+    }
 
     async function showFollowers(username) {
       openModal('followers-modal');

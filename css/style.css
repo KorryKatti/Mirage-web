@@ -911,3 +911,15 @@ nav li:nth-child(4) a {
 .view-profile-btn:hover {
   background: rgba(0, 255, 157, 0.2);
 }
+
+.chat-link {
+  color: #00ff9d;
+  text-decoration: underline;
+  cursor: pointer;
+  word-break: break-all;
+}
+
+.chat-link:hover {
+  text-shadow: 0 0 5px #00ff9d;
+  color: #fff;
+}

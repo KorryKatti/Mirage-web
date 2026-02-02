@@ -32,7 +32,7 @@ if (!username || !token) {
   window.location.href = './index.html';
 }
 
-window.onload = function() {
+window.onload = function () {
   const user = localStorage.getItem('user');
 
   if (!user) {
@@ -44,19 +44,19 @@ window.onload = function() {
     if (profileLink) {
       profileLink.href = `./userprofile.html?user=${encodeURIComponent(user)}`;
     }
-    
+
     // Setup inbox link
     const inboxLink = document.getElementById('inboxLink');
     if (inboxLink) {
       inboxLink.addEventListener('click', showInboxModal);
       inboxLink.style.cursor = 'pointer';
     }
-    
+
     // Initialize room details display
     document.getElementById('currentRoomNameDisplay').textContent = 'None';
     document.getElementById('roomMemberCount').textContent = '0';
     document.getElementById('roomType').textContent = 'Public';
-    
+
     loadRooms();
     loadInboxCount();
   }
@@ -69,95 +69,95 @@ function loadRooms() {
       'Authorization': token
     }
   })
-  .then(res => res.json())
-  .then(data => {
-    if (data.rooms) {
-      availableRooms = data.rooms;
-      
-      // Now fetch user's private rooms
-      fetch(`${server_url}/api/user_rooms`, {
-        method: 'GET',
-        headers: {
-          'Authorization': token
-        }
-      })
-      .then(res => res.json())
-      .then(userData => {
-        if (userData.rooms) {
-          // Merge private rooms with public ones
-          userData.rooms.forEach(userRoom => {
-            const existingRoom = availableRooms.find(r => r.room_id === userRoom.room_id);
-            if (existingRoom) {
-              existingRoom.joined = true;
-              existingRoom.is_private = userRoom.is_private;
-            } else {
-              availableRooms.push({
-                room_id: userRoom.room_id,
-                name: userRoom.name,
-                joined: true,
-                is_private: userRoom.is_private
-              });
-            }
-          });
-          
-          populateRoomList();
-          
-          // Auto-select logic
-          if (currentRoomId) {
-            // If we already have a room selected, refresh its details
-            const room = availableRooms.find(r => r.room_id == currentRoomId);
-            if (room) {
-              selectRoom(room.room_id, room.name);
-            } else {
-              // Our current room is no longer available
-              currentRoomId = null;
-              fetchRoomDetails(null); // Clear details
-            }
-          } else {
-            // Select first joined room or first available room
-            const joinedRoom = availableRooms.find(r => r.joined);
-            if (joinedRoom) {
-              selectRoom(joinedRoom.room_id, joinedRoom.name);
-            } else if (availableRooms.length > 0) {
-              const firstRoom = availableRooms[0];
-              joinExistingRoom(firstRoom.name, () => {
-                selectRoom(firstRoom.room_id, firstRoom.name);
-              });
-            }
+    .then(res => res.json())
+    .then(data => {
+      if (data.rooms) {
+        availableRooms = data.rooms;
+
+        // Now fetch user's private rooms
+        fetch(`${server_url}/api/user_rooms`, {
+          method: 'GET',
+          headers: {
+            'Authorization': token
           }
-        }
-      })
-      .catch(err => {
-        console.error('Error fetching user rooms:', err);
-        populateRoomList();
-      });
-    }
-  })
-  .catch(err => {
-    console.error('Failed to load rooms:', err);
-  });
+        })
+          .then(res => res.json())
+          .then(userData => {
+            if (userData.rooms) {
+              // Merge private rooms with public ones
+              userData.rooms.forEach(userRoom => {
+                const existingRoom = availableRooms.find(r => r.room_id === userRoom.room_id);
+                if (existingRoom) {
+                  existingRoom.joined = true;
+                  existingRoom.is_private = userRoom.is_private;
+                } else {
+                  availableRooms.push({
+                    room_id: userRoom.room_id,
+                    name: userRoom.name,
+                    joined: true,
+                    is_private: userRoom.is_private
+                  });
+                }
+              });
+
+              populateRoomList();
+
+              // Auto-select logic
+              if (currentRoomId) {
+                // If we already have a room selected, refresh its details
+                const room = availableRooms.find(r => r.room_id == currentRoomId);
+                if (room) {
+                  selectRoom(room.room_id, room.name);
+                } else {
+                  // Our current room is no longer available
+                  currentRoomId = null;
+                  fetchRoomDetails(null); // Clear details
+                }
+              } else {
+                // Select first joined room or first available room
+                const joinedRoom = availableRooms.find(r => r.joined);
+                if (joinedRoom) {
+                  selectRoom(joinedRoom.room_id, joinedRoom.name);
+                } else if (availableRooms.length > 0) {
+                  const firstRoom = availableRooms[0];
+                  joinExistingRoom(firstRoom.name, () => {
+                    selectRoom(firstRoom.room_id, firstRoom.name);
+                  });
+                }
+              }
+            }
+          })
+          .catch(err => {
+            console.error('Error fetching user rooms:', err);
+            populateRoomList();
+          });
+      }
+    })
+    .catch(err => {
+      console.error('Failed to load rooms:', err);
+    });
 }
 
 function populateRoomList() {
   const roomList = document.getElementById('roomList');
   roomList.innerHTML = '';
-  
+
   availableRooms.forEach(room => {
     const li = document.createElement('li');
     li.className = 'room';
     li.setAttribute('data-room-id', room.room_id);
     li.setAttribute('data-room-name', room.name);
-    
+
     const icon = room.joined ? '◉' : '◎';
     const joinedClass = room.joined ? '' : ' not-joined';
-    
+
     li.innerHTML = `<span class="room-icon">${icon}</span> ${room.name}`;
     li.className += joinedClass;
-    
+
     if (room.is_private) {
       li.innerHTML += ' <span class="private-indicator">🔒</span>';
     }
-    
+
     li.addEventListener('click', () => {
       if (room.joined) {
         selectRoom(room.room_id, room.name);
@@ -171,17 +171,17 @@ function populateRoomList() {
         });
       }
     });
-    
+
     roomList.appendChild(li);
   });
-  
+
   // Add "Join Channel" button
   const joinLi = document.createElement('li');
   joinLi.className = 'room add-room';
   joinLi.innerHTML = '<span class="room-icon">+</span> Join Channel';
   joinLi.addEventListener('click', showJoinRoomModal);
   roomList.appendChild(joinLi);
-  
+
   // Add "Create Channel" button
   const createLi = document.createElement('li');
   createLi.className = 'room add-room';
@@ -192,22 +192,22 @@ function populateRoomList() {
 
 function checkServerStatus() {
   const startTime = Date.now();
-  
+
   fetch(`${server_url}/api/ping`)
     .then(res => {
       const endTime = Date.now();
       const responseTime = endTime - startTime;
-      
+
       const statusDiv = document.querySelector('.system-status');
       const statusIndicator = document.querySelector('.status-indicator');
       const statusText = document.querySelector('.status-text');
-      
+
       if (res.ok && res.status === 200) {
         statusDiv.className = 'system-status status-nominal';
         statusText.textContent = 'NOMINAL';
         statusIndicator.textContent = '◉';
         statusIndicator.style.color = '#00ff00';
-        
+
         if (responseTime > 500) {
           statusDiv.className = 'system-status status-slow';
           statusText.textContent = 'SLOW';
@@ -225,7 +225,7 @@ function checkServerStatus() {
       const statusDiv = document.querySelector('.system-status');
       const statusIndicator = document.querySelector('.status-indicator');
       const statusText = document.querySelector('.status-text');
-      
+
       statusDiv.className = 'system-status status-offline';
       statusText.textContent = 'OFFLINE';
       statusIndicator.textContent = '◉';
@@ -241,30 +241,30 @@ checkServerStatus(); // Initial check
 function selectRoom(roomId, roomName) {
   currentRoomId = roomId;
   currentRoomName = roomName;
-  
+
   // Update UI
   document.querySelectorAll('.room').forEach(r => r.classList.remove('active'));
   const activeRoom = document.querySelector(`[data-room-id="${roomId}"]`);
   if (activeRoom) {
     activeRoom.classList.add('active');
   }
-  
+
   document.getElementById('headerText').textContent = `🧠 MIRAGE Interface v0.0.4-BETA // ${roomName}`;
-  
+
   // Update room details immediately
   document.getElementById('currentRoomNameDisplay').textContent = roomName;
-  
+
   // Fetch messages and room details
   fetchMessages();
   fetchRoomDetails(roomId);
-  
+
   document.getElementById('joinError').textContent = '';
 }
 
 function joinExistingRoom(roomName, callback) {
   const room = availableRooms.find(r => r.name === roomName);
   let password = '';
-  
+
   if (room && room.is_private) {
     password = prompt(`Room "${roomName}" is private. Please enter password:`);
     if (password === null) return; // User cancelled
@@ -276,31 +276,31 @@ function joinExistingRoom(roomName, callback) {
       'Content-Type': 'application/json',
       'Authorization': token
     },
-    body: JSON.stringify({ 
+    body: JSON.stringify({
       name: roomName,
-      password: password 
+      password: password
     })
   })
-  .then(res => {
-    if (!res.ok) {
-      return res.json().then(err => { throw new Error(err.error || 'Failed to join room'); });
-    }
-    return res.json();
-  })
-  .then(data => {
-    // Immediately select the room we're joining
-    selectRoom(data.room_id, data.room_name);
-    
-    // Then refresh the room list
-    return fetchRooms();
-  })
-  .then(() => {
-    if (callback) callback();
-  })
-  .catch(err => {
-    console.error('Error joining room:', err);
-    alert('Error joining room: ' + err.message);
-  });
+    .then(res => {
+      if (!res.ok) {
+        return res.json().then(err => { throw new Error(err.error || 'Failed to join room'); });
+      }
+      return res.json();
+    })
+    .then(data => {
+      // Immediately select the room we're joining
+      selectRoom(data.room_id, data.room_name);
+
+      // Then refresh the room list
+      return fetchRooms();
+    })
+    .then(() => {
+      if (callback) callback();
+    })
+    .catch(err => {
+      console.error('Error joining room:', err);
+      alert('Error joining room: ' + err.message);
+    });
 }
 
 
@@ -314,9 +314,9 @@ function sendMsg() {
       'Content-Type': 'application/json',
       'Authorization': token
     },
-    body: JSON.stringify({ 
-      room_id: currentRoomId, 
-      message: message 
+    body: JSON.stringify({
+      room_id: currentRoomId,
+      message: message
     })
   }).then(res => {
     if (!res.ok) console.error('flask rejected the message');
@@ -338,6 +338,21 @@ function escapeHTML(str) {
 
 function parseMarkdown(text) {
   text = escapeHTML(text);
+
+  // URL detection
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  text = text.replace(urlRegex, (url) => {
+    // Remove trailing punctuation that's likely not part of the URL
+    let cleanUrl = url;
+    const punctuation = [".", ",", "!", "?", ":", ";", ")", "]"];
+    let trailing = "";
+    while (cleanUrl.length > 0 && punctuation.includes(cleanUrl[cleanUrl.length - 1])) {
+      trailing = cleanUrl[cleanUrl.length - 1] + trailing;
+      cleanUrl = cleanUrl.substring(0, cleanUrl.length - 1);
+    }
+    return `<a href="${cleanUrl}" target="_blank" rel="noopener noreferrer" class="chat-link">${cleanUrl}</a>${trailing}`;
+  });
+
   return text
     .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
     .replace(/_(.*?)_/g, '<i>$1</i>')
@@ -373,13 +388,13 @@ function proceedDownload() {
       localStorage.setItem('downloadWarningsDisabled', 'true');
       downloadWarningsDisabled = true;
     }
-    
+
     // Download the file
     const link = document.createElement('a');
     link.href = pendingDownloadUrl;
     link.download = '';
     link.click();
-    
+
     closeDownloadWarning();
   }
 }
@@ -395,31 +410,31 @@ function fetchMessages() {
       'Authorization': token
     }
   })
-  .then(res => res.json())
-  .then(data => {
-    if (!data.messages) return;
+    .then(res => res.json())
+    .then(data => {
+      if (!data.messages) return;
 
-    chatBox.innerHTML = '';
-    data.messages.forEach(m => {
-  const msg = document.createElement('div');
-  msg.className = 'msg';
-  
-  // Check if message contains a file URL
-  if (m.message.startsWith('[File] ')) {
-    const fileUrl = m.message.substring(7); // Remove '[File] ' prefix
-    const fileName = fileUrl.split('/').pop() || 'Download File';
-    msg.innerHTML = `<span class="msg-user"><a href="./userprofile.html?user=${encodeURIComponent(m.username)}" style="color: #ff004c;">~${m.username}</a>:</span> <span class="msg-text">📎 <button class="download-btn" onclick="handleDownload('${fileUrl}', '${fileName}')">${fileName}</button></span>`;
-  } else {
-    msg.innerHTML = `<span class="msg-user"><a href="./userprofile.html?user=${encodeURIComponent(m.username)}" style="color: #ff004c;">~${m.username}</a>:</span> <span class="msg-text">${parseMarkdown(m.message)}</span>`;
-  }
-  
-  chatBox.appendChild(msg);
-});
-    chatBox.scrollTop = chatBox.scrollHeight;
-  })
-  .catch(err => {
-    console.error('Failed to fetch messages:', err);
-  });
+      chatBox.innerHTML = '';
+      data.messages.forEach(m => {
+        const msg = document.createElement('div');
+        msg.className = 'msg';
+
+        // Check if message contains a file URL
+        if (m.message.startsWith('[File] ')) {
+          const fileUrl = m.message.substring(7); // Remove '[File] ' prefix
+          const fileName = fileUrl.split('/').pop() || 'Download File';
+          msg.innerHTML = `<span class="msg-user"><a href="./userprofile.html?user=${encodeURIComponent(m.username)}" style="color: #ff004c;">~${m.username}</a>:</span> <span class="msg-text">📎 <button class="download-btn" onclick="handleDownload('${fileUrl}', '${fileName}')">${fileName}</button></span>`;
+        } else {
+          msg.innerHTML = `<span class="msg-user"><a href="./userprofile.html?user=${encodeURIComponent(m.username)}" style="color: #ff004c;">~${m.username}</a>:</span> <span class="msg-text">${parseMarkdown(m.message)}</span>`;
+        }
+
+        chatBox.appendChild(msg);
+      });
+      chatBox.scrollTop = chatBox.scrollHeight;
+    })
+    .catch(err => {
+      console.error('Failed to fetch messages:', err);
+    });
 }
 
 input.addEventListener('keydown', (e) => {
@@ -442,23 +457,23 @@ function logout() {
     },
     body: JSON.stringify({ token })
   })
-  .then(res => {
-    if (!res.ok) {
-      return res.json().then(data => {
-        throw new Error(data.error || 'Logout failed');
-      });
-    }
-    return res.json();
-  })
-  .then(data => {
-    console.log(data.message);
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    window.location.href = './index.html';
-  })
-  .catch(err => {
-    console.error('Logout failed:', err.message);
-  });
+    .then(res => {
+      if (!res.ok) {
+        return res.json().then(data => {
+          throw new Error(data.error || 'Logout failed');
+        });
+      }
+      return res.json();
+    })
+    .then(data => {
+      console.log(data.message);
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+      window.location.href = './index.html';
+    })
+    .catch(err => {
+      console.error('Logout failed:', err.message);
+    });
 }
 
 // Modal functions
@@ -490,19 +505,19 @@ function loadInboxCount() {
       'Authorization': token
     }
   })
-  .then(res => res.json())
-  .then(data => {
-    const countBadge = document.getElementById('inboxCount');
-    if (data.inbox_count && data.inbox_count > 0) {
-      countBadge.textContent = data.inbox_count;
-      countBadge.style.display = 'inline';
-    } else {
-      countBadge.style.display = 'none';
-    }
-  })
-  .catch(err => {
-    console.error('Failed to load inbox count:', err);
-  });
+    .then(res => res.json())
+    .then(data => {
+      const countBadge = document.getElementById('inboxCount');
+      if (data.inbox_count && data.inbox_count > 0) {
+        countBadge.textContent = data.inbox_count;
+        countBadge.style.display = 'inline';
+      } else {
+        countBadge.style.display = 'none';
+      }
+    })
+    .catch(err => {
+      console.error('Failed to load inbox count:', err);
+    });
 }
 
 function showInboxModal() {
@@ -521,20 +536,20 @@ function loadInboxMessages() {
       'Authorization': token
     }
   })
-  .then(res => res.json())
-  .then(data => {
-    const messagesContainer = document.getElementById('inboxMessages');
-    messagesContainer.innerHTML = '';
-    
-    if (!data.messages || data.messages.length === 0) {
-      messagesContainer.innerHTML = '<div class="no-messages">No messages found</div>';
-      return;
-    }
-    
-    data.messages.forEach(msg => {
-      const messageDiv = document.createElement('div');
-      messageDiv.className = 'inbox-message';
-      messageDiv.innerHTML = `
+    .then(res => res.json())
+    .then(data => {
+      const messagesContainer = document.getElementById('inboxMessages');
+      messagesContainer.innerHTML = '';
+
+      if (!data.messages || data.messages.length === 0) {
+        messagesContainer.innerHTML = '<div class="no-messages">No messages found</div>';
+        return;
+      }
+
+      data.messages.forEach(msg => {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'inbox-message';
+        messageDiv.innerHTML = `
         <div class="message-header">
           <img src="${msg.avatar_url}" class="sender-avatar" alt="Avatar" />
           <div class="message-info">
@@ -545,18 +560,18 @@ function loadInboxMessages() {
         </div>
         <div class="message-content">${parseMarkdown(msg.message)}</div>
       `;
-      messagesContainer.appendChild(messageDiv);
+        messagesContainer.appendChild(messageDiv);
+      });
+    })
+    .catch(err => {
+      console.error('Failed to load inbox messages:', err);
+      document.getElementById('inboxMessages').innerHTML = '<div class="error-message">Failed to load messages</div>';
     });
-  })
-  .catch(err => {
-    console.error('Failed to load inbox messages:', err);
-    document.getElementById('inboxMessages').innerHTML = '<div class="error-message">Failed to load messages</div>';
-  });
 }
 
 function deleteInboxMessage(messageId) {
   if (!confirm('Are you sure you want to delete this message?')) return;
-  
+
   fetch(`${server_url}/api/delete_inbox_message`, {
     method: 'POST',
     headers: {
@@ -565,19 +580,19 @@ function deleteInboxMessage(messageId) {
     },
     body: JSON.stringify({ message_id: messageId })
   })
-  .then(res => res.json())
-  .then(data => {
-    if (data.message) {
-      loadInboxMessages(); // Refresh messages
-      loadInboxCount(); // Update count
-    } else {
-      alert('Failed to delete message: ' + (data.error || 'Unknown error'));
-    }
-  })
-  .catch(err => {
-    console.error('Failed to delete message:', err);
-    alert('Failed to delete message');
-  });
+    .then(res => res.json())
+    .then(data => {
+      if (data.message) {
+        loadInboxMessages(); // Refresh messages
+        loadInboxCount(); // Update count
+      } else {
+        alert('Failed to delete message: ' + (data.error || 'Unknown error'));
+      }
+    })
+    .catch(err => {
+      console.error('Failed to delete message:', err);
+      alert('Failed to delete message');
+    });
 }
 
 function showSendMessageModal() {
@@ -595,12 +610,12 @@ function sendInboxMessage() {
   const recipient = document.getElementById('recipientUsername').value.trim();
   const message = document.getElementById('messageText').value.trim();
   const errorDiv = document.getElementById('sendError');
-  
+
   if (!recipient || !message) {
     errorDiv.textContent = 'Please fill in both recipient and message';
     return;
   }
-  
+
   fetch(`${server_url}/api/send_inbox_message`, {
     method: 'POST',
     headers: {
@@ -612,19 +627,19 @@ function sendInboxMessage() {
       message: message
     })
   })
-  .then(res => res.json())
-  .then(data => {
-    if (data.message) {
-      closeSendMessageModal();
-      alert('Message sent successfully!');
-    } else {
-      errorDiv.textContent = data.error || 'Failed to send message';
-    }
-  })
-  .catch(err => {
-    console.error('Failed to send message:', err);
-    errorDiv.textContent = 'Failed to send message';
-  });
+    .then(res => res.json())
+    .then(data => {
+      if (data.message) {
+        closeSendMessageModal();
+        alert('Message sent successfully!');
+      } else {
+        errorDiv.textContent = data.error || 'Failed to send message';
+      }
+    })
+    .catch(err => {
+      console.error('Failed to send message:', err);
+      errorDiv.textContent = 'Failed to send message';
+    });
 }
 
 function formatTime(timestamp) {
@@ -636,7 +651,7 @@ function joinRoom() {
   const roomName = document.getElementById('joinRoomName').value.trim();
   const password = document.getElementById('joinRoomPassword').value.trim();
   const errorDiv = document.getElementById('joinError');
-  
+
   if (!roomName) {
     errorDiv.textContent = 'Please enter a room name';
     return;
@@ -648,42 +663,42 @@ function joinRoom() {
       'Content-Type': 'application/json',
       'Authorization': token
     },
-    body: JSON.stringify({ 
+    body: JSON.stringify({
       name: roomName,
-      password: password 
+      password: password
     })
   })
-  .then(res => {
-    if (!res.ok) {
-      return res.json().then(err => { throw new Error(err.error || 'Failed to join room'); });
-    }
-    return res.json();
-  })
-  .then(data => {
-    // Close modal and clear inputs
-    closeJoinModal();
-    document.getElementById('joinRoomName').value = '';
-    document.getElementById('joinRoomPassword').value = '';
-    
-    // Immediately select the joined room
-    selectRoom(data.room_id, data.room_name);
-    
-    // Refresh room list
-    return fetchRooms();
-  })
-  .catch(err => {
-    errorDiv.textContent = err.message;
-    console.error('Error joining room:', err);
-  });
+    .then(res => {
+      if (!res.ok) {
+        return res.json().then(err => { throw new Error(err.error || 'Failed to join room'); });
+      }
+      return res.json();
+    })
+    .then(data => {
+      // Close modal and clear inputs
+      closeJoinModal();
+      document.getElementById('joinRoomName').value = '';
+      document.getElementById('joinRoomPassword').value = '';
+
+      // Immediately select the joined room
+      selectRoom(data.room_id, data.room_name);
+
+      // Refresh room list
+      return fetchRooms();
+    })
+    .catch(err => {
+      errorDiv.textContent = err.message;
+      console.error('Error joining room:', err);
+    });
 }
 
 // Show/hide password field based on private checkbox
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   const privateCheckbox = document.getElementById('isPrivate');
   const passwordField = document.getElementById('roomPassword');
-  
+
   if (privateCheckbox && passwordField) {
-    privateCheckbox.addEventListener('change', function() {
+    privateCheckbox.addEventListener('change', function () {
       passwordField.style.display = this.checked ? 'block' : 'none';
       if (!this.checked) {
         passwordField.value = '';
@@ -697,22 +712,22 @@ function createRoom() {
   const isPrivate = document.getElementById('isPrivate').checked;
   const password = document.getElementById('roomPassword').value.trim();
   const errorDiv = document.getElementById('createError');
-  
+
   if (!roomName) {
     errorDiv.textContent = 'Please enter a room name';
     return;
   }
-  
+
   if (isPrivate && !password) {
     errorDiv.textContent = 'Password required for private channels';
     return;
   }
 
-  const requestBody = { 
+  const requestBody = {
     room_name: roomName,
     is_private: isPrivate ? 1 : 0
   };
-  
+
   if (isPrivate && password) {
     requestBody.password = password;
   }
@@ -725,21 +740,21 @@ function createRoom() {
     },
     body: JSON.stringify(requestBody)
   })
-  .then(res => res.json())
-  .then(data => {
-    if (data.message) {
-      closeCreateModal();
-      loadRooms(); // Refresh room list
-      document.getElementById('createRoomName').value = '';
-      document.getElementById('isPrivate').checked = false;
-    } else {
-      errorDiv.textContent = data.error || 'Failed to create room';
-    }
-  })
-  .catch(err => {
-    errorDiv.textContent = 'Error creating room';
-    console.error('Error:', err);
-  });
+    .then(res => res.json())
+    .then(data => {
+      if (data.message) {
+        closeCreateModal();
+        loadRooms(); // Refresh room list
+        document.getElementById('createRoomName').value = '';
+        document.getElementById('isPrivate').checked = false;
+      } else {
+        errorDiv.textContent = data.error || 'Failed to create room';
+      }
+    })
+    .catch(err => {
+      errorDiv.textContent = 'Error creating room';
+      console.error('Error:', err);
+    });
 }
 
 // Add this to your script section
@@ -750,18 +765,18 @@ function fetchRooms() {
       'Authorization': token
     }
   })
-  .then(res => res.json())
-  .then(data => {
-    if (data.rooms) {
-      availableRooms = data.rooms;
-      populateRoomList();
-      return data.rooms;
-    }
-  })
-  .catch(err => {
-    console.error('Failed to fetch rooms:', err);
-    throw err;
-  });
+    .then(res => res.json())
+    .then(data => {
+      if (data.rooms) {
+        availableRooms = data.rooms;
+        populateRoomList();
+        return data.rooms;
+      }
+    })
+    .catch(err => {
+      console.error('Failed to fetch rooms:', err);
+      throw err;
+    });
 }
 
 function triggerFileUpload() {
@@ -769,69 +784,69 @@ function triggerFileUpload() {
 }
 
 function handleFileUpload() {
-    const fileInput = document.getElementById('fileInput');
-    const file = fileInput.files[0];
-    
-    if (!file) return;
+  const fileInput = document.getElementById('fileInput');
+  const file = fileInput.files[0];
 
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('room_id', currentRoomId);
+  if (!file) return;
 
-    fetch(`${server_url}/api/upload_file`, {
-        method: 'POST',
-        headers: {
-            'Authorization': token
-        },
-        body: formData
-    })
-    .then(res => {
-        if (!res.ok) {
-            return res.json().then(err => {
-                throw new Error(err.error || `Network response was not ok: ${res.status} ${res.statusText}`);
-            });
-        }
-        return res.json();
-    })
-    .then(data => {
-        if (data.error) {
-            console.error('Upload failed:', data.error);
-            alert('Failed to upload file: ' + data.error);
-            return;
-        }
-        if (data.file_url) {
-  console.log('File uploaded successfully:', data.file_url);
-  // Send the file URL as a message
-  fetch(`${server_url}/api/send_room_message`, {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('room_id', currentRoomId);
+
+  fetch(`${server_url}/api/upload_file`, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
       'Authorization': token
     },
-    body: JSON.stringify({ 
-      room_id: currentRoomId, 
-      message: `[File] ${data.file_url}` 
+    body: formData
+  })
+    .then(res => {
+      if (!res.ok) {
+        return res.json().then(err => {
+          throw new Error(err.error || `Network response was not ok: ${res.status} ${res.statusText}`);
+        });
+      }
+      return res.json();
     })
-  }).then(res => {
-    if (!res.ok) console.error('flask rejected the message');
-    fetchMessages(); // Refresh messages to show the file
-  }).catch(err => {
-    console.error('server is ghosting:', err);
-  });
-}
+    .then(data => {
+      if (data.error) {
+        console.error('Upload failed:', data.error);
+        alert('Failed to upload file: ' + data.error);
+        return;
+      }
+      if (data.file_url) {
+        console.log('File uploaded successfully:', data.file_url);
+        // Send the file URL as a message
+        fetch(`${server_url}/api/send_room_message`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': token
+          },
+          body: JSON.stringify({
+            room_id: currentRoomId,
+            message: `[File] ${data.file_url}`
+          })
+        }).then(res => {
+          if (!res.ok) console.error('flask rejected the message');
+          fetchMessages(); // Refresh messages to show the file
+        }).catch(err => {
+          console.error('server is ghosting:', err);
+        });
+      }
     })
     .catch(err => {
-        console.error('Failed to upload file:', err);
-        alert('Failed to upload file: ' + err.message);
+      console.error('Failed to upload file:', err);
+      alert('Failed to upload file: ' + err.message);
     });
 }
 // Mobile sidebar toggle functionality
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   const menuToggle = document.getElementById('menuToggle');
   const sidebar = document.getElementById('sidebar');
   const toggleRooms = document.getElementById('toggleRooms');
   const roomList = document.getElementById('roomList');
-  
+
   // Check if we're on mobile and show the toggle button if needed
   function checkMobile() {
     if (window.innerWidth <= 768) {
@@ -841,30 +856,30 @@ document.addEventListener('DOMContentLoaded', function() {
       sidebar.classList.remove('active');
     }
   }
-  
+
   // Toggle sidebar visibility on mobile
-  menuToggle.addEventListener('click', function() {
+  menuToggle.addEventListener('click', function () {
     sidebar.classList.toggle('active');
   });
-  
+
   // Toggle room list visibility
-  toggleRooms.addEventListener('click', function() {
+  toggleRooms.addEventListener('click', function () {
     roomList.classList.toggle('collapsed');
     toggleRooms.classList.toggle('collapsed');
   });
-  
+
   // Check on load and on resize
   checkMobile();
   window.addEventListener('resize', checkMobile);
 });
 
 // Close modals when clicking outside
-window.onclick = function(event) {
+window.onclick = function (event) {
   const joinModal = document.getElementById('joinRoomModal');
   const createModal = document.getElementById('createRoomModal');
   const inboxModal = document.getElementById('inboxModal');
   const sendModal = document.getElementById('sendMessageModal');
-  
+
   if (event.target === joinModal) {
     closeJoinModal();
   }
@@ -899,42 +914,42 @@ function fetchRoomDetails(roomId) {
       'Authorization': token
     }
   })
-  .then(res => res.json())
-  .then(data => {
-    if (data.rooms) {
-      const room = data.rooms.find(r => r.room_id == roomId);
-      if (room) {
-        document.getElementById('currentRoomNameDisplay').textContent = room.name;
-        document.getElementById('roomType').textContent = room.is_private ? 'Private' : 'Public';
-        
-        // Now get member count
-        fetch(`${server_url}/api/room_members/${roomId}`, {
-          method: 'GET',
-          headers: {
-            'Authorization': token
-          }
-        })
-        .then(res => res.json())
-        .then(memberData => {
-          if (memberData.members) {
-            document.getElementById('roomMemberCount').textContent = memberData.members.length;
-          } else {
-            document.getElementById('roomMemberCount').textContent = '0';
-          }
-        })
-        .catch(err => {
-          console.error('Error fetching room members:', err);
-          document.getElementById('roomMemberCount').textContent = '0';
-        });
+    .then(res => res.json())
+    .then(data => {
+      if (data.rooms) {
+        const room = data.rooms.find(r => r.room_id == roomId);
+        if (room) {
+          document.getElementById('currentRoomNameDisplay').textContent = room.name;
+          document.getElementById('roomType').textContent = room.is_private ? 'Private' : 'Public';
+
+          // Now get member count
+          fetch(`${server_url}/api/room_members/${roomId}`, {
+            method: 'GET',
+            headers: {
+              'Authorization': token
+            }
+          })
+            .then(res => res.json())
+            .then(memberData => {
+              if (memberData.members) {
+                document.getElementById('roomMemberCount').textContent = memberData.members.length;
+              } else {
+                document.getElementById('roomMemberCount').textContent = '0';
+              }
+            })
+            .catch(err => {
+              console.error('Error fetching room members:', err);
+              document.getElementById('roomMemberCount').textContent = '0';
+            });
+        }
       }
-    }
-  })
-  .catch(err => {
-    console.error('Error fetching room details:', err);
-    document.getElementById('currentRoomNameDisplay').textContent = 'None';
-    document.getElementById('roomMemberCount').textContent = '0';
-    document.getElementById('roomType').textContent = 'Public';
-  });
+    })
+    .catch(err => {
+      console.error('Error fetching room details:', err);
+      document.getElementById('currentRoomNameDisplay').textContent = 'None';
+      document.getElementById('roomMemberCount').textContent = '0';
+      document.getElementById('roomType').textContent = 'Public';
+    });
 }
 
 // Get all rooms the user has joined (including private rooms)
@@ -945,36 +960,36 @@ function fetchUserRooms() {
       'Authorization': token
     }
   })
-  .then(res => res.json())
-  .then(data => {
-    if (data.rooms) {
-      // Merge with available rooms
-      availableRooms.forEach(room => {
-        const userRoom = data.rooms.find(r => r.room_id === room.room_id);
-        if (userRoom) {
-          room.joined = true;
-          room.is_private = userRoom.is_private;
-        }
-      });
-      
-      // Add any private rooms not in the public list
-      data.rooms.forEach(userRoom => {
-        if (!availableRooms.some(r => r.room_id === userRoom.room_id)) {
-          availableRooms.push({
-            room_id: userRoom.room_id,
-            name: userRoom.name,
-            joined: true,
-            is_private: userRoom.is_private
-          });
-        }
-      });
-      
-      populateRoomList();
-    }
-  })
-  .catch(err => {
-    console.error('Error fetching user rooms:', err);
-  });
+    .then(res => res.json())
+    .then(data => {
+      if (data.rooms) {
+        // Merge with available rooms
+        availableRooms.forEach(room => {
+          const userRoom = data.rooms.find(r => r.room_id === room.room_id);
+          if (userRoom) {
+            room.joined = true;
+            room.is_private = userRoom.is_private;
+          }
+        });
+
+        // Add any private rooms not in the public list
+        data.rooms.forEach(userRoom => {
+          if (!availableRooms.some(r => r.room_id === userRoom.room_id)) {
+            availableRooms.push({
+              room_id: userRoom.room_id,
+              name: userRoom.name,
+              joined: true,
+              is_private: userRoom.is_private
+            });
+          }
+        });
+
+        populateRoomList();
+      }
+    })
+    .catch(err => {
+      console.error('Error fetching user rooms:', err);
+    });
 }
 
 
@@ -983,52 +998,52 @@ function fetchUserRooms() {
 // Show room members modal
 function showRoomMembersModal() {
   if (!currentRoomId) return;
-  
+
   document.getElementById('roomMembersModal').style.display = 'block';
-  
+
   fetch(`${server_url}/api/room_members/${currentRoomId}`, {
     method: 'GET',
     headers: {
       'Authorization': token
     }
   })
-  .then(res => res.json())
-  .then(data => {
-    const membersList = document.getElementById('roomMembersList');
-    membersList.innerHTML = '';
-    
-    if (!data.members || data.members.length === 0) {
-      membersList.innerHTML = '<p>No members found</p>';
-      return;
-    }
-    
-    data.members.forEach(member => {
-      const memberDiv = document.createElement('div');
-      memberDiv.className = 'room-member';
-      memberDiv.innerHTML = `
+    .then(res => res.json())
+    .then(data => {
+      const membersList = document.getElementById('roomMembersList');
+      membersList.innerHTML = '';
+
+      if (!data.members || data.members.length === 0) {
+        membersList.innerHTML = '<p>No members found</p>';
+        return;
+      }
+
+      data.members.forEach(member => {
+        const memberDiv = document.createElement('div');
+        memberDiv.className = 'room-member';
+        memberDiv.innerHTML = `
         <img src="./img/default-avatar.png" class="member-avatar" />
         <span class="member-name">${member}</span>
         <a href="./userprofile.html?user=${encodeURIComponent(member)}" class="view-profile-btn">View Profile</a>
       `;
-      membersList.appendChild(memberDiv);
+        membersList.appendChild(memberDiv);
+      });
+    })
+    .catch(err => {
+      console.error('Error fetching room members:', err);
+      document.getElementById('roomMembersList').innerHTML = '<p>Failed to load members</p>';
     });
-  })
-  .catch(err => {
-    console.error('Error fetching room members:', err);
-    document.getElementById('roomMembersList').innerHTML = '<p>Failed to load members</p>';
-  });
 }
 
 
 
 // Add event listeners when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   // Add room members button if it exists
   const roomMembersBtn = document.getElementById('roomMembersBtn');
   if (roomMembersBtn) {
     roomMembersBtn.addEventListener('click', showRoomMembersModal);
   }
-  
+
   // Add close button for members modal
   const closeMembersModal = document.getElementById('closeMembersModal');
   if (closeMembersModal) {
