@@ -13,9 +13,25 @@
 
     <aside class="sidebar">
         <div class="sidebar-header">
-            <h2>RECORD_CRATE_ALPHA</h2>
-            <button id="new-msg-btn" onclick="openNewMsg()"
-                style="background:none; border:none; color:var(--record-yellow); cursor:pointer; font-size:1.5rem;">📁</button>
+            <h2>Private Messages</h2>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <button id="refresh-btn" onclick="init()" title="Refresh All Messages"
+                    style="background:none; border:none; color:var(--turntable-green); cursor:pointer; display: flex; align-items: center;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M23 4v6h-6"></path>
+                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                    </svg>
+                </button>
+                <button id="new-msg-btn" onclick="openNewMsg()" title="New Message"
+                    style="background:none; border:none; color:var(--record-yellow); cursor:pointer; display: flex; align-items: center;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                </button>
+            </div>
         </div>
         <div id="convo-list" class="convo-list">
             <!-- Senders will be listed here as record spines -->
@@ -25,25 +41,35 @@
 
     <main class="chat-area">
         <header class="chat-header" id="chat-header" style="display: none;">
-            <div class="active-user-name" id="active-user-name">SELECT_SIDE_A</div>
+            <div class="active-user-name" id="active-user-name">SELECT_CONVERSATION</div>
             <div class="header-nav">
-                <a href="room.html">[ TO_THE_COURT ]</a>
-                <a href="fyp.html">[ VIEW_COLLECTION ]</a>
+                <a href="room.html" title="Return to Main Chat">[ BACK TO CHAT ]</a>
+                <a href="fyp.html" title="Return to Feed">[ BACK TO FEED ]</a>
             </div>
         </header>
 
         <div id="messages-container" class="messages-container">
             <div class="no-chat-selected">
-                <h3 id="empty-state-text">START_THE_TURNTABLE</h3>
-                <div style="font-size: 3rem; margin-top: 20px;">💿</div>
+                <h3 id="empty-state-text">SELECT A CONVERSATION</h3>
+                <div style="margin-top: 20px; color: var(--cardboard);">
+                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M12 7v2"></path>
+                        <path d="M12 15v2"></path>
+                        <path d="M7 12h2"></path>
+                        <path d="M15 12h2"></path>
+                    </svg>
+                </div>
             </div>
         </div>
 
         <div class="input-area" id="input-area" style="display: none;">
             <div class="control-panel">
                 <div class="knob"></div>
-                <input type="text" id="msg-input" placeholder="Inscribe liner notes..." autocomplete="off">
-                <button id="send-btn">RELEASE_TRACK</button>
+                <input type="text" id="msg-input" placeholder="Write a message..." autocomplete="off">
+                <button id="send-btn" title="Send encrypted message">SEND MESSAGE</button>
             </div>
         </div>
     </main>
@@ -147,7 +173,7 @@
 
             document.getElementById('chat-header').style.display = 'flex';
             document.getElementById('input-area').style.display = 'flex';
-            document.getElementById('active-user-name').textContent = `PLAYING: ${sender.toUpperCase()}`;
+            document.getElementById('active-user-name').textContent = `CHAT: ${sender.toUpperCase()}`;
 
             renderMessages();
         }
@@ -218,7 +244,7 @@
                 alert('Signal Interruption: Store closed');
             } finally {
                 btn.disabled = false;
-                btn.textContent = 'RELEASE_TRACK';
+                btn.textContent = 'SEND MESSAGE';
             }
         }
 
@@ -284,7 +310,7 @@
         document.getElementById('msg-input').onkeypress = (e) => { if (e.key === 'Enter') sendMessage(); };
 
         init();
-        setInterval(init, 10000); 
+        // Auto-polling removed as requested. Manual refresh via button only.
     </script>
 </body>
 
