@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIRAGE // Literary Guidelines (CSS)</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,700;1,400&family=Ibarra+Real+Nova:wght@400;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --shelf-wood: #8B7355;
+            --page-cream: #FFF8DC;
+            --binding-brown: #654321;
+            --ribbon-red: #C41E3A;
+            --ink-black: #2A2A2A;
+            --shadow: rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--shelf-wood);
+            background-image: url('https://www.transparenttextures.com/patterns/wood-pattern.png');
+            color: var(--ink-black);
+            font-family: 'Crimson Text', serif;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .library-wrapper {
+            max-width: 1000px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        /* Bookshelf Sidebar */
+        .shelf-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            perspective: 1000px;
+        }
+
+        .book-spine {
+            background-color: var(--binding-brown);
+            color: var(--page-cream);
+            padding: 15px 20px;
+            border-left: 8px solid rgba(0, 0, 0, 0.3);
+            box-shadow: 5px 5px 15px var(--shadow);
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-family: 'Ibarra Real Nova', serif;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .book-spine:hover {
+            transform: translateX(15px) rotateY(-5deg);
+        }
+
+        .book-spine.red {
+            background-color: var(--ribbon-red);
+        }
+
+        .book-spine.dark {
+            background-color: #3d2b1f;
+        }
+
+        /* Main Document (Open Book) */
+        .docs-page {
+            background-color: var(--page-cream);
+            background-image: url('https://www.transparenttextures.com/patterns/paper-fibers.png');
+            padding: 60px;
+            box-shadow: 10px 10px 40px var(--shadow);
+            position: relative;
+            min-height: 800px;
+            border-radius: 2px;
+        }
+
+        .docs-page::before {
+            content: '';
+            position: absolute;
+            left: 30px;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: rgba(0, 0, 0, 0.05);
+            box-shadow: 1px 0 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .ribbon-bookmark {
+            position: absolute;
+            top: -10px;
+            right: 40px;
+            width: 30px;
+            height: 100px;
+            background: var(--ribbon-red);
+            box-shadow: 2px 2px 5px var(--shadow);
+        }
+
+        .ribbon-bookmark::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-bottom: 15px solid var(--page-cream);
+        }
+
+        /* Typography */
+        h1 {
+            font-family: 'Ibarra Real Nova', serif;
+            font-size: 2.8rem;
+            margin-bottom: 30px;
+            border-bottom: 2px double var(--binding-brown);
+            padding-bottom: 10px;
+            text-align: center;
+        }
+
+        h2 {
+            font-family: 'Ibarra Real Nova', serif;
+            font-size: 1.8rem;
+            margin: 40px 0 20px 0;
+            color: var(--binding-brown);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        h2::before {
+            content: '§';
+            font-style: italic;
+            opacity: 0.5;
+        }
+
+        p {
+            margin-bottom: 20px;
+            text-align: justify;
+            font-size: 1.15rem;
+        }
+
+        ul {
+            margin-bottom: 30px;
+            list-style: none;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 15px;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--ribbon-red);
+            font-weight: bold;
+        }
+
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(101, 67, 33, 0.1);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.95em;
+        }
+
+        pre {
+            background: #2a2a2a;
+            color: #dcdccc;
+            padding: 30px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 20px 0;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+            border-left: 5px solid var(--ribbon-red);
+        }
+
+        .back-nav {
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: var(--binding-brown);
+            font-weight: bold;
+            font-style: italic;
+            border-bottom: 1px solid var(--binding-brown);
+            transition: opacity 0.2s;
+        }
+
+        .back-link:hover {
+            opacity: 0.7;
+        }
+
+        /* Library Stamp */
+        .library-stamp {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            border: 3px solid rgba(196, 30, 58, 0.3);
+            color: rgba(196, 30, 58, 0.3);
+            padding: 5px 15px;
+            font-family: 'Ibarra Real Nova', serif;
+            font-weight: bold;
+            transform: rotate(-15deg);
+            text-transform: uppercase;
+            pointer-events: none;
+        }
+
+        @media (max-width: 900px) {
+            .library-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .shelf-sidebar {
+                flex-direction: row;
+                overflow-x: auto;
+                padding-bottom: 10px;
+            }
+
+            .book-spine {
+                white-space: nowrap;
+                transform: none !important;
+            }
+
+            .docs-page {
+                padding: 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="library-wrapper">
+        <aside class="shelf-sidebar">
+            <a href="index.html" class="book-spine dark">
+                <span>The Terminal</span>
+                <span>Vol. I</span>
+            </a>
+            <a href="fyp.html" class="book-spine">
+                <span>The Wire</span>
+                <span>Vol. IV</span>
+            </a>
+            <a href="room.html" class="book-spine">
+                <span>Echo Chambers</span>
+                <span>Vol. II</span>
+            </a>
+            <div class="book-spine red">
+                <span>CSS Codex</span>
+                <span>Active</span>
+            </div>
+        </aside>
+
+        <main class="docs-page">
+            <div class="ribbon-bookmark"></div>
+
+            <h1>CSS Styling Guidelines</h1>
+            <p>This document explains how to customize your personal profile using CSS overrides. These rules ensure a
+                consistent user experience across the platform while allowing for individual customization.</p>
+
+            <section id="elements">
+                <h2>I. Targetable Elements</h2>
+                <p>You can use the following CSS selectors to modify specific parts of your profile page:</p>
+                <ul>
+                    <li><code>body</code> - The main page background and global styles.</li>
+                    <li><code>.profile-box</code> - The central container for your profile information.</li>
+                    <li><code>.polaroid-frame</code> - The frame surrounding your profile picture.</li>
+                    <li><code>#username</code> - The display area for your account name.</li>
+                    <li><code>.post</code> - Individual containers for your activity feed posts.</li>
+                </ul>
+            </section>
+
+            <section id="security">
+                <h2>II. Prohibited Content</h2>
+                <p>For security and stability, the following methods are strictly blocked by the system:</p>
+                <ul>
+                    <li><code>&lt;script&gt;</code> - Embedded JavaScript is not allowed.</li>
+                    <li><code>@import</code> - External stylesheet links are disabled.</li>
+                    <li><code>javascript:</code> - Executable code in CSS properties is filtered.</li>
+                    <li><code>@font-face</code> - Custom fonts are currently restricted to system defaults.</li>
+                </ul>
+            </section>
+
+            <section id="examples">
+                <h2>III. Implementation Example</h2>
+                <p>The following example demonstrates a standard dark-themed override for your profile:
+                </p>
+                <pre>
+/* Apply an aged sepia tone to the entire desk */
+body {
+    filter: sepia(0.6) brightness(0.9);
+}
+
+/* Style the dossier like an old library card */
+.profile-box {
+    background: #fdf5e6 !important;
+    border: 1px solid #8b4513 !important;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Enhance the subject ID with classic bolding */
+#username {
+    font-family: 'Garamond', serif;
+    letter-spacing: 2px;
+    border-bottom: 2px solid #654321;
+}
+                </pre>
+            </section>
+
+            <div class="back-nav">
+                <a href="index.html" class="back-link">Return to the Reading Room</a>
+            </div>
+
+            <div class="library-stamp">MIRAGE ARCHIVES // P-FILE 2023</div>
+        </main>
+    </div>
+</body>
+
+</html>

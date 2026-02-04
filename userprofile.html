@@ -313,6 +313,28 @@
           <div>▼</div>
         </div>
       `;
+
+      // Apply background image if provided and valid
+      if (data.background_image) {
+        const validExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+        const isValid = validExtensions.some(ext => data.background_image.toLowerCase().endsWith(ext));
+        if (isValid) {
+          document.body.style.backgroundImage = `url('${data.background_image}')`;
+          document.body.style.backgroundSize = 'cover';
+          document.body.style.backgroundAttachment = 'fixed';
+        }
+      }
+
+      // Apply custom CSS if provided
+      const oldStyle = document.getElementById('custom-user-css');
+      if (oldStyle) oldStyle.remove();
+
+      if (data.custom_css) {
+        const style = document.createElement('style');
+        style.id = 'custom-user-css';
+        style.textContent = data.custom_css;
+        document.head.appendChild(style);
+      }
     }
 
     function renderPosts(postsData) {
@@ -670,6 +692,16 @@
         if (currentUsername === profileUsername) {
           document.getElementById('post-form').style.display = 'block';
           setupPostForm();
+
+          // Add settings button
+          const settingsBtn = document.createElement('button');
+          settingsBtn.textContent = 'CONFIGURE_DOSSIER';
+          settingsBtn.style.cssText = 'background: #000; color: #fff; border: 1px solid #fff; padding: 5px 15px; font-family: "Special Elite", cursive; margin-top: 10px; cursor: pointer;';
+          settingsBtn.onclick = () => window.location.href = 'settings.html';
+          document.getElementById('follow-section').appendChild(settingsBtn);
+          document.getElementById('follow-section').style.display = 'flex';
+          document.getElementById('follow-section').style.flexDirection = 'column';
+          document.getElementById('follow-section').style.alignItems = 'center';
         }
 
         // Setup follow buttons and message button if viewing another user's profile

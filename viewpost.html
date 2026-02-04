@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>MIRAGE // View Post</title>
@@ -7,127 +8,180 @@
   <link rel="stylesheet" href="css/viewpost.css" />
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
-<body class="scanlines">
-  <div class="header">
-    MIRAGE Post View
-    <div class="divergence" onclick="backtochat()">back to chat</div>
-  </div>
 
-  <div class="profile-box" style="text-align: center; margin: auto; width: fit-content; max-width: 800px;">
-    <!-- Post Display Area -->
-    <div id="post-display" style="margin-bottom: 2rem; text-align: left;">
-      <h2 style="color: #ff004c; text-shadow: 0 0 3px #ff004c;">Post #<span id="post-id"></span></h2>
-      <div id="post-container" class="post">
-        <!-- Post content will be loaded here -->
+<body class="academic-publication">
+  <div class="journal-container">
+    <!-- Top Global Navigation -->
+    <nav class="top-nav">
+      <div class="nav-links-top">
+        <a href="./index.html">RETURN TO MASTER</a>
+        <a href="./room.html">GLOBAL CHATROOM</a>
       </div>
-    </div>
+      <div class="theme-switcher">
+        <button class="theme-btn active" id="light-btn" onclick="setMode('light')">LIGHT_MODE</button>
+        <button class="theme-btn" id="dark-btn" onclick="setMode('dark')">DARK_MODE</button>
+      </div>
+    </nav>
 
-    <!-- Replies Section -->
-    <div id="replies-section" style="text-align: left;">
-      <h3 style="color: #ff004c; text-shadow: 0 0 3px #ff004c;">Replies</h3>
+    <header class="journal-header">
+      <div class="journal-title">MIRAGE // POST ARCHIVE</div>
+      <h1 class="article-title" id="article-title">Post #<span id="post-id">---</span></h1>
+      <div class="publication-meta">
+        Authored by <span class="author" id="post-author">~USER</span> on <span id="publish-date">---</span>
+      </div>
+      <span class="doi-stamp">REF ID: <span id="doi-id">---</span></span>
+    </header>
+
+    <!-- Metrics Sidebar (rebranded voting) -->
+    <aside class="citation-metrics">
+      <div class="metric-box" id="cite-up" title="Cite supporting evidence">
+        <span class="metric-value" id="upvote-count">0</span>
+        UPVOTES
+      </div>
+      <div class="metric-box" id="cite-down" title="Dispute this fragment">
+        <span class="metric-value" id="downvote-count">0</span>
+        DOWNVOTES
+      </div>
+    </aside>
+
+    <main class="article-content" id="post-container">
+      <!-- Article content loaded here -->
+      Loading post...
+    </main>
+
+    <!-- Comments Section -->
+    <section class="peer-review-section">
+      <h2 class="peer-review-title">COMMENTS</h2>
       <div id="replies-container">
-        <p style="color: #888;">Loading replies...</p>
+        <p style="color: #666; font-style: italic;">Loading comments...</p>
       </div>
-    </div>
+    </section>
 
-    <!-- Reply Form -->
-    <div id="reply-form" style="margin-top: 2rem; text-align: left;">
-      <h3 style="color: #ff004c; text-shadow: 0 0 3px #ff004c;">Add Reply</h3>
-      <textarea id="reply-content" placeholder="Write your reply..." maxlength="512" 
-                style="width: 100%; height: 100px; background: #0a0a0a; border: 1px solid #333; color: #ccf2ff; font-family: 'Share Tech Mono', monospace; padding: 0.5rem; resize: vertical;"></textarea>
-      <div style="margin-top: 0.5rem;">
-        <span id="char-count" style="color: #888; font-size: 0.8rem;">0/512</span>
-        <button id="reply-btn" style="float: right;">Post Reply</button>
+    <!-- Submission Form -->
+    <section class="submission-form">
+      <h3>POST A COMMENT</h3>
+      <textarea id="reply-content" class="journal-textarea" placeholder="Write your comment here..."
+        maxlength="512"></textarea>
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span id="char-count" style="font-size: 0.8rem; opacity: 0.6;">CHARS: 0/512</span>
+        <button id="reply-btn" class="journal-btn">PUBLISH COMMENT</button>
       </div>
-      <div style="clear: both;"></div>
-    </div>
+    </section>
+
+    <footer class="nav-links">
+      <a href="./room.html">← RETURN TO CENTRAL REGISTRY</a> |
+      <a href="./settings.html">USER_DOSSIER_SETTINGS</a>
+    </footer>
   </div>
 
   <script>
+    // Theme Switcher Logic
+    function setMode(mode) {
+      const body = document.body;
+      const lightBtn = document.getElementById('light-btn');
+      const darkBtn = document.getElementById('dark-btn');
+
+      if (mode === 'dark') {
+        body.classList.add('dark-mode');
+        localStorage.setItem('theme', 'dark');
+        darkBtn.classList.add('active');
+        lightBtn.classList.remove('active');
+      } else {
+        body.classList.remove('dark-mode');
+        localStorage.setItem('theme', 'light');
+        lightBtn.classList.add('active');
+        darkBtn.classList.remove('active');
+      }
+    }
+
+    // Initialize Theme
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark-mode');
+    }
     let server_url = 'http://127.0.0.1:5000'; // default fallback
-    
+
     function backtochat() {
       window.location.href = './room.html';
     }
 
-    
+
     function sanitizeHTML(input) {
-  // First parse with marked to convert markdown to HTML
-  const html = marked.parse(input || '');
-  
-  // Create a temporary div to hold the parsed HTML
-  const tempDiv = document.createElement('div');
-  tempDiv.innerHTML = html;
-  
-  // Remove all script tags and other dangerous elements
-  const forbiddenTags = ['script', 'iframe', 'frame', 'object', 'embed', 'link', 'style'];
-  forbiddenTags.forEach(tag => {
-    const elements = tempDiv.getElementsByTagName(tag);
-    while (elements[0]) {
-      elements[0].parentNode.removeChild(elements[0]);
-    }
-  });
-  
-  // Remove all event handlers and javascript: URIs
-  const allElements = tempDiv.getElementsByTagName('*');
-  for (let el of allElements) {
-    const attrs = el.attributes;
-    for (let i = attrs.length - 1; i >= 0; i--) {
-      const attr = attrs[i];
-      if (attr.name.startsWith('on') || 
-          (attr.name.toLowerCase() === 'href' && attr.value.toLowerCase().startsWith('javascript:'))) {
-        el.removeAttribute(attr.name);
-      }
-    }
-  }
-  
-  // Only allow specific tags
-  const allowedTags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em', 
-    'i', 'li', 'ol', 'strong', 'ul', 'p', 'br', 'img', 'h1', 'h2', 'h3', 'h4', 
-    'h5', 'h6', 'pre', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'hr'];
-  
-  const allNodes = tempDiv.getElementsByTagName('*');
-  for (let el of allNodes) {
-    if (!allowedTags.includes(el.tagName.toLowerCase())) {
-      // Replace disallowed tags with their content
-      const parent = el.parentNode;
-      while (el.firstChild) {
-        parent.insertBefore(el.firstChild, el);
-      }
-      parent.removeChild(el);
-    }
-  }
-  
-  // Only allow specific attributes
-  const allowedAttributes = {
-    'a': ['href', 'title', 'target'],
-    'img': ['src', 'alt', 'title', 'width', 'height'],
-    'th': ['align'],
-    'td': ['align']
-  };
-  
-  const allElementsFinal = tempDiv.getElementsByTagName('*');
-  for (let el of allElementsFinal) {
-    const tagName = el.tagName.toLowerCase();
-    if (allowedAttributes[tagName]) {
-      const attrs = el.attributes;
-      for (let i = attrs.length - 1; i >= 0; i--) {
-        const attr = attrs[i];
-        if (!allowedAttributes[tagName].includes(attr.name.toLowerCase())) {
-          el.removeAttribute(attr.name);
+      // First parse with marked to convert markdown to HTML
+      const html = marked.parse(input || '');
+
+      // Create a temporary div to hold the parsed HTML
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = html;
+
+      // Remove all script tags and other dangerous elements
+      const forbiddenTags = ['script', 'iframe', 'frame', 'object', 'embed', 'link', 'style'];
+      forbiddenTags.forEach(tag => {
+        const elements = tempDiv.getElementsByTagName(tag);
+        while (elements[0]) {
+          elements[0].parentNode.removeChild(elements[0]);
+        }
+      });
+
+      // Remove all event handlers and javascript: URIs
+      const allElements = tempDiv.getElementsByTagName('*');
+      for (let el of allElements) {
+        const attrs = el.attributes;
+        for (let i = attrs.length - 1; i >= 0; i--) {
+          const attr = attrs[i];
+          if (attr.name.startsWith('on') ||
+            (attr.name.toLowerCase() === 'href' && attr.value.toLowerCase().startsWith('javascript:'))) {
+            el.removeAttribute(attr.name);
+          }
         }
       }
-    } else {
-      // Remove all attributes if not in allowedAttributes
-      const attrs = el.attributes;
-      for (let i = attrs.length - 1; i >= 0; i--) {
-        el.removeAttribute(attrs[i].name);
+
+      // Only allow specific tags
+      const allowedTags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em',
+        'i', 'li', 'ol', 'strong', 'ul', 'p', 'br', 'img', 'h1', 'h2', 'h3', 'h4',
+        'h5', 'h6', 'pre', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'hr'];
+
+      const allNodes = tempDiv.getElementsByTagName('*');
+      for (let el of allNodes) {
+        if (!allowedTags.includes(el.tagName.toLowerCase())) {
+          // Replace disallowed tags with their content
+          const parent = el.parentNode;
+          while (el.firstChild) {
+            parent.insertBefore(el.firstChild, el);
+          }
+          parent.removeChild(el);
+        }
       }
+
+      // Only allow specific attributes
+      const allowedAttributes = {
+        'a': ['href', 'title', 'target'],
+        'img': ['src', 'alt', 'title', 'width', 'height'],
+        'th': ['align'],
+        'td': ['align']
+      };
+
+      const allElementsFinal = tempDiv.getElementsByTagName('*');
+      for (let el of allElementsFinal) {
+        const tagName = el.tagName.toLowerCase();
+        if (allowedAttributes[tagName]) {
+          const attrs = el.attributes;
+          for (let i = attrs.length - 1; i >= 0; i--) {
+            const attr = attrs[i];
+            if (!allowedAttributes[tagName].includes(attr.name.toLowerCase())) {
+              el.removeAttribute(attr.name);
+            }
+          }
+        } else {
+          // Remove all attributes if not in allowedAttributes
+          const attrs = el.attributes;
+          for (let i = attrs.length - 1; i >= 0; i--) {
+            el.removeAttribute(attrs[i].name);
+          }
+        }
+      }
+
+      return tempDiv.innerHTML;
     }
-  }
-  
-  return tempDiv.innerHTML;
-}
 
     async function loadSettings() {
       try {
@@ -154,6 +208,44 @@
       }
     }
 
+    let currentPostId = null;
+
+    function renderPost(postData) {
+      currentPostId = postData.id;
+      document.getElementById('post-id').textContent = postData.id;
+      document.getElementById('doi-id').textContent = String(postData.id).padStart(6, '0');
+      document.getElementById('post-author').textContent = `~${postData.username}`;
+      document.getElementById('publish-date').textContent = new Date(postData.created_at).toLocaleDateString(undefined, {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+
+      // Update Metrics
+      document.getElementById('upvote-count').textContent = postData.upvotes || 0;
+      document.getElementById('downvote-count').textContent = postData.downvotes || 0;
+
+      const postContainer = document.getElementById('post-container');
+      postContainer.innerHTML = sanitizeHTML(marked.parse(postData.content));
+
+      // Handle self-voting state
+      const currentUser = localStorage.getItem('user');
+      const isOwnPost = postData.username === currentUser;
+      const metrics = document.querySelectorAll('.metric-box');
+      metrics.forEach(box => {
+        if (isOwnPost) {
+          box.style.opacity = '0.5';
+          box.style.cursor = 'not-allowed';
+          box.onclick = null;
+        } else {
+          box.style.opacity = '1';
+          box.style.cursor = 'pointer';
+          const type = box.id === 'cite-up' ? 'up' : 'down';
+          box.onclick = () => votePost(postData.id, type);
+        }
+      });
+    }
+
     async function fetchReplies(postId) {
       try {
         const res = await fetch(`${server_url}/api/get_replies/${postId}`);
@@ -167,74 +259,45 @@
       }
     }
 
-function renderPost(postData) {
-  document.getElementById('post-id').textContent = postData.id;
-  
-  const postContainer = document.getElementById('post-container');
-  const currentUser = localStorage.getItem('user');
-  const isOwnPost = postData.username === currentUser;
-  
-  postContainer.innerHTML = `
-    <div class="post-header">
-      Posted by ~${postData.username} on ${new Date(postData.created_at).toLocaleString()}
-    </div>
-    <div class="post-content markdown-content">
-      ${sanitizeHTML(marked.parse(postData.content))}
-    </div>
-    <div class="post-footer">
-      <div class="vote-buttons">
-        <button class="vote-btn upvote ${isOwnPost ? 'disabled' : ''}" 
-                onclick="votePost(${postData.id}, 'up')" 
-                ${isOwnPost ? 'disabled' : ''}>
-          ▲ ${postData.upvotes || 0}
-        </button>
-        <button class="vote-btn downvote ${isOwnPost ? 'disabled' : ''}" 
-                onclick="votePost(${postData.id}, 'down')" 
-                ${isOwnPost ? 'disabled' : ''}>
-          ▼ ${postData.downvotes || 0}
-        </button>
-      </div>
-    </div>
-  `;
-}
     function renderReplies(repliesData) {
-  const container = document.getElementById('replies-container');
-  const replies = repliesData.replies || [];
-  
-  if (replies.length === 0) {
-    container.innerHTML = '<p style="color: #888;">No replies yet.</p>';
-    return;
-  }
-  
-  let html = '';
-  replies.forEach(reply => {
-    html += `
-      <div class="reply" style="margin-bottom: 1rem; padding: 1rem; background: rgba(204, 242, 255, 0.03);">
-        <div class="reply-header" style="display: flex; align-items: center;">
-          <img src="${reply.avatar_url}" width="32" height="32" style="border-radius: 50%; margin-right: 0.5rem;">
-          ~${reply.username} replied on ${new Date(reply.created_at).toLocaleString()}
-        </div>
-        <div class="reply-content markdown-content" style="margin-top: 0.5rem;">
-          ${sanitizeHTML(marked.parse(reply.content))}
-        </div>
-      </div>
-    `;
-  });
-  
-  container.innerHTML = html;
-}
+      const container = document.getElementById('replies-container');
+      const replies = repliesData.replies || [];
+
+      if (replies.length === 0) {
+        container.innerHTML = '<p style="color: #666; font-style: italic;">No comments found for this post.</p>';
+        return;
+      }
+
+      let html = '';
+      replies.forEach((reply, index) => {
+        html += `
+          <article class="review-annotation">
+            <div class="review-header">
+              Comment by <span class="reviewer-name">~${reply.username}</span> — 
+              ${new Date(reply.created_at).toLocaleDateString()}
+            </div>
+            <div class="markdown-content">
+              ${sanitizeHTML(marked.parse(reply.content))}
+            </div>
+          </article>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
 
     async function votePost(postId, voteType) {
+      if (!postId) return;
       const token = localStorage.getItem('token');
       if (!token) {
-        alert('You need to be logged in to vote');
+        alert('Authentication required to vote.');
         window.location.href = './index.html';
         return;
       }
 
-      // Disable buttons during vote
-      const buttons = document.querySelectorAll(`#post-container .vote-btn`);
-      buttons.forEach(btn => btn.disabled = true);
+      // Disable metrics during processing
+      const metrics = document.querySelectorAll('.metric-box');
+      metrics.forEach(m => { m.style.pointerEvents = 'none'; m.style.opacity = '0.5'; });
 
       try {
         const response = await fetch(`${server_url}/api/vote_post`, {
@@ -250,19 +313,18 @@ function renderPost(postData) {
         });
 
         const data = await response.json();
-        
+
         if (response.ok) {
-          // Refresh the post data
           const postData = await fetchPost(postId);
           renderPost(postData);
         } else {
-          alert(data.error || 'Failed to vote');
-          buttons.forEach(btn => btn.disabled = false);
+          alert(data.error || 'Voting failed');
+          metrics.forEach(m => { m.style.pointerEvents = 'auto'; m.style.opacity = '1'; });
         }
       } catch (err) {
-        console.error('Error voting:', err);
-        alert('Failed to vote');
-        buttons.forEach(btn => btn.disabled = false);
+        console.error('Vote error:', err);
+        alert('Voting failed');
+        metrics.forEach(m => { m.style.pointerEvents = 'auto'; m.style.opacity = '1'; });
       }
     }
 
@@ -270,18 +332,18 @@ function renderPost(postData) {
       const replyContent = document.getElementById('reply-content');
       const charCount = document.getElementById('char-count');
       const replyBtn = document.getElementById('reply-btn');
-      
+
       // Character counter
       replyContent.addEventListener('input', () => {
         const count = replyContent.value.length;
         charCount.textContent = `${count}/512`;
       });
-      
+
       // Reply button handler
       replyBtn.addEventListener('click', async () => {
         const content = replyContent.value.trim();
         if (!content) return;
-        
+
         try {
           const token = localStorage.getItem('token');
           if (!token) {
@@ -289,7 +351,7 @@ function renderPost(postData) {
             window.location.href = './index.html';
             return;
           }
-          
+
           const response = await fetch(`${server_url}/api/reply_to_post`, {
             method: 'POST',
             headers: {
@@ -301,11 +363,11 @@ function renderPost(postData) {
               content: content
             })
           });
-          
+
           if (response.ok) {
             replyContent.value = '';
             charCount.textContent = '0/512';
-            
+
             // Refresh replies
             const repliesData = await fetchReplies(postId);
             renderReplies(repliesData);
@@ -322,11 +384,21 @@ function renderPost(postData) {
 
     async function initPostView() {
       await loadSettings();
-      
+
       // Get current user from localStorage
       const currentUsername = localStorage.getItem('user');
       const token = localStorage.getItem('token');
-      
+      const theme = localStorage.getItem('theme');
+
+      // Initialize Button States
+      if (theme === 'dark') {
+        document.getElementById('dark-btn').classList.add('active');
+        document.getElementById('light-btn').classList.remove('active');
+      } else {
+        document.getElementById('light-btn').classList.add('active');
+        document.getElementById('dark-btn').classList.remove('active');
+      }
+
       // If no user is logged in, redirect to login
       if (!currentUsername || !token) {
         window.location.href = './index.html';
@@ -344,11 +416,11 @@ function renderPost(postData) {
         // Load post data
         const postData = await fetchPost(postId);
         renderPost(postData);
-        
+
         // Load replies
         const repliesData = await fetchReplies(postId);
         renderReplies(repliesData);
-        
+
         // Setup reply form
         setupReplyForm(postId);
       } catch (err) {
@@ -361,4 +433,5 @@ function renderPost(postData) {
     document.addEventListener('DOMContentLoaded', initPostView);
   </script>
 </body>
+
 </html>

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>MIRAGE // Passport Settings</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/passport_settings.css" />
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+
+<body class="passport-aware">
+    <div class="passport-container">
+        <!-- Border Control Mode Toggle -->
+        <div class="mode-toggle">
+            <button class="mode-btn" id="mode-toggle-btn" onclick="toggleMode()">TOGGLE_VISUAL_MODE</button>
+        </div>
+
+        <header class="passport-header">
+            <div class="passport-type-container">
+                <div class="passport-type">DIGITAL PASSAGE // IDENTITY DOCUMENT</div>
+                <h1 style="font-size: 2.5rem; margin: 10px 0; color: var(--passport-blue);">PASS_MIRAGE</h1>
+            </div>
+            <div class="passport-id-container">
+                <div class="passport-type" style="text-align: right;">DOCUMENT NO.</div>
+                <div class="passport-id">M-PRT-<span id="display-id">000000</span></div>
+            </div>
+        </header>
+
+        <!-- Biographical Data Page -->
+        <div class="biographical-data">
+            <div class="photo-area" id="photo-frame">
+                <img id="avatar-preview" src="https://i.pinimg.com/736x/b9/e8/db/b9e8db33168a26c9ca697a05ddc80937.jpg"
+                    alt="Passport Photo" />
+                <div class="seal-gold">
+                    <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <path
+                            d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+                        </path>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="settings-page">
+                <div class="settings-group">
+                    <h3>P / SURNAME, GIVEN NAMES</h3>
+                    <div style="font-size: 1.5rem; font-weight: bold; text-transform: uppercase;" id="display-username">
+                        IDENTIFYING...</div>
+                </div>
+
+                <div class="settings-group">
+                    <h3>PERSONAL SPECIFICATIONS</h3>
+
+                    <div style="margin-bottom: 15px;">
+                        <label style="font-size: 0.8rem; opacity: 0.7; display: block;">CONTACT_EMAIL</label>
+                        <input type="email" id="email" class="input-field" placeholder="Update email address..." />
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <label style="font-size: 0.8rem; opacity: 0.7; display: block;">ACCESS_KEY (PASSWORD)</label>
+                        <input type="password" id="password" class="input-field" placeholder="••••••••" />
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                    <h3>VISUAL IDENTIFICATION</h3>
+
+                    <div style="margin-bottom: 15px;">
+                        <label style="font-size: 0.8rem; opacity: 0.7; display: block;">PHOTO_SOURCE_URL</label>
+                        <input type="text" id="avatar_url" class="input-field" placeholder="https://url-to-photo.png"
+                            oninput="updatePreview()" />
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <label style="font-size: 0.8rem; opacity: 0.7; display: block;">ENVIRONMENT_URL
+                            (BACKGROUND)</label>
+                        <input type="text" id="background_image" class="input-field"
+                            placeholder="https://url-to-background.jpg" />
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                    <h3>IDENTITY PROFILE (BIO)</h3>
+                    <textarea id="description" class="journal-textarea"
+                        style="height: 100px; font-family: 'Libre Baskerville', serif;"
+                        placeholder="Write your profile description here..."></textarea>
+                </div>
+
+                <div class="settings-group">
+                    <h3>INTERFACE MODIFICATIONS (CSS)</h3>
+                    <textarea id="custom_css" class="journal-textarea"
+                        style="height: 100px; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem;"
+                        placeholder="/* Custom CSS here */"></textarea>
+                </div>
+
+                <div style="display: flex; gap: 20px; align-items: center; margin-top: 30px;">
+                    <button class="btn-renew" id="save-btn">RENEW IDENTITY</button>
+                    <button class="btn-renew" id="reset-css-btn"
+                        style="background: var(--stamp-exit-blue); border: none;">RESET_INTERFACE</button>
+                </div>
+
+                <div id="status-msg"
+                    style="margin-top: 20px; font-family: 'Share Tech Mono', monospace; font-weight: bold;"></div>
+            </div>
+        </div>
+
+        <!-- Visa Stamps Area (Account History Rebranded) -->
+        <div class="peer-review-section" style="margin-top: 60px;">
+            <h2 class="peer-review-title">ENTRY & EXIT AUTHORIZATIONS</h2>
+            <div class="stamp-area">
+                <div class="stamp">ENTRY // MIRAGE_NET</div>
+                <div class="stamp exit">VALID // PERMANENT</div>
+                <div class="stamp">SECTOR // GLOBAL</div>
+                <div class="stamp exit">AUTH // VERIFIED</div>
+            </div>
+        </div>
+
+        <footer class="nav-links">
+            <a href="./room.html">← DISPATCH HUB</a>
+            <a href="./userprofile.html" id="profile-link">VIEW PROFILE PAGE</a>
+            <a href="./index.html">LOGOUT // EXIT</a>
+        </footer>
+    </div>
+
+    <script>
+        let server_url = 'http://127.0.0.1:5000';
+
+        // Mode Management
+        function toggleMode() {
+            const body = document.body;
+            if (body.classList.contains('dark-mode')) {
+                body.classList.remove('dark-mode');
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.classList.add('dark-mode');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+
+        async function loadSettingsJson() {
+            try {
+                const res = await fetch('settings.json');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.server_url) server_url = data.server_url;
+                }
+            } catch (e) { }
+        }
+
+        function updatePreview() {
+            const url = document.getElementById('avatar_url').value;
+            if (url) {
+                document.getElementById('avatar-preview').src = url;
+            }
+        }
+
+        async function loadCurrentSettings() {
+            const username = localStorage.getItem('user');
+            const token = localStorage.getItem('token');
+            if (!username || !token) {
+                window.location.href = './index.html';
+                return;
+            }
+
+            document.getElementById('display-username').textContent = username;
+            document.getElementById('display-id').textContent = Math.floor(100000 + Math.random() * 900000);
+            document.getElementById('profile-link').href = `./userprofile.html?user=${encodeURIComponent(username)}`;
+
+            try {
+                const res = await fetch(`${server_url}/api/user/${username}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    document.getElementById('avatar_url').value = data.avatar_url || '';
+                    document.getElementById('description').value = data.description || '';
+                    document.getElementById('background_image').value = data.background_image || '';
+                    document.getElementById('custom_css').value = data.custom_css || '';
+                    if (data.avatar_url) document.getElementById('avatar-preview').src = data.avatar_url;
+                }
+            } catch (err) {
+                console.error('Failed to load current settings', err);
+            }
+        }
+
+        function validateBackgroundImage(url) {
+            if (!url) return true;
+            const validExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+            return validExtensions.some(ext => url.toLowerCase().endsWith(ext));
+        }
+
+        function sanitizeCSS(css) {
+            if (!css) return '';
+            return css
+                .replace(/<script\b[^>]*>([\s\S]*?)<\/script>/gim, "")
+                .replace(/expression\s*\(|behavior\s*:/gim, "")
+                .replace(/@import\b/gim, "")
+                .replace(/-moz-binding\b/gim, "")
+                .replace(/javascript\s*:/gim, "")
+                .replace(/@font-face\b/gim, "");
+        }
+
+        document.getElementById('save-btn').addEventListener('click', async () => {
+            const token = localStorage.getItem('token');
+            const statusMsg = document.getElementById('status-msg');
+
+            const payload = {};
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const avatar_url = document.getElementById('avatar_url').value.trim();
+            const description = document.getElementById('description').value.trim();
+            const background_image = document.getElementById('background_image').value.trim();
+            let custom_css = document.getElementById('custom_css').value.trim();
+
+            if (background_image && !validateBackgroundImage(background_image)) {
+                statusMsg.textContent = 'DOCUMENT_ERROR: INVALID_IMAGE_FORMAT';
+                statusMsg.style.color = 'var(--stamp-entry-red)';
+                return;
+            }
+
+            if (custom_css) custom_css = sanitizeCSS(custom_css);
+
+            if (email) payload.email = email;
+            if (password) payload.password = password;
+            if (avatar_url) payload.avatar_url = avatar_url;
+            if (description) payload.description = description;
+            if (background_image) payload.background_image = background_image;
+            if (custom_css) payload.custom_css = custom_css;
+
+            if (Object.keys(payload).length === 0) {
+                statusMsg.textContent = 'DATA_MISSING: NO_CHANGES_FILED';
+                statusMsg.style.color = 'var(--stamp-entry-red)';
+                return;
+            }
+
+            try {
+                statusMsg.textContent = 'TRANSMITTING_TO_BORDER_CONTROL...';
+                statusMsg.style.color = 'var(--official-black)';
+
+                const res = await fetch(`${server_url}/api/user/settings`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': token
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (res.ok) {
+                    statusMsg.textContent = 'SUCCESS: IDENTITY_PASS_RENEWED';
+                    statusMsg.style.color = 'var(--stamp-exit-blue)';
+                    if (avatar_url) updatePreview();
+                } else {
+                    const data = await res.json();
+                    statusMsg.textContent = `DENIED: ${data.message || 'RENEWAL_FAILED'}`;
+                    statusMsg.style.color = 'var(--stamp-entry-red)';
+                }
+            } catch (err) {
+                statusMsg.textContent = 'UNABLE_TO_CONNECT_TO_REGISTRY';
+                statusMsg.style.color = 'var(--stamp-entry-red)';
+            }
+        });
+
+        document.getElementById('reset-css-btn').addEventListener('click', async () => {
+            if (!confirm('RESET_DOCUMENT: Revert all interface modifications?')) return;
+
+            const token = localStorage.getItem('token');
+            const statusMsg = document.getElementById('status-msg');
+
+            try {
+                statusMsg.textContent = 'RESETTING_INTERFACE_MANIFEST...';
+                const res = await fetch(`${server_url}/api/user/settings`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': token
+                    },
+                    body: JSON.stringify({ custom_css: "" })
+                });
+
+                if (res.ok) {
+                    document.getElementById('custom_css').value = '';
+                    statusMsg.textContent = 'INTERFACE_RESET_SUCCESSFUL';
+                    statusMsg.style.color = 'var(--stamp-exit-blue)';
+                }
+            } catch (err) {
+                statusMsg.textContent = 'CONNECTION_FAILURE';
+            }
+        });
+
+        async function init() {
+            await loadSettingsJson();
+            await loadCurrentSettings();
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+
+</html>

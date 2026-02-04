@@ -4,100 +4,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MIRAGE TERMINAL // 1985</title>
+    <title>MIRAGE // Café Menu</title>
     <link rel="stylesheet" href="css/indexstyle.css">
-    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Fira+Code:wght@400;500&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Patrick+Hand&display=swap"
         rel="stylesheet">
 </head>
 
-<body class="crt-theme">
-    <div class="crt-overlay"></div>
-    <div class="monitor">
-        <div class="screen">
-            <header class="terminal-header">
-                <div class="header-left">
-                    <span class="prompt">SYSTEM_MIRAGE_V0.0.6:</span>
-                    <span class="flicker-cursor">|</span>
-                </div>
-                <div class="header-right" id="current-time">20:25:32</div>
-            </header>
+<body class="cafe-theme">
+    <div class="chalkboard-texture"></div>
 
-            <main class="terminal-content">
-                <section class="hero">
-                    <pre class="ascii-art">
-  o          o   __o__   o__ __o                o           o__ __o       o__ __o__/_ 
- <|\        /|>    |    <|     v\              <|>         /v     v\     <|    v      
- / \\o    o// \   / \   / \     <\             / \        />       <\    < >          
- \o/ v\  /v \o/   \o/   \o/     o/           o/   \o    o/                |           
-  |   <\/>   |     |     |__  _<|           <|__ __|>  <|       _\__o__   o__/_       
- / \        / \   < >    |       \          /       \   \\          |     |           
- \o/        \o/    |    <o>       \o      o/         \o   \         /    <o>          
-  |          |     o     |         v\    /v           v\   o       o      |           
- / \        / \  __|>_  / \         <\  />             <\  <\__ __/>     / \  _\o__/_ 
-                                                                                      
-                                                                                      
-                                                                                      
-                    </pre>
-                    <h1 class="amber-text">> WELCOME TO THE PROJECT MIRAGE</h1>
-                    <p class="description">Near-realtime communications. Establishing warm-link since
-                        1985.</p>
+    <div class="menu-board">
+        <header class="menu-header">
+            <div class="header-decoration">
+                <span class="flourish">~*~</span>
+            </div>
+            <h1 class="handwritten-title">MIRAGE</h1>
+            <p class="tagline">Connected communication platform since 2023</p>
+        </header>
+
+        <main class="menu-content">
+            <div class="menu-grid">
+                <section class="menu-section orders">
+                    <h2 class="section-title">NAVIGATION</h2>
+                    <ul class="menu-items">
+                        <li class="menu-item" onclick="window.location.href='./register.html'">
+                            <span class="item-name">Create Account</span>
+                            <span class="dots"></span>
+                            <span class="item-price">NEW</span>
+                        </li>
+                        <li class="menu-item" onclick="window.location.href='./login.html'">
+                            <span class="item-name">User Login</span>
+                            <span class="dots"></span>
+                            <span class="item-price">AUTH</span>
+                        </li>
+                        <li class="menu-item" onclick="window.location.href='./room.html'">
+                            <span class="item-name">Global Chatroom</span>
+                            <span class="dots"></span>
+                            <span class="item-price">LIVE</span>
+                        </li>
+                    </ul>
                 </section>
 
-                <div class="terminal-grid">
-                    <section class="panel commands">
-                        <h2 class="panel-title">[ AVAILABLE_COMMANDS ]</h2>
-                        <div class="command-group">
-                            <button class="cmd-btn" onclick="window.location.href='./register.html'">RUN
-                                SIGNUP.EXE</button>
-                            <button class="cmd-btn" onclick="window.location.href='./login.html'">LOGIN.SYS</button>
-                            <button class="cmd-btn" onclick="window.location.href='./room.html'">GOTO CHAT</button>
-                        </div>
-                    </section>
-
-                    <section class="panel updates">
-                        <h2 class="panel-title">[ RECENT_ACTIVITY ]</h2>
-                        <ul class="activity-log">
-                            <li>* V0.0.6: Fixed buffer overflows</li>
-                            <li>* NEW: Personal blogs added</li>
-                            <li>* UPD: Markdown interpreter live</li>
+                <section class="menu-section daily-special">
+                    <h2 class="section-title">SYSTEM UPDATES</h2>
+                    <div class="special-card">
+                        <ul class="note-list">
+                            <li><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="sidebar-icon">
+                                    <circle cx="12" cy="12" r="3" />
+                                    <path
+                                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                                </svg> V0.0.6: Scroll/Overflow stability</li>
+                            <li><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="sidebar-icon">
+                                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
+                                    <path d="M8 7h6" />
+                                    <path d="M8 11h8" />
+                                </svg> Recent blog updates</li>
                         </ul>
-                    </section>
-                </div>
-
-                <section class="panel devblog-mini">
-                    <h2 class="panel-title">[ RESEARCH_FRAGMENTS ]</h2>
-                    <div class="blog-preview">
-                        <img src="https://i.pinimg.com/736x/02/b0/92/02b0921de35726e3223c404607b2b6d0.jpg"
-                            alt="Vintage Tech" class="vintage-img">
-                        <div class="blog-text">
-                            <h3>Subject: Why Mirage?</h3>
-                            <p>lorem ipsum blah blah...</p>
-                            <a href="https://korrykatti.github.io/blog/" target="_blank"
-                                class="accent-link">READ_MORE.TXT</a>
+                        <div class="docs-promo"
+                            style="margin-top: 20px; padding: 15px; border: 1px dashed var(--coffee-brown); background: rgba(139, 69, 19, 0.05);">
+                            <h4
+                                style="font-family: 'Caveat', cursive; font-size: 1.4rem; color: var(--coffee-brown); margin-bottom: 5px;">
+                                Platform Documentation</h4>
+                            <p style="font-size: 0.9rem; margin-bottom: 15px; opacity: 0.8;">Learn how to customize your
+                                profile with CSS guidelines.</p>
+                            <a href="css_docs.html" class="chalk-btn" style="width: 100%; text-align: center;">Open
+                                Interface Docs</a>
                         </div>
                     </div>
                 </section>
+            </div>
 
-                <footer class="terminal-footer">
-                    <div class="footer-links">
-                        <a href="https://github.com/korrykatti/mirage" target="_blank">$ git clone mirage</a>
-                        <a href="https://github.com/korrykatti/mirage-web" target="_blank">$ git clone mirage_web</a>
+            <section class="menu-section roast-details">
+                <h2 class="section-title">PROJECT OVERVIEW</h2>
+                <div class="roast-preview">
+                    <div class="cup-decoration">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                            style="color: var(--coffee-brown);">
+                            <path d="M17 8h1a4 4 0 1 1 0 8h-1" />
+                            <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z" />
+                            <line x1="6" y1="2" x2="6" y2="4" />
+                            <line x1="10" y1="2" x2="10" y2="4" />
+                            <line x1="14" y1="2" x2="14" y2="4" />
+                        </svg>
                     </div>
-                    <p class="copyright">MIRAGE CORP (C) 1985-2025 // NO RIGHTS RESERVED.</p>
-                </footer>
-            </main>
-        </div>
+                    <div class="roast-info">
+                        <h3>Subject: Why Mirage?</h3>
+                        <p>Providing a platform for persistent digital identity and communication.</p>
+                        <a href="https://korrykatti.github.io/blog/" target="_blank" class="chalk-btn">View Article</a>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="menu-footer">
+                <div class="social-links">
+                    <a href="https://github.com/korrykatti/mirage" target="_blank">Source Code (Github)</a>
+                </div>
+                <p class="copyright">Mirage Project (C) 2023-2026</p>
+                <div class="time-stamp" id="current-time">Time: 12:00 PM</div>
+            </footer>
+        </main>
     </div>
 
     <script>
         function updateTime() {
             const now = new Date();
-            const timeStr = now.getHours().toString().padStart(2, '0') + ':' +
-                now.getMinutes().toString().padStart(2, '0') + ':' +
-                now.getSeconds().toString().padStart(2, '0');
-            document.getElementById('current-time').textContent = timeStr;
+            const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('current-time').textContent = `Brewed at: ${timeStr}`;
         }
-        setInterval(updateTime, 1000);
+        setInterval(updateTime, 60000);
         updateTime();
     </script>
 </body>
