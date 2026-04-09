@@ -1,27 +1,34 @@
 # Mirage-web
 
-** THIS IS NOT UP TO DATE **
+Mirage-web is the official frontend interface for Mirage, a privacy-centric communication platform. This repository contains all the web assets, including HTML layouts, CSS styling, and client-side logic required to run the Mirage experience in a browser.
 
-Welcome to **Mirage-web** – the web version of Mirage, a privacy-focused chat app!
+## Project Overview
 
-## Overview
+The interface is built with a focus on distinct, retro-inspired aesthetic themes. It provides a full suite of features for private and public communication without storing sensitive data on the server side.
 
-Mirage is designed to ensure your conversations remain confidential and secure. Unlike traditional messaging apps, Mirage doesn't store your messages on any server, ensuring your privacy is always protected.
+## Core Features
 
-## Contributing
+- **Central Registry (Global Chat)**: A real-time hub for public discourse and channel-based communication.
+- **Secure Relay (Private Messaging)**: A dedicated system for direct, one-on-one encrypted messaging.
+- **Telegraph Wire (FYP)**: A feed-based discovery system for viewing trending posts and priority wires.
+- **User Dossiers**: Comprehensive profile management and customization options.
+- **Customizable Themes**: Multiple visual modes, including cafe-themed boards and terminal-style interfaces.
 
-We invite you to contribute to the project! Please take a look at the other markdown files in this repository for guidelines and resources. Check the **Discussion** issue to explore the various contributions you can make and engage with other community members.
+## Backend and API
 
-### Server Code
+This repository is purely for the UI. The backend services, including all API endpoints, database handling, and core message routing, are located in a separate repository.
 
-The server code is available at [korrykatti/mirage](https://github.com/KorryKatti/mirage). You can check the endpoints and design your contributions accordingly.
+You can find the backend source code here:
+[github.com/korrykatti/mirage](https://github.com/korrykatti/mirage)
 
-## Getting Started
+## Setup
 
-To get started with Mirage-web, follow the instructions in the respective sections of the repository.
+To run the project locally, serve the root directory using a static file server of your choice. Configuration for the backend connection can be found and modified in the `settings.json` file.
+
+## Development
+
+The project uses vanilla JavaScript and CSS to maintain simplicity and performance. Contributions are welcome, provided they align with the established aesthetic and privacy standards.
 
 ## License
 
-Mirage-web is open-source and available under the MIT License.
-
-Thank you for your interest in contributing to Mirage-web!
+Mirage-web is open-source software distributed under the MIT License.

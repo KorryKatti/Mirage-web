@@ -22,11 +22,11 @@
     </div>
     <nav>
       <ul>
-        <li><a href="./fyp.html"><span class="nav-icon">⌂</span> Explore</a></li>
-        <li><a href="./room.html" class="active"><span class="nav-icon">💬</span> Room</a></li>
-        <li><a id="profileLink"><span class="nav-icon">👤</span> Profile</a></li>
-        <li><a href="./settings.html"><span class="nav-icon">⚙️</span> Settings</a></li>
-        <li><a href="./messages.html"><span class="nav-icon">📧</span> Relay <span id="inboxCount" class="inbox-badge"
+        <li><a href="./fyp.html"><span class="nav-icon">[+]</span> Explore</a></li>
+        <li><a href="./room.html" class="active"><span class="nav-icon">[#]</span> Room</a></li>
+        <li><a id="profileLink"><span class="nav-icon">[@]</span> Profile</a></li>
+        <li><a href="./settings.html"><span class="nav-icon">[*]</span> Settings</a></li>
+        <li><a href="./messages.html"><span class="nav-icon">[!]</span> Relay <span id="inboxCount" class="inbox-badge"
               style="display: none;"></span></a></li>
       </ul>
     </nav>
@@ -58,7 +58,7 @@
     </div>
   </div>
 
-  <div class="header" id="headerText">🧠 MIRAGE Interface v0.0.4-BETA // Loading...</div>
+  <div class="header" id="headerText">MIRAGE Interface v0.0.4-BETA // Loading...</div>
   <div class="chat-box" id="chat">
     <!-- messages will populate here -->
   </div>
@@ -115,7 +115,7 @@
   <div id="inboxModal" class="modal">
     <div class="modal-content inbox-modal">
       <div class="modal-header">
-        <h3>📧 Inbox Messages</h3>
+        <h3>[!] Inbox Messages</h3>
         <div class="modal-controls">
           <button onclick="showSendMessageModal()" class="send-btn">Send Message</button>
           <span class="close" onclick="closeInboxModal()">&times;</span>
@@ -144,7 +144,7 @@
     <div class="modal-content">
       <span class="close" onclick="closeDownloadWarning()">&times;</span>
       <div class="warning-header">
-        <span class="warning-icon">⚠️</span>
+        <span class="warning-icon">[!]</span>
         <h3>Download Warning</h3>
       </div>
       <div class="warning-content">
