@@ -2,136 +2,95 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <title>MIRAGE // The Record Crate</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/messages.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mirage — Messages</title>
+    <link rel="stylesheet" href="theme.css" />
+    <script src="js/theme.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"></script>
 </head>
 
-<body>
+<body style="overflow: hidden;">
+    <div class="page-wrap" style="padding: 16px; height: 100vh; align-items: flex-start;">
 
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <h2>Private Messages</h2>
-            <div style="display: flex; gap: 10px; align-items: center;">
-                <button id="refresh-btn" onclick="init()" title="Refresh All Messages"
-                    style="background:none; border:none; color:var(--turntable-green); cursor:pointer; display: flex; align-items: center;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M23 4v6h-6"></path>
-                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-                    </svg>
-                </button>
-                <button id="new-msg-btn" onclick="openNewMsg()" title="New Message"
-                    style="background:none; border:none; color:var(--record-yellow); cursor:pointer; display: flex; align-items: center;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                    </svg>
-                </button>
-            </div>
-        </div>
-        <div id="convo-list" class="convo-list">
-            <!-- Senders will be listed here as record spines -->
-            <div style="padding: 20px; text-align: center; opacity: 0.5;">BROWSING_COLLECTION...</div>
-        </div>
-    </aside>
+        <div style="width: 100%; max-width: 1000px; display: flex; flex-direction: column; gap: 12px; height: 100%;">
 
-    <main class="chat-area">
-        <header class="chat-header" id="chat-header" style="display: none;">
-            <div class="active-user-name" id="active-user-name">SELECT_CONVERSATION</div>
-            <div class="header-nav">
-                <a href="settings.html" title="Configure Settings">[ SETTINGS ]</a>
-                <a href="room.html" title="Return to Main Chat">[ BACK TO CHAT ]</a>
-                <a href="fyp.html" title="Return to Feed">[ BACK TO FEED ]</a>
-            </div>
-        </header>
-
-        <div id="messages-container" class="messages-container">
-            <div class="no-chat-selected">
-                <h3 id="empty-state-text">SELECT A CONVERSATION</h3>
-                <div style="margin-top: 20px; color: var(--cardboard);">
-                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <circle cx="12" cy="12" r="3"></circle>
-                        <path d="M12 7v2"></path>
-                        <path d="M12 15v2"></path>
-                        <path d="M7 12h2"></path>
-                        <path d="M15 12h2"></path>
-                    </svg>
+            <header class="site-header">
+                <span class="logo">mirage</span>
+                <nav>
+                    <a href="fyp.html">Feed</a>
+                    <a href="room.html">Chat</a>
+                    <a href="messages.html" class="active">Messages</a>
+                    <a href="settings.html">Settings</a>
+                </nav>
+                <div style="display:flex; gap:8px;">
+                    <button class="btn btn-ghost btn-sm" onclick="init()">Refresh</button>
+                    <button class="btn btn-primary btn-sm" onclick="openNewMsg()">New Message</button>
                 </div>
+            </header>
+
+            <div class="messages-layout" style="flex:1; min-height: 0;">
+
+                <!-- Conversation list -->
+                <div class="convo-sidebar" id="convo-list">
+                    <div style="padding: 8px; font-size: 0.85rem; color: var(--text-muted); text-align: center;">
+                        Loading…</div>
+                </div>
+
+                <!-- Chat area -->
+                <div class="chat-area">
+                    <div class="chat-top-bar" id="chat-header" style="display:none;">
+                        <span id="active-user-name">Conversation</span>
+                    </div>
+                    <div id="messages-container">
+                        <div style="padding: 40px; text-align: center; color: var(--text-muted);">
+                            Select a conversation to start messaging.
+                        </div>
+                    </div>
+                    <div class="msg-input-bar" id="input-area" style="display: none;">
+                        <input type="text" id="msg-input" placeholder="Write a message…" autocomplete="off" />
+                        <button class="btn btn-primary" id="send-btn">Send</button>
+                    </div>
+                </div>
+
             </div>
         </div>
-
-        <div class="input-area" id="input-area" style="display: none;">
-            <div class="control-panel">
-                <div class="knob"></div>
-                <input type="text" id="msg-input" placeholder="Write a message..." autocomplete="off">
-                <button id="send-btn" title="Send encrypted message">SEND MESSAGE</button>
-            </div>
-        </div>
-    </main>
-
+    </div>
     <script>
         let server_url = 'http://127.0.0.1:5000';
         const token = localStorage.getItem('token');
         const currentUser = localStorage.getItem('user');
-
         let allMessages = [];
         let conversations = {};
         let activeSender = null;
 
-        if (!token || !currentUser) {
-            window.location.href = 'index.html';
-        }
+        if (!token || !currentUser) { window.location.href = 'index.html'; }
 
         async function loadSettings() {
             try {
-                const res = await fetch('settings.json');
-                const settings = await res.json();
-                if (settings.server_url) server_url = settings.server_url;
+                const r = await fetch('settings.json');
+                const d = await r.json();
+                if (d.server_url) server_url = d.server_url;
             } catch (e) { }
         }
 
         async function fetchInbox() {
             try {
-                const res = await fetch(`${server_url}/api/inbox`, {
-                    headers: { 'Authorization': token }
-                });
+                const res = await fetch(`${server_url}/api/inbox`, { headers: { Authorization: token } });
                 const data = await res.json();
                 return data.messages || [];
-            } catch (err) {
-                console.error(err);
-                return [];
-            }
+            } catch (err) { return []; }
         }
 
         function groupMessages(messages) {
             const groups = {};
             messages.forEach(msg => {
-                // Determine the other person in the conversation
                 const partner = msg.sender === currentUser ? msg.recipient : msg.sender;
-
                 if (!groups[partner]) {
-                    groups[partner] = {
-                        partner: partner,
-                        avatar: 'default.png', // Default, will update if we find their message
-                        messages: [],
-                        lastMessage: msg
-                    };
+                    groups[partner] = { partner, avatar: 'default.png', messages: [], lastMessage: msg };
                 }
-
-                // If the message is FROM the partner, use their avatar for the conversation
-                if (msg.sender === partner && msg.avatar_url) {
-                    groups[partner].avatar = msg.avatar_url;
-                }
-
+                if (msg.sender === partner && msg.avatar_url) groups[partner].avatar = msg.avatar_url;
                 groups[partner].messages.push(msg);
-
-                // Keep track of the truly last message for sorting
                 if (new Date(msg.created_at) > new Date(groups[partner].lastMessage.created_at)) {
                     groups[partner].lastMessage = msg;
                 }
@@ -142,28 +101,24 @@
         function renderConvoList() {
             const list = document.getElementById('convo-list');
             list.innerHTML = '';
-
-            const sortedPartners = Object.values(conversations).sort((a, b) =>
+            const sorted = Object.values(conversations).sort((a, b) =>
                 new Date(b.lastMessage.created_at) - new Date(a.lastMessage.created_at)
             );
-
-            if (sortedPartners.length === 0) {
-                list.innerHTML = '<div style="padding:20px; text-align:center; opacity:0.5; color:var(--cardboard);">CRATE_EMPTY</div>';
+            if (sorted.length === 0) {
+                list.innerHTML = '<div style="padding: 20px; text-align:center; color: var(--text-muted); font-size: 0.9rem;">No conversations yet.</div>';
                 return;
             }
-
-            sortedPartners.forEach(convo => {
+            sorted.forEach(convo => {
                 const item = document.createElement('div');
-                item.className = `convo-item ${activeSender === convo.partner ? 'active' : ''}`;
+                item.className = `convo-item${activeSender === convo.partner ? ' active' : ''}`;
                 item.onclick = () => selectConvo(convo.partner);
-
                 item.innerHTML = `
-          <img src="${convo.avatar}" class="avatar" alt="">
-          <div class="convo-info">
-            <span class="convo-name">${convo.partner}</span>
-          </div>
-          <div class="record-label-tag">LP</div>
-        `;
+        <img src="${convo.avatar}" alt="" onerror="this.src='https://i.pinimg.com/736x/b9/e8/db/b9e8db33168a26c9ca697a05ddc80937.jpg'" />
+        <div>
+          <div class="convo-name">${convo.partner}</div>
+          <div class="convo-preview">${(convo.lastMessage.message || '').slice(0, 40)}…</div>
+        </div>
+      `;
                 list.appendChild(item);
             });
         }
@@ -171,43 +126,33 @@
         function selectConvo(sender) {
             activeSender = sender;
             renderConvoList();
-
-            document.getElementById('chat-header').style.display = 'flex';
+            document.getElementById('chat-header').style.display = 'block';
             document.getElementById('input-area').style.display = 'flex';
-            document.getElementById('active-user-name').textContent = `CHAT: ${sender.toUpperCase()}`;
-
+            document.getElementById('active-user-name').textContent = sender;
             renderMessages();
         }
 
         function renderMessages() {
             const container = document.getElementById('messages-container');
             container.innerHTML = '';
+            const msgs = (conversations[activeSender]?.messages || []).slice()
+                .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
-            const messages = conversations[activeSender].messages.slice().sort((a, b) =>
-                new Date(a.created_at) - new Date(b.created_at)
-            );
-
-            messages.forEach(msg => {
-                const div = document.createElement('div');
+            msgs.forEach(msg => {
                 const isSent = msg.sender === currentUser;
-                div.className = isSent ? 'message sent' : 'message received';
-
-                const timestamp = new Date(msg.created_at).toLocaleTimeString();
+                const div = document.createElement('div');
+                div.className = `message ${isSent ? 'sent' : 'received'}`;
                 const pfp = msg.avatar_url || 'https://i.pinimg.com/736x/b9/e8/db/b9e8db33168a26c9ca697a05ddc80937.jpg';
-
+                const ts = new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 div.innerHTML = `
-          <div class="pfp-container">
-            <img src="${pfp}" alt="artwork">
-          </div>
-          <div class="message-body">
-            <div class="message-content">${marked.parse(msg.message)}</div>
-            <div class="message-meta">TRACK_ID: ${timestamp} / ${isSent ? 'LOCAL_REC' : 'TRANS_IN'}</div>
-          </div>
-          <button class="delete-btn" onclick="deleteMessage(${msg.id}, event)">×</button>
-        `;
+        <img src="${pfp}" alt="" />
+        <div class="message-body">
+          <div class="message-content">${marked.parse(msg.message || '')}</div>
+          <div class="message-meta">${ts}</div>
+        </div>
+      `;
                 container.appendChild(div);
             });
-
             container.scrollTop = container.scrollHeight;
         }
 
@@ -215,70 +160,41 @@
             const input = document.getElementById('msg-input');
             const text = input.value.trim();
             if (!text || !activeSender) return;
-
             const btn = document.getElementById('send-btn');
-            btn.disabled = true;
-            btn.textContent = '...';
-
+            btn.disabled = true; btn.textContent = '…';
             try {
                 const res = await fetch(`${server_url}/api/send_inbox_message`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': token
-                    },
-                    body: JSON.stringify({
-                        recipient: activeSender,
-                        message: text
-                    })
+                    headers: { 'Content-Type': 'application/json', Authorization: token },
+                    body: JSON.stringify({ recipient: activeSender, message: text })
                 });
-
                 const data = await res.json();
-                if (data.message) {
-                    input.value = '';
-                    // Re-fetch to get the official unified history
-                    init();
-                } else {
-                    alert('Mastering Error: Needle scratch');
-                }
-            } catch (err) {
-                alert('Signal Interruption: Store closed');
-            } finally {
-                btn.disabled = false;
-                btn.textContent = 'SEND MESSAGE';
-            }
+                if (data.message) { input.value = ''; init(); }
+            } catch (e) { }
+            btn.disabled = false; btn.textContent = 'Send';
         }
 
         async function deleteMessage(id, event) {
             event.stopPropagation();
-            if (!confirm('Shred this vinyl?')) return;
-
+            if (!confirm('Delete this message?')) return;
             try {
                 await fetch(`${server_url}/api/delete_inbox_message`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': token
-                    },
+                    headers: { 'Content-Type': 'application/json', Authorization: token },
                     body: JSON.stringify({ message_id: id })
                 });
-                init(); // Refresh all
+                init();
             } catch (e) { }
         }
 
         function openNewMsg() {
-            const recipient = prompt("Enter Artist ID (User ID):");
-            if (recipient) {
-                if (!conversations[recipient]) {
-                    conversations[recipient] = {
-                        partner: recipient,
-                        avatar: 'default.png',
-                        messages: [],
-                        lastMessage: { message: 'New LP', created_at: new Date() }
-                    };
+            const r = prompt('Enter username:');
+            if (r) {
+                if (!conversations[r]) {
+                    conversations[r] = { partner: r, avatar: 'default.png', messages: [], lastMessage: { message: '', created_at: new Date() } };
                     renderConvoList();
                 }
-                selectConvo(recipient);
+                selectConvo(r);
             }
         }
 
@@ -287,31 +203,22 @@
             allMessages = await fetchInbox();
             conversations = groupMessages(allMessages);
             renderConvoList();
-
             const urlParams = new URLSearchParams(window.location.search);
             const userParam = urlParams.get('user');
-
             if (userParam && !activeSender) {
                 if (!conversations[userParam]) {
-                    conversations[userParam] = {
-                        partner: userParam,
-                        avatar: 'default.png',
-                        messages: [],
-                        lastMessage: { message: 'New LP', created_at: new Date() }
-                    };
+                    conversations[userParam] = { partner: userParam, avatar: 'default.png', messages: [], lastMessage: { message: '', created_at: new Date() } };
                     renderConvoList();
                 }
                 selectConvo(userParam);
-            } else if (activeSender) {
-                if (conversations[activeSender]) renderMessages();
+            } else if (activeSender && conversations[activeSender]) {
+                renderMessages();
             }
         }
 
         document.getElementById('send-btn').onclick = sendMessage;
-        document.getElementById('msg-input').onkeypress = (e) => { if (e.key === 'Enter') sendMessage(); };
-
+        document.getElementById('msg-input').onkeypress = e => { if (e.key === 'Enter') sendMessage(); };
         init();
-        // Auto-polling removed as requested. Manual refresh via button only.
     </script>
 </body>
 

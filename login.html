@@ -4,157 +4,93 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="css/auth_layout.css" />
-    <link rel="stylesheet" href="css/loginstyle.css">
-    <title>MIRAGE // AUTH_ACCESS</title>
+    <title>Mirage — Log In</title>
+    <link rel="stylesheet" href="theme.css" />
+    <script src="js/theme.js" defer></script>
+    <script src="js/mathcaptcha.js" defer></script>
 </head>
 
 <body>
-    <!-- Punch Card Background -->
-    <div class="punch-card-bg">
-        <div class="card-column"></div>
-        <div class="card-column"></div>
-        <div class="card-column"></div>
-        <div class="card-column"></div>
-        <div class="card-column"></div>
-        <div class="card-column"></div>
-        <div class="card-column"></div>
-        <div class="card-column"></div>
-    </div>
+    <div class="page-wrap" style="align-items: center; min-height: 100vh;">
+        <div class="center-col" style="max-width: 440px;">
 
-    <div class="sidebar">
-        <div class="sidebar-header">
-            ACCESS_CARD: 402
-        </div>
-
-        <!-- Theme Toggle -->
-        <div class="theme-switch-container">
-            <span>LIGHT</span>
-            <label class="switch">
-                <input type="checkbox" id="theme-toggle">
-                <span class="slider"></span>
-            </label>
-            <span>DARK</span>
-        </div>
-
-        <form method="POST" action="/login" onsubmit="if (validateCaptcha()) { login(); } return false;">
-            <div class="input-slot">
-                <label for="username">User ID (Username)</label>
-                <input type="text" id="username" name="username" title="Enter your account username" required />
+            <div style="text-align: center; margin-bottom: 8px;">
+                <a href="index.html" style="font-size: 1.6rem; font-weight: 800; color: var(--primary);">mirage</a>
             </div>
-            <div class="input-slot">
-                <label for="password">Security Cipher (Password)</label>
-                <input type="password" id="password" name="password" title="Enter your security password" required />
-            </div>
-            <div class="input-slot">
-                <label id="captcha-question">VERIFYING_SUM...</label>
-                <input type="number" id="captcha-answer" required />
-            </div>
-            <button type="submit" class="mech-btn">AUTHORIZE_CARD</button>
-        </form>
 
-        <div class="sidebar-links">
-            <a href="./index.html">[RETURN TO MASTER]</a>
-            <a href="./register.html">[REGISTER NEW_TOKEN]</a>
-        </div>
+            <div class="card">
+                <h2 style="margin-bottom: 4px;">Welcome back</h2>
+                <p class="muted" style="margin-bottom: 20px;">Log in to your account</p>
 
-        <div class="footer" style="text-align: left; margin-top: 20px;">
-            <p>© 2023-2026 MIRAGE COMP.</p>
+                <form method="POST" action="/login" onsubmit="if (validateCaptcha()) { login(); } return false;">
+                    <div class="input-group">
+                        <label>Username</label>
+                        <input type="text" id="username" placeholder="yourusername" autocomplete="username" required />
+                    </div>
+                    <div class="input-group">
+                        <label>Password</label>
+                        <input type="password" id="password" placeholder="••••••••" autocomplete="current-password"
+                            required />
+                    </div>
+                    <div class="input-group">
+                        <label id="captcha-question">Math Captcha</label>
+                        <input type="text" id="captcha-answer" placeholder="Answer" required />
+                    </div>
+                    <p id="login-error" class="error-text" style="display:none; margin-bottom: 10px;"></p>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Log In</button>
+                </form>
+
+                <p class="muted" style="text-align: center; margin-top: 16px; font-size: 0.85rem;">
+                    Don't have an account? <a href="register.html">Sign up</a>
+                </p>
+            </div>
+
         </div>
     </div>
-
-    <main class="main-content">
-        <div class="binary-ghost">
-            01001101<br>01001001<br>01010010<br>01010100<br>01001000<br>01001001
-        </div>
-
-        <div style="z-index: 10; text-align: center;">
-            <h1 style="font-size: 3rem; letter-spacing: 5px; color: var(--card-brown);">CARD_READER_02</h1>
-            <p style="opacity: 0.6;">STATION_ID: MIRAGE_HUB_01</p>
-        </div>
-
-        <div class="reader-container">
-            <div class="mechanical-counter">
-                <div class="counter-label">SYSTEM_UPTIME</div>
-                <div id="uptime" class="counter-value">00:00:00</div>
-            </div>
-            <div class="mechanical-counter">
-                <div class="counter-label">VERSION</div>
-                <div class="counter-value">0.0.6</div>
-            </div>
-        </div>
-
-        <div class="reader-container">
-            <div class="mechanical-counter" style="border-color: var(--mech-red);">
-                <div class="counter-label" style="color: var(--mech-red);">SIGNAL_STRENGTH</div>
-                <div class="counter-value">OPTIMAL</div>
-            </div>
-        </div>
-    </main>
-
-    <script src="js/mathcaptcha.js"></script>
     <script>
-        // Theme Management
-        const themeToggle = document.getElementById('theme-toggle');
-        const body = document.body;
-
-        // Check for saved theme
-        if (localStorage.getItem('theme') === 'dark') {
-            body.classList.add('dark-mode');
-            themeToggle.checked = true;
+        // Auto-login check
+        if (localStorage.getItem('token')) {
+            window.location.href = './fyp.html';
         }
 
-        themeToggle.addEventListener('change', () => {
-            if (themeToggle.checked) {
-                body.classList.add('dark-mode');
-                localStorage.setItem('theme', 'dark');
-            } else {
-                body.classList.remove('dark-mode');
-                localStorage.setItem('theme', 'light');
-            }
-        });
+        let server_url = 'http://127.0.0.1:5000';
 
-        let server_url = "http://127.0.0.1:5000";
-        fetch('settings.json')
-            .then(res => res.json())
-            .then(settings => {
-                if (settings.server_url) server_url = settings.server_url;
-            });
+        async function loadSettings() {
+            try {
+                const r = await fetch('settings.json');
+                const d = await r.json();
+                if (d.server_url) server_url = d.server_url;
+            } catch (e) { }
+        }
 
         async function login() {
-            const username = document.getElementById("username").value;
-            const password = document.getElementById("password").value;
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const errEl = document.getElementById('login-error');
+            errEl.style.display = 'none';
 
             try {
                 const res = await fetch(`${server_url}/api/login`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, password })
                 });
-
                 const data = await res.json();
                 if (res.ok) {
-                    localStorage.setItem('user', username);
                     localStorage.setItem('token', data.token);
-                    alert("ACCESS GRANTED");
-                    setTimeout(() => window.location.href = "./room.html", 300);
+                    localStorage.setItem('user', username);
+                    window.location.href = './fyp.html';
                 } else {
-                    alert("ACCESS DENIED: " + data.error);
+                    errEl.textContent = data.error || 'Login failed';
+                    errEl.style.display = 'block';
                 }
             } catch (err) {
-                alert("MECHANICAL FAILURE");
+                errEl.textContent = 'Cannot connect to server.';
+                errEl.style.display = 'block';
             }
         }
 
-        function updateUptime() {
-            const now = new Date();
-            const timeStr = now.getHours().toString().padStart(2, '0') + ':' +
-                now.getMinutes().toString().padStart(2, '0') + ':' +
-                now.getSeconds().toString().padStart(2, '0');
-            document.getElementById('uptime').textContent = timeStr;
-        }
-        setInterval(updateUptime, 1000);
-        updateUptime();
+        loadSettings();
     </script>
 </body>
 

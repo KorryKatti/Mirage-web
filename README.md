@@ -12,7 +12,7 @@ The interface is built with a focus on distinct, retro-inspired aesthetic themes
 - **Secure Relay (Private Messaging)**: A dedicated system for direct, one-on-one encrypted messaging.
 - **Telegraph Wire (FYP)**: A feed-based discovery system for viewing trending posts and priority wires.
 - **User Dossiers**: Comprehensive profile management and customization options.
-- **Customizable Themes**: Multiple visual modes, including cafe-themed boards and terminal-style interfaces.
+- **Consistent Design**: A unified, minimalistic design powered by Sakura CSS and Alpine.js.
 
 ## Backend and API
 
@@ -27,7 +27,7 @@ To run the project locally, serve the root directory using a static file server 
 
 ## Development
 
-The project uses vanilla JavaScript and CSS to maintain simplicity and performance. Contributions are welcome, provided they align with the established aesthetic and privacy standards.
+The project uses Sakura CSS for straightforward, classless styling and Alpine.js for lightweight UI interactions. Contributions are welcome, provided they align with the established aesthetic and privacy standards.
 
 ## License
 

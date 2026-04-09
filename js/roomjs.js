@@ -1,17 +1,17 @@
-let server_url = '';
+let server_url = 'http://127.0.0.1:5000'; // Default fallback
 
-fetch('settings.json')
-  .then(res => res.json())
-  .then(settings => {
-    if (settings.server_url) {
-      server_url = settings.server_url;
-    } else {
-      alert('server_url not found in settings.json');
-    }
-  })
-  .catch(() => {
-    alert('Failed to load settings.json');
-  });
+function loadSettings() {
+  return fetch('settings.json')
+    .then(res => res.json())
+    .then(settings => {
+      if (settings.server_url) {
+        server_url = settings.server_url;
+      }
+    })
+    .catch(() => {
+      console.warn('Failed to load settings.json, using fallback');
+    });
+}
 
 const chatBox = document.getElementById('chat');
 const input = document.getElementById('input');
@@ -32,7 +32,8 @@ if (!username || !token) {
   window.location.href = './index.html';
 }
 
-window.onload = function () {
+window.onload = async function () {
+  await loadSettings();
   const user = localStorage.getItem('user');
 
   if (!user) {
@@ -197,39 +198,30 @@ function checkServerStatus() {
     .then(res => {
       const endTime = Date.now();
       const responseTime = endTime - startTime;
-
-      const statusDiv = document.querySelector('.system-status');
       const statusIndicator = document.querySelector('.status-indicator');
-      const statusText = document.querySelector('.status-text');
 
-      if (res.ok && res.status === 200) {
-        statusDiv.className = 'system-status status-nominal';
-        statusText.textContent = 'NOMINAL';
-        statusIndicator.textContent = '◉';
-        statusIndicator.style.color = '#00ff00';
+      if (statusIndicator) {
+        if (res.ok && res.status === 200) {
+          statusIndicator.textContent = `◉ ONLINE (${responseTime}ms)`;
+          statusIndicator.style.color = '#00ff00';
 
-        if (responseTime > 500) {
-          statusDiv.className = 'system-status status-slow';
-          statusText.textContent = 'SLOW';
-          statusIndicator.style.color = '#ffaa00';
+          if (responseTime > 500) {
+            statusIndicator.textContent = `◉ SLOW`;
+            statusIndicator.style.color = '#ffaa00';
+          }
+        } else {
+          statusIndicator.textContent = '◉ OFFLINE';
+          statusIndicator.style.color = '#ff0000';
         }
-      } else {
-        statusDiv.className = 'system-status status-offline';
-        statusText.textContent = 'OFFLINE';
-        statusIndicator.textContent = '◉';
-        statusIndicator.style.color = '#ff0000';
       }
     })
     .catch(err => {
       console.error('Failed to check server status:', err);
-      const statusDiv = document.querySelector('.system-status');
       const statusIndicator = document.querySelector('.status-indicator');
-      const statusText = document.querySelector('.status-text');
-
-      statusDiv.className = 'system-status status-offline';
-      statusText.textContent = 'OFFLINE';
-      statusIndicator.textContent = '◉';
-      statusIndicator.style.color = '#ff0000';
+      if (statusIndicator) {
+        statusIndicator.textContent = '◉ OFFLINE';
+        statusIndicator.style.color = '#ff0000';
+      }
     });
 }
 
@@ -849,18 +841,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Check if we're on mobile and show the toggle button if needed
   function checkMobile() {
+    if (!menuToggle) return;
     if (window.innerWidth <= 768) {
       menuToggle.style.display = 'block';
     } else {
       menuToggle.style.display = 'none';
-      sidebar.classList.remove('active');
+      if (sidebar) sidebar.classList.remove('active');
     }
   }
 
   // Toggle sidebar visibility on mobile
-  menuToggle.addEventListener('click', function () {
-    sidebar.classList.toggle('active');
-  });
+  if (menuToggle) {
+    menuToggle.addEventListener('click', function () {
+      sidebar.classList.toggle('active');
+    });
+  }
 
   // Toggle room list visibility
   toggleRooms.addEventListener('click', function () {

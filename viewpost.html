@@ -3,156 +3,128 @@
 
 <head>
   <meta charset="UTF-8" />
-  <title>MIRAGE // View Post</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="css/viewpost.css" />
+  <title>Mirage — Post Archive</title>
+  <link rel="stylesheet" href="theme.css" />
+  <script src="js/theme.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 
-<body class="academic-publication">
-  <div class="journal-container">
-    <!-- Top Global Navigation -->
-    <nav class="top-nav">
-      <div class="nav-links-top">
-        <a href="./index.html">RETURN TO MASTER</a>
-        <a href="./room.html">GLOBAL CHATROOM</a>
-      </div>
-      <div class="theme-switcher">
-        <button class="theme-btn active" id="light-btn" onclick="setMode('light')">LIGHT_MODE</button>
-        <button class="theme-btn" id="dark-btn" onclick="setMode('dark')">DARK_MODE</button>
-      </div>
-    </nav>
+<body>
+  <div class="page-wrap">
+    <div class="center-col">
 
-    <header class="journal-header">
-      <div class="journal-title">MIRAGE // POST ARCHIVE</div>
-      <h1 class="article-title" id="article-title">Post #<span id="post-id">---</span></h1>
-      <div class="publication-meta">
-        Authored by <span class="author" id="post-author">~USER</span> on <span id="publish-date">---</span>
-      </div>
-      <span class="doi-stamp">REF ID: <span id="doi-id">---</span></span>
-    </header>
+      <header class="site-header">
+        <span class="logo">mirage</span>
+        <nav>
+          <a href="fyp.html">Feed</a>
+          <a href="room.html">Chat</a>
+          <a href="messages.html">Messages</a>
+          <a href="settings.html">Settings</a>
+        </nav>
+      </header>
 
-    <!-- Metrics Sidebar (rebranded voting) -->
-    <aside class="citation-metrics">
-      <div class="metric-box" id="cite-up" title="Cite supporting evidence">
-        <span class="metric-value" id="upvote-count">0</span>
-        UPVOTES
-      </div>
-      <div class="metric-box" id="cite-down" title="Dispute this fragment">
-        <span class="metric-value" id="downvote-count">0</span>
-        DOWNVOTES
-      </div>
-    </aside>
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+          <div>
+            <h1 style="font-size: 1.2rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">
+              Post Archive</h1>
+            <h2 id="article-title" style="margin: 4px 0;">Post #<span id="post-id">---</span></h2>
+            <p class="muted" style="margin: 0;">Authored by <span id="post-author"
+                style="color: var(--primary); font-weight: 700;">---</span> on <span id="publish-date">---</span></p>
+            <p class="muted" style="font-size: 0.75rem;">REF ID: <span id="doi-id">---</span></p>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <div class="vote-btn" id="cite-up"
+              style="display: flex; flex-direction: column; align-items: center; min-width: 60px; padding: 8px; cursor: pointer; border: 1px solid var(--border); border-radius: var(--radius-sm);">
+              <span style="font-size: 1.2rem;">▲</span>
+              <span id="upvote-count" style="font-weight: 800;">0</span>
+            </div>
+            <div class="vote-btn" id="cite-down"
+              style="display: flex; flex-direction: column; align-items: center; min-width: 60px; padding: 8px; cursor: pointer; border: 1px solid var(--border); border-radius: var(--radius-sm);">
+              <span style="font-size: 1.2rem;">▼</span>
+              <span id="downvote-count" style="font-weight: 800;">0</span>
+            </div>
+          </div>
+        </div>
 
-    <main class="article-content" id="post-container">
-      <!-- Article content loaded here -->
-      Loading post...
-    </main>
+        <hr style="margin-bottom: 20px;" />
 
-    <!-- Comments Section -->
-    <section class="peer-review-section">
-      <h2 class="peer-review-title">COMMENTS</h2>
-      <div id="replies-container">
-        <p style="color: #666; font-style: italic;">Loading comments...</p>
+        <article id="post-container" class="post-content" style="font-size: 1.05rem; line-height: 1.7;">
+          Loading post content...
+        </article>
       </div>
-    </section>
 
-    <!-- Submission Form -->
-    <section class="submission-form">
-      <h3>POST A COMMENT</h3>
-      <textarea id="reply-content" class="journal-textarea" placeholder="Write your comment here..."
-        maxlength="512"></textarea>
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <span id="char-count" style="font-size: 0.8rem; opacity: 0.6;">CHARS: 0/512</span>
-        <button id="reply-btn" class="journal-btn">PUBLISH COMMENT</button>
+      <div class="card">
+        <h3 style="margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+          <span>💬</span> Comments
+        </h3>
+        <div id="replies-container" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
+          <p class="muted">Loading comments...</p>
+        </div>
+
+        <hr style="margin-bottom: 20px;" />
+
+        <div class="settings-section">
+          <h3>Post a Comment</h3>
+          <div class="input-group">
+            <textarea id="reply-content" rows="4" placeholder="Write your thoughts... Markdown supported."
+              maxlength="512"></textarea>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="muted" id="char-count" style="font-size: 0.75rem;">CHARS: 0/512</span>
+            <button class="btn btn-primary btn-sm" id="reply-btn">Publish Comment</button>
+          </div>
+        </div>
       </div>
-    </section>
 
-    <footer class="nav-links">
-      <a href="./room.html">← RETURN TO CENTRAL REGISTRY</a> |
-      <a href="./settings.html">USER_DOSSIER_SETTINGS</a>
-    </footer>
+      <footer class="card card-sm" style="text-align: center;">
+        <p class="muted">
+          <a href="fyp.html">← Back to Feed</a> |
+          <a href="room.html">Chatroom</a> |
+          <a href="settings.html">Settings</a>
+        </p>
+      </footer>
+
+    </div>
   </div>
 
   <script>
-    // Theme Switcher Logic
-    function setMode(mode) {
-      const body = document.body;
-      const lightBtn = document.getElementById('light-btn');
-      const darkBtn = document.getElementById('dark-btn');
-
-      if (mode === 'dark') {
-        body.classList.add('dark-mode');
-        localStorage.setItem('theme', 'dark');
-        darkBtn.classList.add('active');
-        lightBtn.classList.remove('active');
-      } else {
-        body.classList.remove('dark-mode');
-        localStorage.setItem('theme', 'light');
-        lightBtn.classList.add('active');
-        darkBtn.classList.remove('active');
-      }
-    }
-
-    // Initialize Theme
-    if (localStorage.getItem('theme') === 'dark') {
-      document.body.classList.add('dark-mode');
-    }
-    let server_url = 'http://127.0.0.1:5000'; // default fallback
-
-    function backtochat() {
-      window.location.href = './room.html';
-    }
-
+    let server_url = 'http://127.0.0.1:5000';
 
     function sanitizeHTML(input) {
-      // First parse with marked to convert markdown to HTML
       const html = marked.parse(input || '');
-
-      // Create a temporary div to hold the parsed HTML
       const tempDiv = document.createElement('div');
       tempDiv.innerHTML = html;
 
-      // Remove all script tags and other dangerous elements
       const forbiddenTags = ['script', 'iframe', 'frame', 'object', 'embed', 'link', 'style'];
       forbiddenTags.forEach(tag => {
         const elements = tempDiv.getElementsByTagName(tag);
-        while (elements[0]) {
-          elements[0].parentNode.removeChild(elements[0]);
-        }
+        while (elements[0]) { elements[0].parentNode.removeChild(elements[0]); }
       });
 
-      // Remove all event handlers and javascript: URIs
       const allElements = tempDiv.getElementsByTagName('*');
       for (let el of allElements) {
         const attrs = el.attributes;
         for (let i = attrs.length - 1; i >= 0; i--) {
           const attr = attrs[i];
-          if (attr.name.startsWith('on') ||
-            (attr.name.toLowerCase() === 'href' && attr.value.toLowerCase().startsWith('javascript:'))) {
+          if (attr.name.startsWith('on') || (attr.name.toLowerCase() === 'href' && attr.value.toLowerCase().startsWith('javascript:'))) {
             el.removeAttribute(attr.name);
           }
         }
       }
 
-      // Only allow specific tags
-      const allowedTags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em',
-        'i', 'li', 'ol', 'strong', 'ul', 'p', 'br', 'img', 'h1', 'h2', 'h3', 'h4',
-        'h5', 'h6', 'pre', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'hr'];
-
+      const allowedTags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em', 'i', 'li', 'ol', 'strong', 'ul', 'p', 'br', 'img', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'hr'];
       const allNodes = tempDiv.getElementsByTagName('*');
-      for (let el of allNodes) {
+      for (let i = allNodes.length - 1; i >= 0; i--) {
+        const el = allNodes[i];
         if (!allowedTags.includes(el.tagName.toLowerCase())) {
-          // Replace disallowed tags with their content
           const parent = el.parentNode;
-          while (el.firstChild) {
-            parent.insertBefore(el.firstChild, el);
-          }
+          while (el.firstChild) { parent.insertBefore(el.firstChild, el); }
           parent.removeChild(el);
         }
       }
 
-      // Only allow specific attributes
       const allowedAttributes = {
         'a': ['href', 'title', 'target'],
         'img': ['src', 'alt', 'title', 'width', 'height'],
@@ -167,19 +139,13 @@
           const attrs = el.attributes;
           for (let i = attrs.length - 1; i >= 0; i--) {
             const attr = attrs[i];
-            if (!allowedAttributes[tagName].includes(attr.name.toLowerCase())) {
-              el.removeAttribute(attr.name);
-            }
+            if (!allowedAttributes[tagName].includes(attr.name.toLowerCase())) { el.removeAttribute(attr.name); }
           }
         } else {
-          // Remove all attributes if not in allowedAttributes
           const attrs = el.attributes;
-          for (let i = attrs.length - 1; i >= 0; i--) {
-            el.removeAttribute(attrs[i].name);
-          }
+          for (let i = attrs.length - 1; i >= 0; i--) { el.removeAttribute(attrs[i].name); }
         }
       }
-
       return tempDiv.innerHTML;
     }
 
@@ -190,49 +156,33 @@
           const settings = await settingsRes.json();
           if (settings.server_url) server_url = settings.server_url;
         }
-      } catch (e) {
-        console.warn('settings.json not found or invalid, using default server_url');
-      }
+      } catch (e) { }
     }
 
     async function fetchPost(postId) {
-      try {
-        const res = await fetch(`${server_url}/api/get_post_by_id/${postId}`);
-        if (!res.ok) {
-          throw new Error('Failed to fetch post');
-        }
-        return await res.json();
-      } catch (err) {
-        console.error('Error fetching post:', err);
-        throw err;
-      }
+      const res = await fetch(`${server_url}/api/get_post_by_id/${postId}`);
+      if (!res.ok) throw new Error('Failed to fetch post');
+      return res.json();
     }
 
-    let currentPostId = null;
-
     function renderPost(postData) {
-      currentPostId = postData.id;
       document.getElementById('post-id').textContent = postData.id;
       document.getElementById('doi-id').textContent = String(postData.id).padStart(6, '0');
-      document.getElementById('post-author').textContent = `~${postData.username}`;
+      document.getElementById('post-author').textContent = `@${postData.username}`;
       document.getElementById('publish-date').textContent = new Date(postData.created_at).toLocaleDateString(undefined, {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
+        year: 'numeric', month: 'long', day: 'numeric'
       });
 
-      // Update Metrics
       document.getElementById('upvote-count').textContent = postData.upvotes || 0;
       document.getElementById('downvote-count').textContent = postData.downvotes || 0;
 
       const postContainer = document.getElementById('post-container');
-      postContainer.innerHTML = sanitizeHTML(marked.parse(postData.content));
+      postContainer.innerHTML = sanitizeHTML(postData.content);
 
-      // Handle self-voting state
       const currentUser = localStorage.getItem('user');
       const isOwnPost = postData.username === currentUser;
-      const metrics = document.querySelectorAll('.metric-box');
-      metrics.forEach(box => {
+      ['cite-up', 'cite-down'].forEach(id => {
+        const box = document.getElementById(id);
         if (isOwnPost) {
           box.style.opacity = '0.5';
           box.style.cursor = 'not-allowed';
@@ -240,8 +190,7 @@
         } else {
           box.style.opacity = '1';
           box.style.cursor = 'pointer';
-          const type = box.id === 'cite-up' ? 'up' : 'down';
-          box.onclick = () => votePost(postData.id, type);
+          box.onclick = () => votePost(postData.id, id === 'cite-up' ? 'up' : 'down');
         }
       });
     }
@@ -249,187 +198,86 @@
     async function fetchReplies(postId) {
       try {
         const res = await fetch(`${server_url}/api/get_replies/${postId}`);
-        if (!res.ok) {
-          throw new Error('Failed to fetch replies');
-        }
-        return await res.json();
-      } catch (err) {
-        console.error('Error fetching replies:', err);
-        return { replies: [] };
-      }
+        if (!res.ok) throw new Error('Failed to fetch replies');
+        return res.json();
+      } catch (err) { return { replies: [] }; }
     }
 
     function renderReplies(repliesData) {
       const container = document.getElementById('replies-container');
       const replies = repliesData.replies || [];
-
       if (replies.length === 0) {
-        container.innerHTML = '<p style="color: #666; font-style: italic;">No comments found for this post.</p>';
+        container.innerHTML = '<p class="muted" style="text-align:center; padding: 20px;">No comments yet.</p>';
         return;
       }
-
-      let html = '';
-      replies.forEach((reply, index) => {
-        html += `
-          <article class="review-annotation">
-            <div class="review-header">
-              Comment by <span class="reviewer-name">~${reply.username}</span> — 
-              ${new Date(reply.created_at).toLocaleDateString()}
-            </div>
-            <div class="markdown-content">
-              ${sanitizeHTML(marked.parse(reply.content))}
-            </div>
-          </article>
-        `;
-      });
-
-      container.innerHTML = html;
+      container.innerHTML = replies.map(reply => `
+      <article class="card card-sm" style="background: var(--surface-hover);">
+        <div style="font-size: 0.85rem; margin-bottom: 6px;">
+          <a href="userprofile.html?user=${reply.username}" style="font-weight:700;">@${reply.username}</a> 
+          <span class="muted">· ${new Date(reply.created_at).toLocaleDateString()}</span>
+        </div>
+        <div class="post-content" style="font-size: 0.92rem;">
+          ${sanitizeHTML(reply.content)}
+        </div>
+      </article>
+    `).join('');
     }
 
     async function votePost(postId, voteType) {
-      if (!postId) return;
       const token = localStorage.getItem('token');
-      if (!token) {
-        alert('Authentication required to vote.');
-        window.location.href = './index.html';
-        return;
-      }
-
-      // Disable metrics during processing
-      const metrics = document.querySelectorAll('.metric-box');
-      metrics.forEach(m => { m.style.pointerEvents = 'none'; m.style.opacity = '0.5'; });
-
+      if (!token) { window.location.href = './login.html'; return; }
       try {
-        const response = await fetch(`${server_url}/api/vote_post`, {
+        const res = await fetch(`${server_url}/api/vote_post`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': token
-          },
-          body: JSON.stringify({
-            post_id: postId,
-            vote_type: voteType
-          })
+          headers: { 'Content-Type': 'application/json', Authorization: token },
+          body: JSON.stringify({ post_id: postId, vote_type: voteType })
         });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          const postData = await fetchPost(postId);
-          renderPost(postData);
-        } else {
-          alert(data.error || 'Voting failed');
-          metrics.forEach(m => { m.style.pointerEvents = 'auto'; m.style.opacity = '1'; });
-        }
-      } catch (err) {
-        console.error('Vote error:', err);
-        alert('Voting failed');
-        metrics.forEach(m => { m.style.pointerEvents = 'auto'; m.style.opacity = '1'; });
-      }
+        if (res.ok) { renderPost(await fetchPost(postId)); }
+      } catch (e) { }
     }
 
     function setupReplyForm(postId) {
       const replyContent = document.getElementById('reply-content');
       const charCount = document.getElementById('char-count');
       const replyBtn = document.getElementById('reply-btn');
-
-      // Character counter
-      replyContent.addEventListener('input', () => {
-        const count = replyContent.value.length;
-        charCount.textContent = `${count}/512`;
-      });
-
-      // Reply button handler
+      replyContent.addEventListener('input', () => { charCount.textContent = `CHARS: ${replyContent.value.length}/512`; });
       replyBtn.addEventListener('click', async () => {
         const content = replyContent.value.trim();
         if (!content) return;
-
+        const token = localStorage.getItem('token');
+        if (!token) { window.location.href = './login.html'; return; }
         try {
-          const token = localStorage.getItem('token');
-          if (!token) {
-            alert('You need to be logged in to reply');
-            window.location.href = './index.html';
-            return;
-          }
-
-          const response = await fetch(`${server_url}/api/reply_to_post`, {
+          const res = await fetch(`${server_url}/api/reply_to_post`, {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': token
-            },
-            body: JSON.stringify({
-              post_id: postId,
-              content: content
-            })
+            headers: { 'Content-Type': 'application/json', Authorization: token },
+            body: JSON.stringify({ post_id: postId, content: content })
           });
-
-          if (response.ok) {
-            replyContent.value = '';
-            charCount.textContent = '0/512';
-
-            // Refresh replies
-            const repliesData = await fetchReplies(postId);
-            renderReplies(repliesData);
-          } else {
-            const error = await response.json();
-            alert(error.error || 'Failed to post reply');
+          if (res.ok) {
+            replyContent.value = ''; charCount.textContent = 'CHARS: 0/512';
+            renderReplies(await fetchReplies(postId));
           }
-        } catch (err) {
-          console.error('Error posting reply:', err);
-          alert('Failed to post reply');
-        }
+        } catch (e) { }
       });
     }
 
     async function initPostView() {
       await loadSettings();
-
-      // Get current user from localStorage
-      const currentUsername = localStorage.getItem('user');
       const token = localStorage.getItem('token');
-      const theme = localStorage.getItem('theme');
+      if (!token) { window.location.href = './login.html'; return; }
 
-      // Initialize Button States
-      if (theme === 'dark') {
-        document.getElementById('dark-btn').classList.add('active');
-        document.getElementById('light-btn').classList.remove('active');
-      } else {
-        document.getElementById('light-btn').classList.add('active');
-        document.getElementById('dark-btn').classList.remove('active');
-      }
-
-      // If no user is logged in, redirect to login
-      if (!currentUsername || !token) {
-        window.location.href = './index.html';
-        return;
-      }
-
-      const urlParams = new URLSearchParams(window.location.search);
-      const postId = urlParams.get('post_id');
-      if (!postId) {
-        document.body.innerHTML = '<p style="color:red;">No post ID provided</p>';
-        return;
-      }
+      const postId = new URLSearchParams(window.location.search).get('post_id');
+      if (!postId) { document.body.innerHTML = '<p class="error-text">No post ID provided</p>'; return; }
 
       try {
-        // Load post data
-        const postData = await fetchPost(postId);
+        const [postData, repliesData] = await Promise.all([fetchPost(postId), fetchReplies(postId)]);
         renderPost(postData);
-
-        // Load replies
-        const repliesData = await fetchReplies(postId);
         renderReplies(repliesData);
-
-        // Setup reply form
         setupReplyForm(postId);
       } catch (err) {
-        console.error(err);
-        document.body.innerHTML = '<p style="color:red;">Failed to fetch post data</p>';
+        document.getElementById('post-container').innerHTML = '<p class="error-text">Failed to fetch post data.</p>';
       }
     }
 
-    // Initialize the post view when the page loads
     document.addEventListener('DOMContentLoaded', initPostView);
   </script>
 </body>

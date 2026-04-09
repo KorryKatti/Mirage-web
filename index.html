@@ -2,119 +2,84 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MIRAGE // Café Menu</title>
-    <link rel="stylesheet" href="css/indexstyle.css">
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Patrick+Hand&display=swap"
-        rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mirage</title>
+    <link rel="stylesheet" href="theme.css" />
+    <script src="js/theme.js" defer></script>
 </head>
 
-<body class="cafe-theme">
-    <div class="chalkboard-texture"></div>
+<body>
+    <div class="page-wrap">
+        <div class="center-col">
 
-    <div class="menu-board">
-        <header class="menu-header">
-            <div class="header-decoration">
-                <span class="flourish">~*~</span>
+            <header class="site-header">
+                <span class="logo">mirage</span>
+                <nav>
+                    <a href="register.html">Sign Up</a>
+                    <a href="login.html" class="btn btn-primary btn-sm">Log In</a>
+                </nav>
+            </header>
+
+            <div class="card" style="padding: 40px; text-align: center;">
+                <h1 style="font-size: 2.2rem; margin-bottom: 10px;">A space for real conversations.</h1>
+                <p class="muted" style="font-size: 1.05rem; margin-bottom: 24px;">Mirage is a connected communication
+                    platform — feeds, rooms, and direct messages.</p>
+                <div style="display: flex; gap: 12px; justify-content: center;">
+                    <a href="register.html" class="btn btn-primary">Create Account</a>
+                    <a href="login.html" class="btn btn-ghost">Log In</a>
+                </div>
             </div>
-            <h1 class="handwritten-title">MIRAGE</h1>
-            <p class="tagline">Connected communication platform since 2023</p>
-        </header>
 
-        <main class="menu-content">
-            <div class="menu-grid">
-                <section class="menu-section orders">
-                    <h2 class="section-title">NAVIGATION</h2>
-                    <ul class="menu-items">
-                        <li class="menu-item" onclick="window.location.href='./register.html'">
-                            <span class="item-name">Create Account</span>
-                            <span class="dots"></span>
-                            <span class="item-price">NEW</span>
-                        </li>
-                        <li class="menu-item" onclick="window.location.href='./login.html'">
-                            <span class="item-name">User Login</span>
-                            <span class="dots"></span>
-                            <span class="item-price">AUTH</span>
-                        </li>
-                        <li class="menu-item" onclick="window.location.href='./room.html'">
-                            <span class="item-name">Global Chatroom</span>
-                            <span class="dots"></span>
-                            <span class="item-price">LIVE</span>
-                        </li>
-                    </ul>
-                </section>
-
-                <section class="menu-section daily-special">
-                    <h2 class="section-title">SYSTEM UPDATES</h2>
-                    <div class="special-card">
-                        <ul class="note-list">
-                            <li><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" class="sidebar-icon">
-                                    <circle cx="12" cy="12" r="3" />
-                                    <path
-                                        d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-                                </svg> V0.0.6: Scroll/Overflow stability</li>
-                            <li><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" class="sidebar-icon">
-                                    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
-                                    <path d="M8 7h6" />
-                                    <path d="M8 11h8" />
-                                </svg> Recent blog updates</li>
-                        </ul>
-                        <div class="docs-promo"
-                            style="margin-top: 20px; padding: 15px; border: 1px dashed var(--coffee-brown); background: rgba(139, 69, 19, 0.05);">
-                            <h4
-                                style="font-family: 'Caveat', cursive; font-size: 1.4rem; color: var(--coffee-brown); margin-bottom: 5px;">
-                                Platform Documentation</h4>
-                            <p style="font-size: 0.9rem; margin-bottom: 15px; opacity: 0.8;">Learn how to customize your
-                                profile with CSS guidelines.</p>
-                            <a href="css_docs.html" class="chalk-btn" style="width: 100%; text-align: center;">Open
-                                Interface Docs</a>
+            <div class="card">
+                <h2 style="margin-bottom: 12px;">What's on Mirage</h2>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 1.5rem;">📡</span>
+                        <div>
+                            <h4>Global Feed</h4>
+                            <p class="muted" style="margin:0;">Posts from people across the platform, surfaced by
+                                relevance.</p>
                         </div>
                     </div>
-                </section>
+                    <hr>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 1.5rem;">💬</span>
+                        <div>
+                            <h4>Chat Rooms</h4>
+                            <p class="muted" style="margin:0;">Public and private channels for real-time group
+                                conversations.</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 1.5rem;">✉️</span>
+                        <div>
+                            <h4>Direct Messages</h4>
+                            <p class="muted" style="margin:0;">Private, one-on-one conversations with anyone on the
+                                platform.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <section class="menu-section roast-details">
-                <h2 class="section-title">PROJECT OVERVIEW</h2>
-                <div class="roast-preview">
-                    <div class="cup-decoration">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
-                            style="color: var(--coffee-brown);">
-                            <path d="M17 8h1a4 4 0 1 1 0 8h-1" />
-                            <path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z" />
-                            <line x1="6" y1="2" x2="6" y2="4" />
-                            <line x1="10" y1="2" x2="10" y2="4" />
-                            <line x1="14" y1="2" x2="14" y2="4" />
-                        </svg>
-                    </div>
-                    <div class="roast-info">
-                        <h3>Subject: Why Mirage?</h3>
-                        <p>Providing a platform for persistent digital identity and communication.</p>
-                        <a href="https://korrykatti.github.io/blog/" target="_blank" class="chalk-btn">View Article</a>
-                    </div>
-                </div>
-            </section>
-
-            <footer class="menu-footer">
-                <div class="social-links">
-                    <a href="https://github.com/korrykatti/mirage" target="_blank">Source Code (Github)</a>
-                </div>
-                <p class="copyright">Mirage Project (C) 2023-2026</p>
-                <div class="time-stamp" id="current-time">Time: 12:00 PM</div>
+            <footer class="card card-sm" style="text-align: center;">
+                <p class="muted">Mirage — <a href="https://github.com/korrykatti/mirage" target="_blank">Source Code</a>
+                    · v0.0.6 · <span id="current-time"></span></p>
             </footer>
-        </main>
-    </div>
 
+        </div>
+    </div>
     <script>
+        // Auto-login if token exists
+        if (localStorage.getItem('token')) {
+            window.location.href = './fyp.html';
+        }
+
         function updateTime() {
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            document.getElementById('current-time').textContent = `Brewed at: ${timeStr}`;
+            const t = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const el = document.getElementById('current-time');
+            if (el) el.textContent = t;
         }
         setInterval(updateTime, 60000);
         updateTime();

@@ -3,176 +3,115 @@
 
 <head>
     <meta charset="UTF-8" />
-    <title>MIRAGE // Passport Settings</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="css/passport_settings.css" />
+    <title>Mirage — Settings</title>
+    <link rel="stylesheet" href="theme.css" />
+    <script src="js/theme.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 
-<body class="passport-aware">
-    <div class="passport-container">
-        <!-- Border Control Mode Toggle -->
-        <div class="mode-toggle">
-            <button class="mode-btn" id="mode-toggle-btn" onclick="toggleMode()">TOGGLE_VISUAL_MODE</button>
+<body>
+    <div class="page-wrap">
+        <div class="center-col">
+
+            <header class="site-header">
+                <span class="logo">mirage</span>
+                <nav>
+                    <a href="fyp.html">Feed</a>
+                    <a href="room.html">Chat</a>
+                    <a href="messages.html">Messages</a>
+                    <a href="settings.html" class="active">Settings</a>
+                    <a id="profile-link" href="#">Profile</a>
+                </nav>
+            </header>
+
+            <div class="card">
+                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
+                    <img id="avatar-preview"
+                        src="https://i.pinimg.com/736x/b9/e8/db/b9e8db33168a26c9ca697a05ddc80937.jpg" alt="Avatar"
+                        style="width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-light);" />
+                    <div>
+                        <h2 id="display-username" style="margin-bottom: 2px;">Loading…</h2>
+                        <p class="muted" style="margin: 0;">ID: <span id="display-id">—</span></p>
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Account</h3>
+                    <div class="input-group">
+                        <label>Email</label>
+                        <input type="email" id="email" placeholder="Update email address" />
+                    </div>
+                    <div class="input-group">
+                        <label>New Password</label>
+                        <input type="password" id="password" placeholder="Leave blank to keep current" />
+                    </div>
+                </div>
+
+                <hr style="margin: 16px 0;" />
+
+                <div class="settings-section">
+                    <h3>Appearance</h3>
+                    <div class="input-group">
+                        <label>Avatar URL</label>
+                        <input type="text" id="avatar_url" placeholder="https://…" oninput="updatePreview()" />
+                    </div>
+                    <div class="input-group">
+                        <label>Profile Background URL</label>
+                        <input type="text" id="background_image" placeholder="https://… (jpg/png/gif/webp)" />
+                    </div>
+                    <div class="input-group">
+                        <label>Bio</label>
+                        <textarea id="description" rows="3" placeholder="Tell people about yourself…"></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label>Custom CSS</label>
+                        <textarea id="custom_css" rows="4"
+                            placeholder="/* custom CSS applied to your profile */"></textarea>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 8px; align-items: center; flex-wrap: wrap;">
+                    <button class="btn btn-primary" id="save-btn">Save Changes</button>
+                    <button class="btn btn-ghost btn-sm" id="reset-css-btn">Reset CSS</button>
+                    <span id="status-msg" style="font-size: 0.85rem;"></span>
+                </div>
+            </div>
+
+            <div class="card card-sm" style="text-align: center;">
+                <button onclick="logout()" class="btn btn-danger btn-sm">Log Out</button>
+            </div>
+
         </div>
-
-        <header class="passport-header">
-            <div class="passport-type-container">
-                <div class="passport-type">DIGITAL PASSAGE // IDENTITY DOCUMENT</div>
-                <h1 style="font-size: 2.5rem; margin: 10px 0; color: var(--passport-blue);">PASS_MIRAGE</h1>
-            </div>
-            <div class="passport-id-container">
-                <div class="passport-type" style="text-align: right;">DOCUMENT NO.</div>
-                <div class="passport-id">M-PRT-<span id="display-id">000000</span></div>
-            </div>
-        </header>
-
-        <!-- Biographical Data Page -->
-        <div class="biographical-data">
-            <div class="photo-area" id="photo-frame">
-                <img id="avatar-preview" src="https://i.pinimg.com/736x/b9/e8/db/b9e8db33168a26c9ca697a05ddc80937.jpg"
-                    alt="Passport Photo" />
-                <div class="seal-gold">
-                    <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <line x1="2" y1="12" x2="22" y2="12"></line>
-                        <path
-                            d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
-                        </path>
-                    </svg>
-                </div>
-            </div>
-
-            <div class="settings-page">
-                <div class="settings-group">
-                    <h3>P / SURNAME, GIVEN NAMES</h3>
-                    <div style="font-size: 1.5rem; font-weight: bold; text-transform: uppercase;" id="display-username">
-                        IDENTIFYING...</div>
-                </div>
-
-                <div class="settings-group">
-                    <h3>PERSONAL SPECIFICATIONS</h3>
-
-                    <div style="margin-bottom: 15px;">
-                        <label style="font-size: 0.8rem; opacity: 0.7; display: block;">CONTACT_EMAIL</label>
-                        <input type="email" id="email" class="input-field" placeholder="Update email address..." />
-                    </div>
-
-                    <div style="margin-bottom: 15px;">
-                        <label style="font-size: 0.8rem; opacity: 0.7; display: block;">ACCESS_KEY (PASSWORD)</label>
-                        <input type="password" id="password" class="input-field" placeholder="••••••••" />
-                    </div>
-                </div>
-
-                <div class="settings-group">
-                    <h3>VISUAL IDENTIFICATION</h3>
-
-                    <div style="margin-bottom: 15px;">
-                        <label style="font-size: 0.8rem; opacity: 0.7; display: block;">PHOTO_SOURCE_URL</label>
-                        <input type="text" id="avatar_url" class="input-field" placeholder="https://url-to-photo.png"
-                            oninput="updatePreview()" />
-                    </div>
-
-                    <div style="margin-bottom: 15px;">
-                        <label style="font-size: 0.8rem; opacity: 0.7; display: block;">ENVIRONMENT_URL
-                            (BACKGROUND)</label>
-                        <input type="text" id="background_image" class="input-field"
-                            placeholder="https://url-to-background.jpg" />
-                    </div>
-                </div>
-
-                <div class="settings-group">
-                    <h3>IDENTITY PROFILE (BIO)</h3>
-                    <textarea id="description" class="journal-textarea"
-                        style="height: 100px; font-family: 'Libre Baskerville', serif;"
-                        placeholder="Write your profile description here..."></textarea>
-                </div>
-
-                <div class="settings-group">
-                    <h3>INTERFACE MODIFICATIONS (CSS)</h3>
-                    <textarea id="custom_css" class="journal-textarea"
-                        style="height: 100px; font-family: 'Share Tech Mono', monospace; font-size: 0.8rem;"
-                        placeholder="/* Custom CSS here */"></textarea>
-                </div>
-
-                <div style="display: flex; gap: 20px; align-items: center; margin-top: 30px;">
-                    <button class="btn-renew" id="save-btn">RENEW IDENTITY</button>
-                    <button class="btn-renew" id="reset-css-btn"
-                        style="background: var(--stamp-exit-blue); border: none;">RESET_INTERFACE</button>
-                </div>
-
-                <div id="status-msg"
-                    style="margin-top: 20px; font-family: 'Share Tech Mono', monospace; font-weight: bold;"></div>
-            </div>
-        </div>
-
-        <!-- Visa Stamps Area (Account History Rebranded) -->
-        <div class="peer-review-section" style="margin-top: 60px;">
-            <h2 class="peer-review-title">ENTRY & EXIT AUTHORIZATIONS</h2>
-            <div class="stamp-area">
-                <div class="stamp">ENTRY // MIRAGE_NET</div>
-                <div class="stamp exit">VALID // PERMANENT</div>
-                <div class="stamp">SECTOR // GLOBAL</div>
-                <div class="stamp exit">AUTH // VERIFIED</div>
-            </div>
-        </div>
-
-        <footer class="nav-links">
-            <a href="./room.html">← DISPATCH HUB</a>
-            <a href="./userprofile.html" id="profile-link">VIEW PROFILE PAGE</a>
-            <a href="./index.html">LOGOUT // EXIT</a>
-        </footer>
     </div>
-
     <script>
         let server_url = 'http://127.0.0.1:5000';
 
-        // Mode Management
-        function toggleMode() {
-            const body = document.body;
-            if (body.classList.contains('dark-mode')) {
-                body.classList.remove('dark-mode');
-                localStorage.setItem('theme', 'light');
-            } else {
-                body.classList.add('dark-mode');
-                localStorage.setItem('theme', 'dark');
-            }
-        }
-
-        if (localStorage.getItem('theme') === 'dark') {
-            document.body.classList.add('dark-mode');
-        }
-
-        async function loadSettingsJson() {
-            try {
-                const res = await fetch('settings.json');
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data.server_url) server_url = data.server_url;
-                }
-            } catch (e) { }
+        function logout() {
+            localStorage.clear();
+            window.location.href = './index.html';
         }
 
         function updatePreview() {
             const url = document.getElementById('avatar_url').value;
-            if (url) {
-                document.getElementById('avatar-preview').src = url;
-            }
+            if (url) document.getElementById('avatar-preview').src = url;
+        }
+
+        async function loadSettingsJson() {
+            try {
+                const r = await fetch('settings.json');
+                const d = await r.json();
+                if (d.server_url) server_url = d.server_url;
+            } catch (e) { }
         }
 
         async function loadCurrentSettings() {
             const username = localStorage.getItem('user');
             const token = localStorage.getItem('token');
-            if (!username || !token) {
-                window.location.href = './index.html';
-                return;
-            }
-
+            if (!username || !token) { window.location.href = './index.html'; return; }
             document.getElementById('display-username').textContent = username;
             document.getElementById('display-id').textContent = Math.floor(100000 + Math.random() * 900000);
             document.getElementById('profile-link').href = `./userprofile.html?user=${encodeURIComponent(username)}`;
-
             try {
                 const res = await fetch(`${server_url}/api/user/${username}`);
                 if (res.ok) {
@@ -183,32 +122,28 @@
                     document.getElementById('custom_css').value = data.custom_css || '';
                     if (data.avatar_url) document.getElementById('avatar-preview').src = data.avatar_url;
                 }
-            } catch (err) {
-                console.error('Failed to load current settings', err);
-            }
-        }
-
-        function validateBackgroundImage(url) {
-            if (!url) return true;
-            const validExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
-            return validExtensions.some(ext => url.toLowerCase().endsWith(ext));
+            } catch (err) { }
         }
 
         function sanitizeCSS(css) {
             if (!css) return '';
             return css
-                .replace(/<script\b[^>]*>([\s\S]*?)<\/script>/gim, "")
-                .replace(/expression\s*\(|behavior\s*:/gim, "")
-                .replace(/@import\b/gim, "")
-                .replace(/-moz-binding\b/gim, "")
-                .replace(/javascript\s*:/gim, "")
-                .replace(/@font-face\b/gim, "");
+                .replace(/<script\b[^>]*>([\s\S]*?)<\/script>/gim, '')
+                .replace(/expression\s*\(|behavior\s*:/gim, '')
+                .replace(/@import\b/gim, '')
+                .replace(/-moz-binding\b/gim, '')
+                .replace(/javascript\s*:/gim, '')
+                .replace(/@font-face\b/gim, '');
+        }
+
+        function validateBgUrl(url) {
+            if (!url) return true;
+            return ['.jpg', '.jpeg', '.png', '.gif', '.webp'].some(e => url.toLowerCase().endsWith(e));
         }
 
         document.getElementById('save-btn').addEventListener('click', async () => {
             const token = localStorage.getItem('token');
             const statusMsg = document.getElementById('status-msg');
-
             const payload = {};
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value.trim();
@@ -217,14 +152,12 @@
             const background_image = document.getElementById('background_image').value.trim();
             let custom_css = document.getElementById('custom_css').value.trim();
 
-            if (background_image && !validateBackgroundImage(background_image)) {
-                statusMsg.textContent = 'DOCUMENT_ERROR: INVALID_IMAGE_FORMAT';
-                statusMsg.style.color = 'var(--stamp-entry-red)';
+            if (background_image && !validateBgUrl(background_image)) {
+                statusMsg.textContent = 'Invalid background URL format.';
+                statusMsg.className = 'error-text';
                 return;
             }
-
             if (custom_css) custom_css = sanitizeCSS(custom_css);
-
             if (email) payload.email = email;
             if (password) payload.password = password;
             if (avatar_url) payload.avatar_url = avatar_url;
@@ -233,72 +166,57 @@
             if (custom_css) payload.custom_css = custom_css;
 
             if (Object.keys(payload).length === 0) {
-                statusMsg.textContent = 'DATA_MISSING: NO_CHANGES_FILED';
-                statusMsg.style.color = 'var(--stamp-entry-red)';
+                statusMsg.textContent = 'No changes to save.';
+                statusMsg.style.color = 'var(--text-muted)';
                 return;
             }
 
             try {
-                statusMsg.textContent = 'TRANSMITTING_TO_BORDER_CONTROL...';
-                statusMsg.style.color = 'var(--official-black)';
-
+                statusMsg.textContent = 'Saving…';
+                statusMsg.style.color = 'var(--text-muted)';
                 const res = await fetch(`${server_url}/api/user/settings`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': token
-                    },
+                    headers: { 'Content-Type': 'application/json', Authorization: token },
                     body: JSON.stringify(payload)
                 });
-
                 if (res.ok) {
-                    statusMsg.textContent = 'SUCCESS: IDENTITY_PASS_RENEWED';
-                    statusMsg.style.color = 'var(--stamp-exit-blue)';
+                    statusMsg.textContent = 'Saved!';
+                    statusMsg.style.color = '#00a050';
                     if (avatar_url) updatePreview();
                 } else {
-                    const data = await res.json();
-                    statusMsg.textContent = `DENIED: ${data.message || 'RENEWAL_FAILED'}`;
-                    statusMsg.style.color = 'var(--stamp-entry-red)';
+                    const d = await res.json();
+                    statusMsg.textContent = d.message || 'Failed to save.';
+                    statusMsg.style.color = '#c00';
                 }
             } catch (err) {
-                statusMsg.textContent = 'UNABLE_TO_CONNECT_TO_REGISTRY';
-                statusMsg.style.color = 'var(--stamp-entry-red)';
+                statusMsg.textContent = 'Cannot connect to server.';
+                statusMsg.style.color = '#c00';
             }
         });
 
         document.getElementById('reset-css-btn').addEventListener('click', async () => {
-            if (!confirm('RESET_DOCUMENT: Revert all interface modifications?')) return;
-
+            if (!confirm('Reset custom CSS?')) return;
             const token = localStorage.getItem('token');
             const statusMsg = document.getElementById('status-msg');
-
             try {
-                statusMsg.textContent = 'RESETTING_INTERFACE_MANIFEST...';
+                statusMsg.textContent = 'Resetting…';
                 const res = await fetch(`${server_url}/api/user/settings`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': token
-                    },
-                    body: JSON.stringify({ custom_css: "" })
+                    headers: { 'Content-Type': 'application/json', Authorization: token },
+                    body: JSON.stringify({ custom_css: '' })
                 });
-
                 if (res.ok) {
                     document.getElementById('custom_css').value = '';
-                    statusMsg.textContent = 'INTERFACE_RESET_SUCCESSFUL';
-                    statusMsg.style.color = 'var(--stamp-exit-blue)';
+                    statusMsg.textContent = 'CSS reset.';
+                    statusMsg.style.color = '#00a050';
                 }
             } catch (err) {
-                statusMsg.textContent = 'CONNECTION_FAILURE';
+                statusMsg.textContent = 'Failed.';
+                statusMsg.style.color = '#c00';
             }
         });
 
-        async function init() {
-            await loadSettingsJson();
-            await loadCurrentSettings();
-        }
-
-        document.addEventListener('DOMContentLoaded', init);
+        loadSettingsJson().then(loadCurrentSettings);
     </script>
 </body>
 
